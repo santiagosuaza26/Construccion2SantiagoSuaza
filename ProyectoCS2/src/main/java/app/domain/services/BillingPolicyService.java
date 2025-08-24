@@ -2,9 +2,9 @@ package app.domain.services;
 
 import app.domain.model.MedicalInsurance;
 
-public class PatientService {
+public class BillingPolicyService {
 
-    public boolean validateInsurancePolicy(MedicalInsurance policy) {
+    public boolean isPolicyValid(MedicalInsurance policy) {
         return policy != null && policy.isActive();
     }
 }

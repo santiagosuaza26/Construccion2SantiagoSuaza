@@ -1,34 +1,38 @@
 package app.domain.model;
 
 public class EmergencyContact {
-    private String name;
+
+    private String fullName;
     private String relationship;
     private String phoneNumber;
 
-    public EmergencyContact(String name, String relationship, String phoneNumber) {
-        this.name = name;
+    public EmergencyContact() {
+    }
+
+    public EmergencyContact(String fullName, String relationship, String phoneNumber) {
+        this.fullName = fullName;
         this.relationship = relationship;
         this.phoneNumber = phoneNumber;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getRelationship() {
         return relationship;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setRelationship(String relationship) {
         this.relationship = relationship;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
@@ -38,7 +42,7 @@ public class EmergencyContact {
     @Override
     public String toString() {
         return "EmergencyContact{" +
-                "name='" + name + '\'' +
+                "fullName='" + fullName + '\'' +
                 ", relationship='" + relationship + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
