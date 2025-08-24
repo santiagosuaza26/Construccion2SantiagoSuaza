@@ -3,56 +3,61 @@ package app.domain.model;
 import java.time.LocalDate;
 
 public class MedicalInsurance {
+
     private String companyName;
     private String policyNumber;
-    private boolean isActive;
-    private LocalDate policyEndDate;
+    private boolean active;
+    private LocalDate expirationDate;
 
-    public MedicalInsurance(String companyName, String policyNumber, boolean isActive, LocalDate policyEndDate) {
+    public MedicalInsurance() {
+    }
+
+    public MedicalInsurance(String companyName, String policyNumber, boolean active, LocalDate expirationDate) {
         this.companyName = companyName;
         this.policyNumber = policyNumber;
-        this.isActive = isActive;
-        this.policyEndDate = policyEndDate;
+        this.active = active;
+        this.expirationDate = expirationDate;
     }
 
     public String getCompanyName() {
         return companyName;
     }
 
-    public String getPolicyNumber() {
-        return policyNumber;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public LocalDate getPolicyEndDate() {
-        return policyEndDate;
-    }
-
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public String getPolicyNumber() {
+        return policyNumber;
     }
 
     public void setPolicyNumber(String policyNumber) {
         this.policyNumber = policyNumber;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setPolicyEndDate(LocalDate policyEndDate) {
-        this.policyEndDate = policyEndDate;
+    public void setActive(boolean active) {
+        this.active = active;
     }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
     @Override
     public String toString() {
         return "MedicalInsurance{" +
                 "companyName='" + companyName + '\'' +
                 ", policyNumber='" + policyNumber + '\'' +
-                ", isActive=" + isActive +
-                ", policyEndDate=" + policyEndDate +
+                ", active=" + active +
+                ", expirationDate=" + expirationDate +
                 '}';
     }
 }
