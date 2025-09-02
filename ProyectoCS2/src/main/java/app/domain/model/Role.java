@@ -1,7 +1,7 @@
 package app.domain.model;
 
 public enum Role {
-    HR,
+    HUMAN_RESOURCES,
     ADMINISTRATIVE,
     SUPPORT,
     NURSE,
