@@ -1,7 +1,7 @@
 package app.application.usecase;
 
-import com.clinic.domain.model.OrderHeader;
-import com.clinic.domain.service.DoctorService;
+import app.domain.model.OrderHeader;
+import app.domain.service.DoctorService;
 
 import java.time.LocalDate;
 

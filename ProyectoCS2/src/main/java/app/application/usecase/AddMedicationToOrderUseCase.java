@@ -1,7 +1,7 @@
 package app.application.usecase;
 
-import com.clinic.domain.model.MedicationOrderItem;
-import com.clinic.domain.service.DoctorService;
+import app.domain.model.MedicationOrderItem;
+import app.domain.service.DoctorService;
 
 import java.util.List;
 

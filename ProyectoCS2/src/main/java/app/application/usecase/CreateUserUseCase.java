@@ -1,9 +1,9 @@
 package app.application.usecase;
 
-import com.clinic.application.dto.UserRequest;
-import com.clinic.application.dto.UserResponse;
-import com.clinic.domain.model.User;
-import com.clinic.domain.service.HumanResourcesService;
+import app.application.dto.UserRequest;
+import app.application.dto.UserResponse;
+import app.domain.model.User;
+import app.domain.service.HumanResourcesService;
 
 public class CreateUserUseCase {
     private final HumanResourcesService service;

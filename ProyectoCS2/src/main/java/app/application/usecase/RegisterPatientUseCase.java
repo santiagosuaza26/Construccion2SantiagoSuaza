@@ -1,8 +1,8 @@
 package app.application.usecase;
-import com.clinic.application.dto.PatientRequest;
-import com.clinic.application.dto.PatientResponse;
-import com.clinic.domain.model.Patient;
-import com.clinic.domain.service.AdministrativeService;
+import app.application.dto.PatientRequest;
+import app.application.dto.PatientResponse;
+import app.domain.model.Patient;
+import app.domain.service.AdministrativeService;
 
 public class RegisterPatientUseCase {
     private final AdministrativeService service;
