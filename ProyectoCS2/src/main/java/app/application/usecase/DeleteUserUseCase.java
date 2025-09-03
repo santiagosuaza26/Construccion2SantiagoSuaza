@@ -1,6 +1,6 @@
 package app.application.usecase;
 
-import app.domain.service.HumanResourcesService;
+import app.domain.services.HumanResourcesService;
 
 public class DeleteUserUseCase {
     private final HumanResourcesService service;

@@ -3,7 +3,7 @@ package app.application.usecase;
 import app.application.dto.UserRequest;
 import app.application.dto.UserResponse;
 import app.domain.model.User;
-import app.domain.service.HumanResourcesService;
+import app.domain.services.HumanResourcesService;
 
 public class CreateUserUseCase {
     private final HumanResourcesService service;

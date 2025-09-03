@@ -2,7 +2,7 @@ package app.application.usecase;
 import app.application.dto.PatientRequest;
 import app.application.dto.PatientResponse;
 import app.domain.model.Patient;
-import app.domain.service.AdministrativeService;
+import app.domain.services.AdministrativeService;
 
 public class RegisterPatientUseCase {
     private final AdministrativeService service;

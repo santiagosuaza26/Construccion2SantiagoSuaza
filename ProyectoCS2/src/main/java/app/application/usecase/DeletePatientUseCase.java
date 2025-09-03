@@ -1,6 +1,6 @@
 package app.application.usecase;
 
-import app.domain.service.AdministrativeService;
+import app.domain.services.AdministrativeService;
 
 public class DeletePatientUseCase {
     private final AdministrativeService service;

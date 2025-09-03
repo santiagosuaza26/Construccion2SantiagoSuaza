@@ -1,9 +1,9 @@
 package app.application.usecase;
 
-import app.domain.model.DiagnosticOrderItem;
-import app.domain.service.DoctorService;
-
 import java.util.List;
+
+import app.domain.model.DiagnosticOrderItem;
+import app.domain.services.DoctorService;
 
 public class AddDiagnosticToOrderUseCase {
     private final DoctorService service;
