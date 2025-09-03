@@ -1,7 +1,7 @@
 package app.application.usecase;
 
 import app.domain.model.ProcedureType;
-import app.domain.service.SupportService;
+import app.domain.services.SupportService;
 
 public class EnsureProcedureExistsUseCase {
     private final SupportService service;

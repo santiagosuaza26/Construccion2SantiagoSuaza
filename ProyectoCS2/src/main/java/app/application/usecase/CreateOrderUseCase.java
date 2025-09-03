@@ -1,9 +1,9 @@
 package app.application.usecase;
 
-import app.domain.model.OrderHeader;
-import app.domain.service.DoctorService;
-
 import java.time.LocalDate;
+
+import app.domain.model.OrderHeader;
+import app.domain.services.DoctorService;
 
 public class CreateOrderUseCase {
     private final DoctorService service;

@@ -1,7 +1,7 @@
 package app.application.usecase;
 
 import app.domain.model.VitalSigns;
-import app.domain.service.NurseService;
+import app.domain.services.NurseService;
 
 public class RecordVitalSignsUseCase {
     private final NurseService service;

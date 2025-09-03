@@ -1,9 +1,9 @@
 package app.application.usecase;
 
-import app.domain.model.MedicationOrderItem;
-import app.domain.service.DoctorService;
-
 import java.util.List;
+
+import app.domain.model.MedicationOrderItem;
+import app.domain.services.DoctorService;
 
 public class AddMedicationToOrderUseCase {
     private final DoctorService service;

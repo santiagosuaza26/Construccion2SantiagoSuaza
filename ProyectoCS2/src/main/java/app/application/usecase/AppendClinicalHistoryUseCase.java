@@ -2,7 +2,7 @@ package app.application.usecase;
 
 
 import app.domain.model.ClinicalHistoryEntry;
-import app.domain.service.DoctorService;
+import app.domain.services.DoctorService;
 
 public class AppendClinicalHistoryUseCase {
     private final DoctorService service;

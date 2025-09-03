@@ -1,7 +1,7 @@
 package app.application.usecase;
 
 import app.domain.model.Medication;
-import app.domain.service.SupportService;
+import app.domain.services.SupportService;
 
 public class EnsureMedicationExistsUseCase {
     private final SupportService service;
