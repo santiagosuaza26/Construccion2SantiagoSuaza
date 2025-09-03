@@ -1,50 +1,27 @@
 package app.domain.model;
 
-public class EmergencyContact {
+public final class EmergencyContact {
+    private final String firstName;
+    private final String lastName;
+    private final String relationship;
+    private final String phone;
 
-    private String fullName;
-    private String relationship;
-    private String phoneNumber;
-
-    public EmergencyContact() {
-    }
-
-    public EmergencyContact(String fullName, String relationship, String phoneNumber) {
-        this.fullName = fullName;
+    public EmergencyContact(String firstName, String lastName, String relationship, String phone) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.relationship = relationship;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
+        validate();
     }
 
-    public String getFullName() {
-        return fullName;
-    }
+    public String getFirstName() { return firstName; }
+    public String getLastName() { return lastName; }
+    public String getRelationship() { return relationship; }
+    public String getPhone() { return phone; }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getRelationship() {
-        return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    @Override
-    public String toString() {
-        return "EmergencyContact{" +
-                "fullName='" + fullName + '\'' +
-                ", relationship='" + relationship + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
+    private void validate() {
+        if (phone == null || !phone.matches("\\d{10}")) {
+            throw new IllegalArgumentException("Emergency phone must have 10 digits");
+        }
     }
 }

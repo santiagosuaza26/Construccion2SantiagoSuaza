@@ -1,21 +1,20 @@
 package app.application.dto;
 
+
+import app.domain.model.User;
+
 public class UserResponse {
-    private String id;
-    private String fullName;
-    private String email;
-    private String userName;
+    public String fullName;
+    public String idCard;
+    public String email;
+    public String role;
 
-    public UserResponse(String id, String fullName, String email, String userName) {
-        this.id = id;
-        this.fullName = fullName;
-        this.email = email;
-        this.userName = userName;
+    public static UserResponse fromDomain(User user) {
+        UserResponse dto = new UserResponse();
+        dto.fullName = user.getFullName();
+        dto.idCard = user.getIdCard();
+        dto.email = user.getEmail();
+        dto.role = user.getRole().name();
+        return dto;
     }
-
-    // Getters
-    public String getId() { return id; }
-    public String getFullName() { return fullName; }
-    public String getEmail() { return email; }
-    public String getUserName() { return userName; }
 }
