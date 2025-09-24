@@ -145,11 +145,13 @@ public class BillingService {
     }
     
     private Money calculateCopay(InsurancePolicy policy, Money subtotal, 
-                                Money currentYearCopayPaid, LocalDate today) {
-        
-        return insuranceCalculationService.calculateCopayWithMoney(
-            policy, subtotal, currentYearCopayPaid, today
+                            Money currentYearCopayPaid, LocalDate today) {
+        long subtotalLong = subtotal.getAmount();
+        long copayPaidLong = currentYearCopayPaid.getAmount();
+        long copay = insuranceCalculationService.calculateCopay(
+            policy, subtotalLong, copayPaidLong, today
         );
+        return Money.of(copay);
     }
     
     private String extractInsuranceCompany(InsurancePolicy policy) {
