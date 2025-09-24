@@ -1,6 +1,7 @@
 package app.domain.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 public class Patient {
     private final String idCard; // unique
@@ -52,5 +53,9 @@ public class Patient {
         if (idCard == null || !idCard.matches("\\d+")) throw new IllegalArgumentException("Invalid idCard");
         if (phone == null || !phone.matches("\\d{10}")) throw new IllegalArgumentException("Invalid patient phone");
         if (birthDate == null) throw new IllegalArgumentException("Birth date required");
+        if (birthDate != null) {int age = Period.between(birthDate, LocalDate.now()).getYears();
+        if (age > 100) throw new IllegalArgumentException("Invalid age: maximum 100 years");}
+        if (fullName == null || fullName.isBlank()) throw new IllegalArgumentException("Invalid fullName");
+        if (email == null || !email.contains("@")) throw new IllegalArgumentException("Invalid email");
     }
 }
