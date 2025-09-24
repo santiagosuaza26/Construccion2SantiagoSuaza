@@ -1,12 +1,17 @@
 package app.domain.port;
 
+import java.util.List;
 import java.util.Optional;
 
 import app.domain.model.Patient;
 
 public interface PatientRepository {
     Optional<Patient> findByIdCard(String idCard);
+    Optional<Patient> findByUsername(String username);
     Patient save(Patient patient);
     void deleteByIdCard(String idCard);
-    long totalCopayPaidInYear(String idCard, int year); // para regla de tope de copago:contentReference[oaicite:3]{index=3}
+    long totalCopayPaidInYear(String idCard, int year);
+    boolean existsByIdCard(String idCard);
+    boolean existsByUsername(String username);
+    List<Patient> findAll();
 }

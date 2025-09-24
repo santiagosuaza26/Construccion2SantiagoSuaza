@@ -5,5 +5,6 @@ public enum Role {
     ADMINISTRATIVE,
     SUPPORT,
     NURSE,
-    DOCTOR
+    DOCTOR,
+    PATIENT  // Rol implícito para pacientes
 }
