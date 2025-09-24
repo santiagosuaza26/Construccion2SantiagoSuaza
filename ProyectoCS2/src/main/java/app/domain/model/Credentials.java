@@ -26,5 +26,8 @@ public final class Credentials {
             !password.matches(".*[^A-Za-z0-9].*")) {
             throw new IllegalArgumentException("Password must contain uppercase, number and special char");
         }
+        if (!username.matches("^[a-zA-Z0-9]+$")) {
+            throw new IllegalArgumentException("Username must contain only letters and numbers");
+        }
     }
 }
