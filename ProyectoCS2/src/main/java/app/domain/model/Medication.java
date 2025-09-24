@@ -5,7 +5,7 @@ public class Medication {
     private final String name;
     private final String description;
     private final int stock;
-    private final long price; // in pesos
+    private final long price;
 
     public Medication(String medicationId, String name, String description, int stock, long price) {
         this.medicationId = medicationId;

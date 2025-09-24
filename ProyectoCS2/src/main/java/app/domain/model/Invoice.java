@@ -9,10 +9,10 @@ public class Invoice {
     private final int patientAge;
     private final String patientIdCard;
     private final String doctorName;
-    private final String insuranceCompany; // nullable
-    private final String policyNumber;     // nullable
-    private final int policyRemainingDays; // computed at generation time
-    private final LocalDate policyEndDate; // nullable
+    private final String insuranceCompany;
+    private final String policyNumber;    
+    private final int policyRemainingDays;
+    private final LocalDate policyEndDate;
     private final List<InvoiceLine> lines;
     private final long copay;
     private final long total;

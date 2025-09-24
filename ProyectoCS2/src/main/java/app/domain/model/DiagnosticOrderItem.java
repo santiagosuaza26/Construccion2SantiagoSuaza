@@ -6,7 +6,7 @@ public class DiagnosticOrderItem extends OrderItem {
     private final int quantity;
     private final boolean specialistRequired;
     private final String specialtyId;
-    private final Money cost; // Usar Money internamente
+    private final Money cost;
 
     public DiagnosticOrderItem(String orderNumber, int itemNumber,
                             String diagnosticId, String diagnosticName,
@@ -18,11 +18,10 @@ public class DiagnosticOrderItem extends OrderItem {
         this.quantity = quantity;
         this.specialistRequired = specialistRequired;
         this.specialtyId = specialtyId;
-        this.cost = Money.of(cost); // Convert to Money
+        this.cost = Money.of(cost);
         validateSelf();
     }
-    
-    // Constructor alternativo que acepta Money directamente
+    // recibe money directamente
     public DiagnosticOrderItem(String orderNumber, int itemNumber,
                             String diagnosticId, String diagnosticName,
                             int quantity, boolean specialistRequired,

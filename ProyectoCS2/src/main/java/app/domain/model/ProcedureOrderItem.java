@@ -7,7 +7,7 @@ public class ProcedureOrderItem extends OrderItem {
     private final String frequency;
     private final boolean specialistRequired;
     private final String specialtyId;
-    private final Money cost; // Usar Money internamente
+    private final Money cost;
 
     public ProcedureOrderItem(String orderNumber, int itemNumber,
                             String procedureId, String procedureName,
@@ -21,11 +21,11 @@ public class ProcedureOrderItem extends OrderItem {
         this.frequency = frequency;
         this.specialistRequired = specialistRequired;
         this.specialtyId = specialtyId;
-        this.cost = Money.of(cost); // Convert to Money
+        this.cost = Money.of(cost);
         validateSelf();
     }
     
-    // Constructor alternativo que acepta Money directamente
+    // recibe money directamente
     public ProcedureOrderItem(String orderNumber, int itemNumber,
                             String procedureId, String procedureName,
                             int quantity, String frequency,

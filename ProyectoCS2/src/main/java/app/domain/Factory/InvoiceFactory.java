@@ -10,6 +10,7 @@ import app.domain.model.InsurancePolicy;
 import app.domain.model.Invoice;
 import app.domain.model.InvoiceLine;
 import app.domain.model.MedicationOrderItem;
+import app.domain.model.Money;
 import app.domain.model.OrderItem;
 import app.domain.model.Patient;
 import app.domain.model.ProcedureOrderItem;
@@ -17,14 +18,14 @@ import app.domain.model.ProcedureOrderItem;
 public class InvoiceFactory {
     
     public Invoice createInvoice(String invoiceId, Patient patient, String doctorName,
-                                List<OrderItem> orderItems, long totalCopayPaidThisYear,
+                                List<OrderItem> orderItems, Money totalCopayPaidThisYear,
                                 LocalDate invoiceDate) {
         
         List<InvoiceLine> lines = createInvoiceLines(orderItems);
-        long subtotal = calculateSubtotal(lines);
+        Money subtotal = calculateSubtotal(lines);
         
         InsurancePolicy policy = patient.getInsurancePolicy();
-        long copay = calculateCopay(policy, subtotal, totalCopayPaidThisYear);
+        Money copay = calculateCopay(policy, subtotal, totalCopayPaidThisYear);
         
         int age = Period.between(patient.getBirthDate(), invoiceDate).getYears();
         
@@ -39,8 +40,8 @@ public class InvoiceFactory {
             policy != null ? (int) policy.remainingDaysFrom(invoiceDate) : 0,
             policy != null ? policy.getEndDate() : null,
             lines,
-            copay,
-            subtotal
+            copay.getAmount(), // Convertir a long para Invoice
+            subtotal.getAmount() // Convertir a long para Invoice
         );
     }
     
@@ -62,22 +63,35 @@ public class InvoiceFactory {
         return lines;
     }
     
-    private long calculateSubtotal(List<InvoiceLine> lines) {
-        return lines.stream().mapToLong(InvoiceLine::getAmount).sum();
+    private Money calculateSubtotal(List<InvoiceLine> lines) {
+        return lines.stream()
+            .map(line -> Money.of(line.getAmount()))
+            .reduce(Money.zero(), Money::add);
     }
     
-    private long calculateCopay(InsurancePolicy policy, long subtotal, long copayPaidThisYear) {
+    private Money calculateCopay(InsurancePolicy policy, Money subtotal, Money copayPaidThisYear) {
         if (policy == null || !policy.isActive()) {
             return subtotal; // Patient pays everything
         }
         
-        long copayLimit = 1_000_000L; // 1 million pesos
-        long standardCopay = 50_000L; // 50k pesos
+        Money copayLimit = Money.of(1_000_000L); // 1 million pesos
+        Money standardCopay = Money.of(50_000L); // 50k pesos
         
-        if (copayPaidThisYear >= copayLimit) {
-            return 0; // No more copay this year
+        if (copayPaidThisYear.isGreaterThanOrEqual(copayLimit)) {
+            return Money.zero(); // No more copay this year
         }
         
-        return Math.min(standardCopay, copayLimit - copayPaidThisYear);
+        Money remainingCapacity = copayLimit.subtract(copayPaidThisYear);
+        
+        // Return minimum of: standard copay, remaining capacity, or subtotal
+        Money result = standardCopay;
+        if (result.isGreaterThan(remainingCapacity)) {
+            result = remainingCapacity;
+        }
+        if (result.isGreaterThan(subtotal)) {
+            result = subtotal;
+        }
+        
+        return result;
     }
 }

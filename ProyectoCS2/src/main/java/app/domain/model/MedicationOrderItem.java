@@ -5,7 +5,7 @@ public class MedicationOrderItem extends OrderItem {
     private final String medicationName;
     private final String dosage;
     private final String treatmentDuration;
-    private final Money cost; // Usar Money internamente
+    private final Money cost;
 
     public MedicationOrderItem(String orderNumber, int itemNumber,
                             String medicationId, String medicationName,
@@ -15,7 +15,7 @@ public class MedicationOrderItem extends OrderItem {
         this.medicationName = medicationName;
         this.dosage = dosage;
         this.treatmentDuration = treatmentDuration;
-        this.cost = Money.of(cost); // Convert to Money
+        this.cost = Money.of(cost);
         validateSelf();
     }
     

@@ -9,8 +9,8 @@ public class PatientVisit {
     private final Role attendingStaffRole;
     private final LocalDateTime visitDateTime;
     private final String notes;
-    private final VitalSigns vitalSigns; // nullable
-    private final String relatedOrderNumber; // nullable
+    private final VitalSigns vitalSigns;
+    private final String relatedOrderNumber;
 
     public PatientVisit(String visitId, String patientIdCard, String attendingStaffIdCard,
                         Role attendingStaffRole, LocalDateTime visitDateTime, String notes,

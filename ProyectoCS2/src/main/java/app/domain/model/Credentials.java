@@ -20,7 +20,6 @@ public final class Credentials {
         if (password == null || password.length() < 8) {
             throw new IllegalArgumentException("Invalid password");
         }
-        // Minimal structural checks (uppercase, number, special)
         if (!password.matches(".*[A-Z].*") ||
             !password.matches(".*\\d.*") ||
             !password.matches(".*[^A-Za-z0-9].*")) {

@@ -3,7 +3,7 @@ package app.domain.model;
 import java.time.LocalDate;
 
 public class OrderHeader {
-    private final String orderNumber; // max 6 digits (en el repositorio se garantiza unicidad)
+    private final String orderNumber;
     private final String patientIdCard;
     private final String doctorIdCard;
     private final LocalDate creationDate;

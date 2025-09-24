@@ -4,13 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ClinicalHistoryEntry {
-    private final LocalDate date;          // key at NoSQL level
-    private final String doctorIdCard;     // max 10 digits implied
+    private final LocalDate date;
+    private final String doctorIdCard;
     private final String reason;
     private final String symptoms;
-    private final String diagnosis;        // may be empty for diagnostic-only
-    private final VitalSigns vitalSigns;   // optional (nurse)
-    private final List<String> relatedOrderNumbers; // orders created/updated in this visit
+    private final String diagnosis;
+    private final VitalSigns vitalSigns;
+    private final List<String> relatedOrderNumbers;
 
     public ClinicalHistoryEntry(LocalDate date, String doctorIdCard,
                                 String reason, String symptoms, String diagnosis,

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public class Patient {
-    private final String idCard; // unique
+    private final String idCard;
     private final String fullName;
     private final LocalDate birthDate;
     private final String gender;
@@ -12,8 +12,8 @@ public class Patient {
     private final String phone;
     private final String email;
     private final Credentials credentials;
-    private final EmergencyContact emergencyContact; // optional (min/max 1)
-    private final InsurancePolicy insurancePolicy;   // optional (0..1)
+    private final EmergencyContact emergencyContact;
+    private final InsurancePolicy insurancePolicy;
 
     public Patient(String idCard,
                 String fullName,
@@ -53,9 +53,16 @@ public class Patient {
         if (idCard == null || !idCard.matches("\\d+")) throw new IllegalArgumentException("Invalid idCard");
         if (phone == null || !phone.matches("\\d{10}")) throw new IllegalArgumentException("Invalid patient phone");
         if (birthDate == null) throw new IllegalArgumentException("Birth date required");
-        if (birthDate != null) {int age = Period.between(birthDate, LocalDate.now()).getYears();
-        if (age > 100) throw new IllegalArgumentException("Invalid age: maximum 100 years");}
+        if (birthDate != null) {
+            int age = Period.between(birthDate, LocalDate.now()).getYears();
+            if (age > 150) throw new IllegalArgumentException("Invalid age: maximum 150 years");
+        }
         if (fullName == null || fullName.isBlank()) throw new IllegalArgumentException("Invalid fullName");
         if (email == null || !email.contains("@")) throw new IllegalArgumentException("Invalid email");
+        if (credentials == null) throw new IllegalArgumentException("Credentials required");
+        if (emergencyContact == null) throw new IllegalArgumentException("Emergency contact required");
+        if (address != null && address.length() > 30) throw new IllegalArgumentException("Address must be maximum 30 characters");
+        if (email == null || email.isBlank()) throw new IllegalArgumentException("Email required");
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) throw new IllegalArgumentException("Invalid email format");
     }
 }

@@ -2,7 +2,7 @@ package app.domain.model;
 
 public abstract class OrderItem {
     private final String orderNumber;
-    private final int itemNumber; // unique per order starting at 1
+    private final int itemNumber;
     private final OrderItemType type;
 
     protected OrderItem(String orderNumber, int itemNumber, OrderItemType type) {

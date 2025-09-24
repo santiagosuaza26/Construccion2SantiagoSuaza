@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class User {
     private final String fullName;
-    private final String idCard; // unique
+    private final String idCard;
     private final String email;
     private final String phone;
     private final LocalDate birthDate;
@@ -47,5 +47,8 @@ public class User {
         if (birthDate == null || birthDate.isAfter(LocalDate.now())) throw new IllegalArgumentException("Invalid birthDate");
         if (fullName == null || fullName.isBlank()) throw new IllegalArgumentException("Invalid fullName");
         if (role == null) throw new IllegalArgumentException("Role required");
+        if (credentials == null) throw new IllegalArgumentException("Credentials required");
+        if (address != null && address.length() > 30) throw new IllegalArgumentException("Address must be maximum 30 characters");
+        
     }
 }
