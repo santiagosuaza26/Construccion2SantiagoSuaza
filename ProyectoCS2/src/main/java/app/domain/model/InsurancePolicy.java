@@ -31,5 +31,5 @@ public class InsurancePolicy {
     private void validate() {
         if (company == null || company.isBlank()) throw new IllegalArgumentException("Company required");
         if (policyNumber == null || policyNumber.isBlank()) throw new IllegalArgumentException("Policy number required");
-    }
+    }   
 }
