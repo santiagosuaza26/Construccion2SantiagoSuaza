@@ -1,0 +1,187 @@
+# Archivo de pruebas para la API de Clínica CS2
+# Usar con extensiones como REST Client en VS Code
+# o importar a Postman
+
+@baseUrl = http://localhost:8080/api
+
+### 🏥 Health Check
+GET {{baseUrl}}/actuator/health
+
+### 👥 Gestión de Usuarios
+
+### Listar todos los usuarios
+GET {{baseUrl}}/users
+
+### Crear un nuevo usuario administrativo
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "idCard": "12345678",
+  "fullName": "Carlos Rodríguez",
+  "email": "carlos.rodriguez@clinica.com",
+  "phone": "3001234567",
+  "birthDate": "1980-05-15",
+  "address": "Calle 45 #23-67",
+  "role": "ADMINISTRATIVE",
+  "username": "crodriguez",
+  "password": "admin123"
+}
+
+### Crear un médico
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "idCard": "87654321",
+  "fullName": "Dra. Ana María López",
+  "email": "ana.lopez@clinica.com",
+  "phone": "3019876543",
+  "birthDate": "1975-12-08",
+  "address": "Av. Principal 123",
+  "role": "DOCTOR",
+  "username": "alopez",
+  "password": "doctor123"
+}
+
+### Crear una enfermera
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "idCard": "11223344",
+  "fullName": "Enf. María González",
+  "email": "maria.gonzalez@clinica.com",
+  "phone": "3024567890",
+  "birthDate": "1985-03-20",
+  "address": "Carrera 15 #67-89",
+  "role": "NURSE",
+  "username": "mgonzalez",
+  "password": "nurse123"
+}
+
+### Obtener usuario por ID
+GET {{baseUrl}}/users/12345678
+
+### Actualizar usuario
+PUT {{baseUrl}}/users/12345678
+Content-Type: application/json
+
+{
+  "idCard": "12345678",
+  "fullName": "Carlos Rodríguez Actualizado",
+  "email": "carlos.rodriguez@clinica.com",
+  "phone": "3001234567",
+  "birthDate": "1980-05-15",
+  "address": "Calle 45 #23-67 - Apto 301",
+  "role": "ADMINISTRATIVE",
+  "username": "crodriguez",
+  "password": "admin123"
+}
+
+### 🔐 Autenticación
+
+### Login (actualmente sin autenticación real)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "crodriguez",
+  "password": "admin123"
+}
+
+### Ver información del usuario actual
+GET {{baseUrl}}/auth/me
+
+### Verificar permisos
+GET {{baseUrl}}/auth/permissions?permission=USER_CREATE
+
+### Verificar acceso a recurso
+GET {{baseUrl}}/auth/access?resourceType=PATIENT&action=READ
+
+### 🏥 Pacientes
+
+### Listar pacientes (actualmente no implementado sin autenticación)
+GET {{baseUrl}}/patients
+
+### 📋 Facturación
+
+### Generar factura (actualmente no implementado sin autenticación)
+POST {{baseUrl}}/invoices
+Content-Type: application/json
+
+{
+  "orderNumber": "ORD-001",
+  "patientIdCard": "12345678",
+  "doctorName": "Dra. Ana López",
+  "invoiceDate": "15/01/2024",
+  "shouldPrint": false,
+  "shouldSendByEmail": false
+}
+
+### 🩺 Operaciones Médicas
+
+### Obtener signos vitales (actualmente no implementado sin autenticación)
+GET {{baseUrl}}/medical/vital-signs/12345678
+
+### Registrar signos vitales (actualmente no implementado sin autenticación)
+POST {{baseUrl}}/medical/vital-signs
+Content-Type: application/json
+
+{
+  "patientId": "12345678",
+  "bloodPressure": "120/80",
+  "heartRate": 72,
+  "temperature": 36.5,
+  "weight": 70.5,
+  "height": 175,
+  "notes": "Paciente en buen estado general"
+}
+
+### 📊 Monitoreo
+
+### Información general de la aplicación
+GET {{baseUrl}}/actuator/info
+
+### Métricas de la aplicación
+GET {{baseUrl}}/actuator/metrics
+
+### Configuración de la aplicación
+GET {{baseUrl}}/actuator/configprops
+
+### Mapeo de beans
+GET {{baseUrl}}/actuator/beans
+
+### Estado de los threads
+GET {{baseUrl}}/actuator/threaddump
+
+### ⚠️ Pruebas de Error
+
+### Solicitud sin Content-Type
+POST {{baseUrl}}/users
+{
+  "idCard": "11111111",
+  "fullName": "Usuario Sin Content Type"
+}
+
+### Datos inválidos
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "idCard": "",
+  "fullName": "",
+  "email": "email-invalido",
+  "phone": "123",
+  "birthDate": "2050-01-01",
+  "role": "INVALID_ROLE"
+}
+
+### ID no encontrado
+GET {{baseUrl}}/users/99999999
+
+### 🔍 H2 Console (Desarrollo)
+# Acceder a: http://localhost:8080/api/h2-console
+# JDBC URL: jdbc:h2:mem:clinicdb_dev
+# Username: sa
+# Password: (vacío)

@@ -142,23 +142,39 @@ public class PatientApplicationService {
         }
     }
     
+    public CommonResponse<List<PatientResponse>> getAllPatients() {
+        try {
+            List<Patient> patients = patientRepository.findAll();
+            List<PatientResponse> patientResponses = patientMapper.toResponseList(patients);
+
+            return CommonResponse.success(
+                String.format("Retrieved %d patients", patients.size()),
+                patientResponses
+            );
+
+        } catch (Exception e) {
+            logSystemError("getAllPatients", e, null);
+            return CommonResponse.error("Internal error retrieving patients", "PAT_015");
+        }
+    }
+
     public CommonResponse<List<PatientResponse>> getAllPatients(AuthenticatedUser currentUser) {
         try {
             if (!canViewPatients(currentUser)) {
                 logUnauthorizedAccess(currentUser, "VIEW_ALL_PATIENTS");
                 return CommonResponse.error("Access denied - Cannot view patients list", "PAT_014");
             }
-            
+
             List<Patient> patients = patientRepository.findAll();
             List<PatientResponse> patientResponses = patientMapper.toResponseList(patients);
-            
+
             logPatientsListed(patients.size(), currentUser);
-            
+
             return CommonResponse.success(
-                String.format("Retrieved %d patients", patients.size()), 
+                String.format("Retrieved %d patients", patients.size()),
                 patientResponses
             );
-            
+
         } catch (Exception e) {
             logSystemError("getAllPatients", e, currentUser);
             return CommonResponse.error("Internal error retrieving patients", "PAT_015");

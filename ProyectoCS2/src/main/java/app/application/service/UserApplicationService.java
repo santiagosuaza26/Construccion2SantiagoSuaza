@@ -54,11 +54,52 @@ public class UserApplicationService {
     }
     
     /**
+     * CASO DE USO: Crear Usuario del Sistema (Versión básica sin autenticación)
+     *
+     * Crea un nuevo usuario en el sistema.
+     * NOTA: En producción requerir autenticación HR
+     *
+     * @param request Datos del usuario a crear
+     * @return Response con información del usuario creado
+     */
+    public CommonResponse<UserResponse> createUser(CreateUserRequest request) {
+        try {
+            // 2. Validar el request
+            validateCreateUserRequest(request);
+
+            // 3. Verificar unicidad de cédula y username
+            CommonResponse<Void> uniquenessCheck = validateUniqueness(request);
+            if (!uniquenessCheck.isSuccess()) {
+                return CommonResponse.error(uniquenessCheck.getMessage(), uniquenessCheck.getErrorCode());
+            }
+
+            // 4. Convertir DTO a Domain model usando mapper
+            User userToCreate = userMapper.toUser(request);
+
+            // 5. Crear usuario usando el servicio de dominio
+            User createdUser = humanResourcesService.createUser(userToCreate);
+
+            // 6. Convertir resultado a DTO response
+            UserResponse userResponse = userMapper.toResponse(createdUser);
+
+            return CommonResponse.success("User created successfully", userResponse);
+
+        } catch (IllegalArgumentException e) {
+            // Error de validación de dominio o mapper
+            return CommonResponse.error(e.getMessage(), "USER_002");
+
+        } catch (Exception e) {
+            // Error interno del sistema
+            return CommonResponse.error("Internal error creating user", "USER_003");
+        }
+    }
+
+    /**
      * CASO DE USO: Crear Usuario del Sistema
-     * 
+     *
      * Solo personal de Recursos Humanos puede crear nuevos usuarios del sistema.
      * Valida unicidad de cédula y username, aplica todas las reglas de negocio.
-     * 
+     *
      * @param request Datos del usuario a crear
      * @param currentUser Usuario autenticado (debe ser HR)
      * @return Response con información del usuario creado
@@ -107,17 +148,73 @@ public class UserApplicationService {
     }
     
     /**
+     * CASO DE USO: Actualizar Usuario (Versión básica sin autenticación)
+     *
+     * Permite actualizar información de un usuario existente.
+     * NOTA: En producción requerir autenticación HR
+     *
+     * @param userIdCard Cédula del usuario a actualizar
+     * @param request Nuevos datos del usuario
+     * @return Response con información actualizada
+     */
+    public CommonResponse<UserResponse> updateUser(String userIdCard, CreateUserRequest request) {
+        try {
+            // 2. Validar parámetros
+            if (userIdCard == null || userIdCard.isBlank()) {
+                return CommonResponse.error("User ID card is required", "USER_005");
+            }
+
+            validateCreateUserRequest(request);
+
+            // 3. Verificar que el usuario existe
+            Optional<User> existingUserOpt = userRepository.findByIdCard(userIdCard);
+            if (existingUserOpt.isEmpty()) {
+                return CommonResponse.error("User not found with ID: " + userIdCard, "USER_006");
+            }
+
+            User existingUser = existingUserOpt.get();
+
+            // 4. Validar unicidad si cambió cédula o username
+            if (!userIdCard.equals(request.getIdCard()) ||
+                !existingUser.getCredentials().getUsername().equals(request.getUsername())) {
+                CommonResponse<Void> uniquenessCheck = validateUniquenessForUpdate(request, userIdCard);
+                if (!uniquenessCheck.isSuccess()) {
+                    return CommonResponse.error(uniquenessCheck.getMessage(), uniquenessCheck.getErrorCode());
+                }
+            }
+
+            // 5. Convertir y actualizar
+            User updatedUserData = userMapper.toUser(request);
+
+            // En implementación real: usar un método update específico
+            // Por ahora simulamos eliminando y creando
+            humanResourcesService.deleteUser(userIdCard);
+            User updatedUser = humanResourcesService.createUser(updatedUserData);
+
+            UserResponse userResponse = userMapper.toResponse(updatedUser);
+
+            return CommonResponse.success("User updated successfully", userResponse);
+
+        } catch (IllegalArgumentException e) {
+            return CommonResponse.error(e.getMessage(), "USER_007");
+
+        } catch (Exception e) {
+            return CommonResponse.error("Internal error updating user", "USER_008");
+        }
+    }
+
+    /**
      * CASO DE USO: Actualizar Usuario
-     * 
+     *
      * Permite actualizar información de un usuario existente.
      * Solo HR puede realizar esta operación.
-     * 
+     *
      * @param userIdCard Cédula del usuario a actualizar
      * @param request Nuevos datos del usuario
      * @param currentUser Usuario autenticado (debe ser HR)
      * @return Response con información actualizada
      */
-    public CommonResponse<UserResponse> updateUser(String userIdCard, CreateUserRequest request, 
+    public CommonResponse<UserResponse> updateUser(String userIdCard, CreateUserRequest request,
                                                     AuthenticatedUser currentUser) {
         try {
             // 1. Validar permisos
@@ -176,11 +273,45 @@ public class UserApplicationService {
     }
     
     /**
+     * CASO DE USO: Eliminar Usuario (Versión básica sin autenticación)
+     *
+     * Elimina un usuario del sistema.
+     * NOTA: En producción requerir autenticación HR
+     *
+     * @param userIdCard Cédula del usuario a eliminar
+     * @return Response confirmando la eliminación
+     */
+    public CommonResponse<String> deleteUser(String userIdCard) {
+        try {
+            // 2. Validar parámetros
+            if (userIdCard == null || userIdCard.isBlank()) {
+                return CommonResponse.error("User ID card is required", "USER_010");
+            }
+
+            // 3. Verificar que el usuario existe
+            Optional<User> userToDeleteOpt = userRepository.findByIdCard(userIdCard);
+            if (userToDeleteOpt.isEmpty()) {
+                return CommonResponse.error("User not found with ID: " + userIdCard, "USER_011");
+            }
+
+            User userToDelete = userToDeleteOpt.get();
+
+            // 5. Eliminar usando servicio de dominio
+            humanResourcesService.deleteUser(userIdCard);
+
+            return CommonResponse.success("User deleted successfully: " + userToDelete.getFullName());
+
+        } catch (Exception e) {
+            return CommonResponse.error("Internal error deleting user", "USER_013");
+        }
+    }
+
+    /**
      * CASO DE USO: Eliminar Usuario
-     * 
+     *
      * Elimina un usuario del sistema. Solo HR puede realizar esta operación.
      * Incluye validaciones de seguridad y auditoría.
-     * 
+     *
      * @param userIdCard Cédula del usuario a eliminar
      * @param currentUser Usuario autenticado (debe ser HR)
      * @return Response confirmando la eliminación
@@ -226,11 +357,38 @@ public class UserApplicationService {
     }
     
     /**
+     * CASO DE USO: Listar Todos los Usuarios (Versión básica sin autenticación)
+     *
+     * Retorna lista completa de usuarios del sistema.
+     * NOTA: En producción requerir autenticación HR
+     *
+     * @return Response con lista de usuarios
+     */
+    public CommonResponse<List<UserResponse>> getAllUsers() {
+        try {
+            // 2. Obtener todos los usuarios
+            List<User> users = userRepository.findAll();
+
+            // 3. Convertir a DTOs
+            List<UserResponse> userResponses = userMapper.toResponseList(users);
+
+            return CommonResponse.success(
+                String.format("Retrieved %d users", users.size()),
+                userResponses
+            );
+
+        } catch (Exception e) {
+            logSystemError("getAllUsers", e, null);
+            return CommonResponse.error("Internal error retrieving users", "USER_015");
+        }
+    }
+
+    /**
      * CASO DE USO: Listar Todos los Usuarios
-     * 
+     *
      * Retorna lista completa de usuarios del sistema.
      * Solo HR puede ver esta información.
-     * 
+     *
      * @param currentUser Usuario autenticado (debe ser HR)
      * @return Response con lista de usuarios
      */
@@ -263,11 +421,45 @@ public class UserApplicationService {
     }
     
     /**
+     * CASO DE USO: Consultar Usuario por ID (Versión básica sin autenticación)
+     *
+     * Busca un usuario específico por su cédula.
+     * NOTA: En producción requerir autenticación HR
+     *
+     * @param userIdCard Cédula del usuario a buscar
+     * @return Response con información del usuario
+     */
+    public CommonResponse<UserResponse> getUserByIdCard(String userIdCard) {
+        try {
+            // 2. Validar parámetros
+            if (userIdCard == null || userIdCard.isBlank()) {
+                return CommonResponse.error("User ID card is required", "USER_017");
+            }
+
+            // 3. Buscar usuario
+            Optional<User> userOpt = userRepository.findByIdCard(userIdCard);
+
+            if (userOpt.isEmpty()) {
+                return CommonResponse.error("User not found with ID: " + userIdCard, "USER_018");
+            }
+
+            // 4. Convertir a DTO
+            UserResponse userResponse = userMapper.toResponse(userOpt.get());
+
+            return CommonResponse.success("User found", userResponse);
+
+        } catch (Exception e) {
+            logSystemError("getUserByIdCard", e, null);
+            return CommonResponse.error("Internal error retrieving user", "USER_019");
+        }
+    }
+
+    /**
      * CASO DE USO: Consultar Usuario por ID
-     * 
+     *
      * Busca un usuario específico por su cédula.
      * Solo HR puede acceder a esta información.
-     * 
+     *
      * @param userIdCard Cédula del usuario a buscar
      * @param currentUser Usuario autenticado (debe ser HR)
      * @return Response con información del usuario

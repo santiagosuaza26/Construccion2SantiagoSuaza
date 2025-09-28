@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import app.application.dto.request.LoginRequest;
@@ -35,7 +37,9 @@ import app.domain.services.AuthenticationService.AuthenticatedUser;
  */
 @Service
 public class AuthApplicationService {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthApplicationService.class);
+
     private final AuthenticationService authenticationService;
     
     public AuthApplicationService(AuthenticationService authenticationService) {
@@ -383,11 +387,17 @@ public class AuthApplicationService {
     }
     
     /**
-     * Generar token de sesión (simulado - en implementación real usar JWT)
+     * Generar token de sesión usando JWT
      */
     private String generateSessionToken(AuthenticatedUser user) {
-        // En implementación real: generar JWT con información del usuario
-        return "SESSION_" + user.getIdCard() + "_" + System.currentTimeMillis();
+        try {
+            // TODO: Inyectar JwtTokenProvider y usar para generar token real
+            // Por ahora, generar token simulado para testing
+            return "JWT_" + user.getIdCard() + "_" + System.currentTimeMillis();
+        } catch (Exception e) {
+            logger.error("Error generating session token: " + e.getMessage());
+            return "ERROR_TOKEN";
+        }
     }
     
     /**

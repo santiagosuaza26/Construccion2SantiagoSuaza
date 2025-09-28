@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏥 Clínica CS2 - Sistema de Gestión Médica</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="welcome-card">
+            <div class="welcome-header">
+                <h1>🏥 Clínica CS2</h1>
+                <p class="subtitle">Sistema de Gestión Médica Integral</p>
+            </div>
+
+            <div class="welcome-content">
+                <div class="clinic-logo">
+                    <i class="fas fa-hospital"></i>
+                </div>
+
+                <div class="welcome-text">
+                    <h2>Bienvenido al Sistema de Gestión Médica</h2>
+                    <p>Accede de forma segura y eficiente a todas las funcionalidades de la clínica.</p>
+
+                    <div class="features">
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Gestión de Usuarios</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-user-md"></i>
+                            <span>Control de Pacientes</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Sistema de Facturación</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Reportes y Estadísticas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="welcome-actions">
+                    <button class="btn-primary" onclick="startApplication()">
+                        <i class="fas fa-play"></i>
+                        Iniciar Sesión
+                    </button>
+
+                    <button class="btn-secondary" onclick="showInfo()">
+                        <i class="fas fa-info-circle"></i>
+                        Más Información
+                    </button>
+                </div>
+
+                <div class="system-info">
+                    <div class="info-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Seguro y Confiable</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Disponible 24/7</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>Compatible Móvil</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="welcome-footer">
+                <p>&copy; 2024 Clínica CS2 - Todos los derechos reservados</p>
+                <p class="version">Versión 1.0.0</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Información -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h4>Características Principales:</h4>
+                <ul>
+                    <li><strong>Gestión de Usuarios:</strong> Control completo del personal médico y administrativo</li>
+                    <li><strong>Registro de Pacientes:</strong> Manejo de información y expedientes</li>
+                    <li><strong>Sistema de Facturación:</strong> Generación y control de facturas</li>
+                    <li><strong>Historia Clínica:</strong> Registro de consultas y tratamientos</li>
+                    <li><strong>Inventario:</strong> Control de medicamentos y suministros</li>
+                    <li><strong>Reportes:</strong> Estadísticas y análisis de datos</li>
+                </ul>
+
+                <h4>Roles de Usuario:</h4>
+                <ul>
+                    <li><strong>Administrativo:</strong> Gestión general y facturación</li>
+                    <li><strong>Doctor:</strong> Atención médica y órdenes</li>
+                    <li><strong>Enfermera:</strong> Signos vitales y atención al paciente</li>
+                    <li><strong>Recursos Humanos:</strong> Gestión del personal</li>
+                    <li><strong>Soporte:</strong> Inventarios y mantenimiento</li>
+                </ul>
+
+                <div class="contact-info">
+                    <h4>Contacto Técnico:</h4>
+                    <p><i class="fas fa-envelope"></i> soporte@clinica-cs2.com</p>
+                    <p><i class="fas fa-phone"></i> +57 300 123 4567</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

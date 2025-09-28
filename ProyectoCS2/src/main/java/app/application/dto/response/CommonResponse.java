@@ -76,13 +76,21 @@ public class CommonResponse<T> {
     public boolean hasError() {
         return !success;
     }
-    
+
     public boolean hasData() {
         return data != null;
     }
-    
+
     public boolean hasErrorCode() {
         return errorCode != null && !errorCode.isBlank();
+    }
+
+    /**
+     * Get HTTP status code based on success flag
+     * @return 200 for success, 400 for error
+     */
+    public int getStatusCode() {
+        return success ? 200 : 400;
     }
     
     @Override
