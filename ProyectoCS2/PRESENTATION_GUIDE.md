@@ -20,15 +20,24 @@ mvn -version          # Maven 3.9+
 ```
 
 ### 2. **Ejecución del Proyecto (Sin dependencias externas)**
+
+#### **🎯 OPCIÓN 1: Script Más Fácil (Recomendada)**
 ```bash
-# ✅ OPCIÓN RECOMENDADA - Sin MongoDB ni Docker
+# ✅ MÁS SIMPLE - Sin problemas de dependencias
 cd Construccion2SantiagoSuaza/ProyectoCS2
+simple-demo.bat    # En Windows
+```
 
-# En Windows:
-simple-demo.bat    # ✅ MÁS FÁCIL - Sin problemas de dependencias
+#### **🎯 OPCIÓN 2: Spring Boot Directo**
+```bash
+# ✅ MÁS PROFESIONAL - Control total
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo
+```
 
-# En Linux/Mac:
-./simple-demo.sh   # Necesitaría chmod +x simple-demo.sh
+#### **🎯 OPCIÓN 3: Con Configuración Específica**
+```bash
+# ✅ MÁS CONTROL - Para debugging
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo -Dserver.port=8082
 ```
 
 ### 3. **URLs de Acceso (Demostración)**
