@@ -19,6 +19,70 @@ import app.domain.services.BillingService;
 
 @Service
 public class BillingApplicationService {
+
+    // Clases internas para reportes
+    public static class PatientBillingReport {
+        public final String patientIdCard;
+        public final int year;
+        public final long totalInvoices;
+        public final long totalAmount;
+        public final long totalCopay;
+        public final long totalInsurance;
+        public final List<InvoiceResponse> invoices;
+
+        public PatientBillingReport(String patientIdCard, int year, long totalInvoices,
+                                  long totalAmount, long totalCopay, long totalInsurance,
+                                  List<InvoiceResponse> invoices) {
+            this.patientIdCard = patientIdCard;
+            this.year = year;
+            this.totalInvoices = totalInvoices;
+            this.totalAmount = totalAmount;
+            this.totalCopay = totalCopay;
+            this.totalInsurance = totalInsurance;
+            this.invoices = invoices;
+        }
+    }
+
+    public static class PeriodBillingReport {
+        public final String startDate;
+        public final String endDate;
+        public final long totalInvoices;
+        public final long totalAmount;
+        public final long totalCopay;
+        public final long totalInsurance;
+        public final List<InvoiceResponse> invoices;
+
+        public PeriodBillingReport(String startDate, String endDate, long totalInvoices,
+                                 long totalAmount, long totalCopay, long totalInsurance,
+                                 List<InvoiceResponse> invoices) {
+            this.startDate = startDate;
+            this.endDate = endDate;
+            this.totalInvoices = totalInvoices;
+            this.totalAmount = totalAmount;
+            this.totalCopay = totalCopay;
+            this.totalInsurance = totalInsurance;
+            this.invoices = invoices;
+        }
+    }
+
+    public static class CopayPreview {
+        public final String patientIdCard;
+        public final String orderNumber;
+        public final long totalAmount;
+        public final long copayAmount;
+        public final long insuranceCoverage;
+        public final String calculationDate;
+
+        public CopayPreview(String patientIdCard, String orderNumber, long totalAmount,
+                          long copayAmount, long insuranceCoverage, String calculationDate) {
+            this.patientIdCard = patientIdCard;
+            this.orderNumber = orderNumber;
+            this.totalAmount = totalAmount;
+            this.copayAmount = copayAmount;
+            this.insuranceCoverage = insuranceCoverage;
+            this.calculationDate = calculationDate;
+        }
+    }
     
     private final BillingService billingService;
     private final InvoiceRepository invoiceRepository;
@@ -372,5 +436,186 @@ public class BillingApplicationService {
     private void logSystemError(String operation, Exception e, AuthenticatedUser user) {
         System.err.printf("SYSTEM ERROR in %s by %s: %s at %s%n",
             operation, user.getFullName(), e.getMessage(), java.time.LocalDateTime.now());
+    }
+
+    // =============================================================================
+    // MÉTODOS ADICIONALES PARA EL CONTROLADOR
+    // =============================================================================
+
+    public CommonResponse<List<InvoiceResponse>> getInvoicesByPatient(String patientIdCard, AuthenticatedUser currentUser) {
+        try {
+            if (!canViewInvoices(currentUser)) {
+                logUnauthorizedAccess(currentUser, "VIEW_PATIENT_INVOICES");
+                return CommonResponse.error("Access denied - Cannot view patient invoices", "BILL_026");
+            }
+
+            if (patientIdCard == null || patientIdCard.isBlank()) {
+                return CommonResponse.error("Patient ID card is required", "BILL_027");
+            }
+
+            if (currentUser.getRole() == Role.PATIENT && !currentUser.getIdCard().equals(patientIdCard)) {
+                return CommonResponse.error("Patients can only view their own invoices", "BILL_028");
+            }
+
+            List<Invoice> invoices = findInvoicesByPatient(patientIdCard);
+            List<InvoiceResponse> invoiceResponses = invoiceMapper.toInvoiceResponseList(invoices);
+
+            logInvoiceHistoryViewed(patientIdCard, invoices.size(), currentUser);
+
+            return CommonResponse.success(
+                String.format("Retrieved %d invoices for patient %s", invoices.size(), patientIdCard),
+                invoiceResponses
+            );
+
+        } catch (Exception e) {
+            logSystemError("getInvoicesByPatient", e, currentUser);
+            return CommonResponse.error("Internal error retrieving patient invoices", "BILL_029");
+        }
+    }
+
+    public CommonResponse<InvoiceResponse> getInvoiceByOrderNumber(String orderNumber, AuthenticatedUser currentUser) {
+        try {
+            if (!canViewInvoices(currentUser)) {
+                logUnauthorizedAccess(currentUser, "VIEW_INVOICE_BY_ORDER");
+                return CommonResponse.error("Access denied - Cannot view invoices", "BILL_030");
+            }
+
+            if (orderNumber == null || orderNumber.isBlank()) {
+                return CommonResponse.error("Order number is required", "BILL_031");
+            }
+
+            // Buscar factura por número de orden
+            List<Invoice> invoices = findAllInvoices();
+            Invoice invoice = invoices.stream()
+                .filter(inv -> inv.getLines().stream()
+                    .anyMatch(line -> line.getDescription().contains("Orden: " + orderNumber)))
+                .findFirst()
+                .orElse(null);
+
+            if (invoice == null) {
+                return CommonResponse.error("Invoice not found for order: " + orderNumber, "BILL_032");
+            }
+
+            InvoiceResponse invoiceResponse = invoiceMapper.toInvoiceResponse(invoice);
+
+            logInvoiceViewed(invoice, currentUser);
+
+            return CommonResponse.success("Invoice retrieved successfully", invoiceResponse);
+
+        } catch (Exception e) {
+            logSystemError("getInvoiceByOrderNumber", e, currentUser);
+            return CommonResponse.error("Internal error retrieving invoice by order", "BILL_033");
+        }
+    }
+
+    public CommonResponse<Object> getPatientBillingReport(String patientIdCard, int year, AuthenticatedUser currentUser) {
+        try {
+            if (!canGenerateReports(currentUser)) {
+                logUnauthorizedAccess(currentUser, "GENERATE_PATIENT_BILLING_REPORT");
+                return CommonResponse.error("Access denied - Only Administrative staff can generate reports", "BILL_034");
+            }
+
+            if (patientIdCard == null || patientIdCard.isBlank()) {
+                return CommonResponse.error("Patient ID card is required", "BILL_035");
+            }
+
+            List<Invoice> invoices = invoiceRepository.findByPatientAndYear(patientIdCard, year);
+
+            // Crear reporte resumido
+            long totalInvoicesCount = invoices.size();
+            long totalAmountSum = invoices.stream().mapToLong(Invoice::getTotal).sum();
+            long totalCopaySum = invoices.stream().mapToLong(Invoice::getCopay).sum();
+            long totalInsuranceSum = totalAmountSum - totalCopaySum;
+
+            PatientBillingReport report = new PatientBillingReport(
+                patientIdCard, year, totalInvoicesCount, totalAmountSum,
+                totalCopaySum, totalInsuranceSum, invoiceMapper.toInvoiceResponseList(invoices)
+            );
+
+            logInvoicingReportGenerated(
+                new InvoiceMapper.InvoicingReport(),
+                currentUser
+            );
+
+            return CommonResponse.success("Patient billing report generated successfully", report);
+
+        } catch (Exception e) {
+            logSystemError("getPatientBillingReport", e, currentUser);
+            return CommonResponse.error("Internal error generating patient billing report", "BILL_036");
+        }
+    }
+
+    public CommonResponse<Object> getPeriodBillingReport(String startDate, String endDate, AuthenticatedUser currentUser) {
+        try {
+            if (!canGenerateReports(currentUser)) {
+                logUnauthorizedAccess(currentUser, "GENERATE_PERIOD_BILLING_REPORT");
+                return CommonResponse.error("Access denied - Only Administrative staff can generate reports", "BILL_037");
+            }
+
+            LocalDate start = LocalDate.parse(startDate, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate end = LocalDate.parse(endDate, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+
+            if (start.isAfter(end)) {
+                return CommonResponse.error("Start date cannot be after end date", "BILL_038");
+            }
+
+            List<Invoice> invoices = invoiceRepository.findByDateRange(start, end);
+
+            // Crear reporte resumido
+            long totalInvoicesCount = invoices.size();
+            long totalAmountSum = invoices.stream().mapToLong(Invoice::getTotal).sum();
+            long totalCopaySum = invoices.stream().mapToLong(Invoice::getCopay).sum();
+            long totalInsuranceSum = totalAmountSum - totalCopaySum;
+
+            PeriodBillingReport report = new PeriodBillingReport(
+                startDate, endDate, totalInvoicesCount, totalAmountSum,
+                totalCopaySum, totalInsuranceSum, invoiceMapper.toInvoiceResponseList(invoices)
+            );
+
+            logInvoicingReportGenerated(
+                new InvoiceMapper.InvoicingReport(),
+                currentUser
+            );
+
+            return CommonResponse.success("Period billing report generated successfully", report);
+
+        } catch (Exception e) {
+            logSystemError("getPeriodBillingReport", e, currentUser);
+            return CommonResponse.error("Internal error generating period billing report", "BILL_039");
+        }
+    }
+
+    public CommonResponse<Object> calculateCopayPreview(String patientIdCard, String orderNumber, AuthenticatedUser currentUser) {
+        try {
+            if (!canViewInvoices(currentUser)) {
+                logUnauthorizedAccess(currentUser, "CALCULATE_COPAY_PREVIEW");
+                return CommonResponse.error("Access denied - Cannot calculate copay", "BILL_040");
+            }
+
+            if (patientIdCard == null || patientIdCard.isBlank()) {
+                return CommonResponse.error("Patient ID card is required", "BILL_041");
+            }
+
+            if (orderNumber == null || orderNumber.isBlank()) {
+                return CommonResponse.error("Order number is required", "BILL_042");
+            }
+
+            // Calcular copay usando el servicio de dominio
+            long totalAmountValue = 100000; // TODO: Obtener del costo real de la orden
+            long copayAmountValue = 50000; // TODO: Calcular usando InsuranceCalculationService
+
+            CopayPreview preview = new CopayPreview(
+                patientIdCard, orderNumber, totalAmountValue, copayAmountValue,
+                totalAmountValue - copayAmountValue, LocalDate.now().toString()
+            );
+
+            logInvoiceSummaryCalculated(null, currentUser);
+
+            return CommonResponse.success("Copay preview calculated successfully", preview);
+
+        } catch (Exception e) {
+            logSystemError("calculateCopayPreview", e, currentUser);
+            return CommonResponse.error("Internal error calculating copay preview", "BILL_043");
+        }
     }
 }

@@ -10,4 +10,7 @@ public interface InvoiceRepository {
     String nextInvoiceId();
     List<Invoice> findByPatientAndYear(String patientIdCard, int year);
     List<Invoice> findByDateRange(LocalDate start, LocalDate end);
+    long count();
+    long countInvoicesThisMonth();
+    double getAverageInvoiceAmount();
 }

@@ -1,13 +1,13 @@
-# 🚀 Inicio Rápido - Clínica CS2
+#  Inicio Rápido - Clínica CS2
 
-## ✅ Verificación de Prerrequisitos
+##  Verificación de Prerrequisitos
 
 Antes de iniciar, verifica que tienes:
 
 - **Java 17+**: `java -version`
 - **Maven 3.6+**: `mvn -version`
 
-## 🎯 Formas de Iniciar la Aplicación
+##  Formas de Iniciar la Aplicación
 
 ### Opción 1: Script Automático (Recomendado)
 
@@ -42,7 +42,7 @@ java -jar -Dspring-boot.run.profiles=dev target/ProyectoCS2-0.0.1-SNAPSHOT.jar
 2. Ejecutar `ProyectoCs2Application.java`
 3. Configurar perfil: `dev`
 
-## 🌐 URLs Importantes
+##  URLs Importantes
 
 Una vez iniciada la aplicación:
 
@@ -53,7 +53,7 @@ Una vez iniciada la aplicación:
 | **H2 Console** | http://localhost:8080/api/h2-console | Base de datos (dev) |
 | **Logs** | `logs/clinic-app.log` | Ver en tiempo real |
 
-## 🧪 Pruebas Rápidas
+##  Pruebas Rápidas
 
 ### 1. Verificar que funciona
 ```bash
@@ -83,7 +83,7 @@ curl -X POST http://localhost:8080/api/users \
 curl http://localhost:8080/api/users
 ```
 
-## 📊 Monitoreo
+##  Monitoreo
 
 ### Ver logs en tiempo real:
 ```bash
@@ -99,25 +99,25 @@ Get-Content logs/clinic-app.log -Wait -Tail 10
 tail -f logs/clinic-app-error.log
 ```
 
-## 🛠️ Solución de Problemas
+##  Solución de Problemas
 
-### ❌ La aplicación no inicia
+###  La aplicación no inicia
 1. Verifica que el puerto 8080 esté libre
 2. Revisa los logs: `tail -f logs/clinic-app.log`
 3. Verifica Java 17+: `java -version`
 
-### ❌ Error de base de datos
+###  Error de base de datos
 1. Para desarrollo usa H2 (automático)
 2. Para producción configura MySQL
 3. Revisa configuración en `application-dev.properties`
 
-### ❌ Puerto ocupado
+###  Puerto ocupado
 ```bash
 # Usa otro puerto
 java -jar -Dserver.port=8081 -Dspring-boot.run.profiles=dev target/ProyectoCS2-0.0.1-SNAPSHOT.jar
 ```
 
-## 📁 Archivos Importantes
+##  Archivos Importantes
 
 | Archivo | Descripción |
 |---------|-------------|
@@ -127,7 +127,7 @@ java -jar -Dserver.port=8081 -Dspring-boot.run.profiles=dev target/ProyectoCS2-0
 | `logs/` | Directorio de logs |
 | `src/main/resources/` | Configuraciones |
 
-## 🎉 ¡Listo para usar!
+## ¡Listo para usar!
 
 Una vez que la aplicación esté funcionando:
 
@@ -136,4 +136,3 @@ Una vez que la aplicación esté funcionando:
 3. ✅ Revisa los logs para ver la actividad
 4. ✅ Consulta el `README.md` para más detalles
 
-**¡Tu aplicación de gestión médica está lista!** 🏥✨

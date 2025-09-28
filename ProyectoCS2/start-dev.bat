@@ -50,7 +50,7 @@ if not exist logs mkdir logs
 REM Compilar proyecto si no existe el JAR
 if not exist "target\ProyectoCS2-0.0.1-SNAPSHOT.jar" (
     echo 🔨 Compilando proyecto...
-    call mvn clean package -DskipTests
+    call .\mvnw.cmd clean package -DskipTests
 
     if errorlevel 1 (
         echo ❌ Error durante la compilación

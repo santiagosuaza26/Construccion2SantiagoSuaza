@@ -570,4 +570,122 @@ public class InventoryApplicationService {
         System.err.printf("SYSTEM ERROR in %s by %s: %s at %s%n",
             operation, user.getFullName(), e.getMessage(), java.time.LocalDateTime.now());
     }
+
+    // =============================================================================
+    // MÉTODOS ADICIONALES PARA EL CONTROLADOR
+    // =============================================================================
+
+    public CommonResponse<InventoryResponse> addMedication(InventoryItemRequest request, AuthenticatedUser currentUser) {
+        return createMedication(request, currentUser);
+    }
+
+    public CommonResponse<InventoryResponse> addProcedure(InventoryItemRequest request, AuthenticatedUser currentUser) {
+        return createProcedure(request, currentUser);
+    }
+
+    public CommonResponse<InventoryResponse> addDiagnostic(InventoryItemRequest request, AuthenticatedUser currentUser) {
+        return createDiagnosticTest(request, currentUser);
+    }
+
+    public CommonResponse<InventoryResponse> updateMedication(String id, InventoryItemRequest request, AuthenticatedUser currentUser) {
+        // Agregar ID al request para actualización
+        InventoryItemRequest updateRequest = new InventoryItemRequest(
+            request.getName(), request.getDescription(), request.getCost(),
+            request.getType(), request.getStock(), id
+        );
+        return updateMedication(updateRequest, currentUser);
+    }
+
+    public CommonResponse<InventoryResponse> updateProcedure(String id, InventoryItemRequest request, AuthenticatedUser currentUser) {
+        // Agregar ID al request para actualización
+        InventoryItemRequest updateRequest = new InventoryItemRequest(
+            request.getName(), request.getDescription(), request.getCost(),
+            request.getType(), request.getStock(), id
+        );
+        return updateProcedure(updateRequest, currentUser);
+    }
+
+    public CommonResponse<InventoryResponse> updateDiagnostic(String id, InventoryItemRequest request, AuthenticatedUser currentUser) {
+        // Agregar ID al request para actualización
+        InventoryItemRequest updateRequest = new InventoryItemRequest(
+            request.getName(), request.getDescription(), request.getCost(),
+            request.getType(), request.getStock(), id
+        );
+        return updateDiagnosticTest(updateRequest, currentUser);
+    }
+
+    public CommonResponse<List<InventoryResponse>> searchInventory(String query, String type, AuthenticatedUser currentUser) {
+        try {
+            if (!canManageInventory(currentUser)) {
+                logUnauthorizedAccess(currentUser, "SEARCH_INVENTORY");
+                return CommonResponse.error("Access denied - Cannot search inventory", "INV_048");
+            }
+
+            if (query == null || query.trim().isEmpty()) {
+                return CommonResponse.error("Search query is required", "INV_049");
+            }
+
+            List<Medication> medications = List.of();
+            List<ProcedureType> procedures = List.of();
+            List<DiagnosticTest> diagnostics = List.of();
+
+            // Buscar en todos los tipos si no se especifica tipo
+            if (type == null || type.isEmpty() || "MEDICATION".equals(type)) {
+                medications = inventoryService.searchMedications(query);
+            }
+            if (type == null || type.isEmpty() || "PROCEDURE".equals(type)) {
+                procedures = inventoryService.searchProcedures(query);
+            }
+            if (type == null || type.isEmpty() || "DIAGNOSTIC".equals(type)) {
+                diagnostics = inventoryService.searchDiagnostics(query);
+            }
+
+            // Combinar resultados
+            List<InventoryResponse> results = new java.util.ArrayList<>();
+            results.addAll(inventoryMapper.toMedicationListResponse(medications).getItems());
+            results.addAll(inventoryMapper.toProcedureListResponse(procedures).getItems());
+            results.addAll(inventoryMapper.toDiagnosticListResponse(diagnostics).getItems());
+
+            logInventorySearched(query, results.size(), currentUser);
+
+            return CommonResponse.success("Search completed successfully", results);
+
+        } catch (Exception e) {
+            logSystemError("searchInventory", e, currentUser);
+            return CommonResponse.error("Internal error searching inventory", "INV_050");
+        }
+    }
+
+    public CommonResponse<List<InventoryResponse>> getLowStockItems(int threshold, AuthenticatedUser currentUser) {
+        try {
+            if (!canManageInventory(currentUser)) {
+                logUnauthorizedAccess(currentUser, "VIEW_LOW_STOCK");
+                return CommonResponse.error("Access denied - Cannot view low stock items", "INV_051");
+            }
+
+            List<Medication> lowStockMedications = inventoryService.getLowStockMedications(threshold);
+            List<InventoryResponse> results = inventoryMapper.toMedicationListResponse(lowStockMedications).getItems();
+
+            logLowStockViewed(results.size(), threshold, currentUser);
+
+            return CommonResponse.success(
+                String.format("Found %d items with stock below %d", results.size(), threshold),
+                results
+            );
+
+        } catch (Exception e) {
+            logSystemError("getLowStockItems", e, currentUser);
+            return CommonResponse.error("Internal error retrieving low stock items", "INV_052");
+        }
+    }
+
+    private void logInventorySearched(String query, int resultsCount, AuthenticatedUser currentUser) {
+        System.out.printf("INVENTORY SEARCH: %s searched for '%s' - found %d results at %s%n",
+            currentUser.getFullName(), query, resultsCount, java.time.LocalDateTime.now());
+    }
+
+    private void logLowStockViewed(int itemCount, int threshold, AuthenticatedUser currentUser) {
+        System.out.printf("LOW STOCK VIEWED: %s viewed %d items with stock below %d at %s%n",
+            currentUser.getFullName(), itemCount, threshold, java.time.LocalDateTime.now());
+    }
 }

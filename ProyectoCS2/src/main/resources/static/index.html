@@ -9,110 +9,321 @@
 </head>
 <body>
     <div class="welcome-container">
-        <div class="welcome-card">
-            <div class="welcome-header">
-                <h1>🏥 Clínica CS2</h1>
-                <p class="subtitle">Sistema de Gestión Médica Integral</p>
-            </div>
-
-            <div class="welcome-content">
-                <div class="clinic-logo">
-                    <i class="fas fa-hospital"></i>
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <i class="fas fa-hospital logo-icon"></i>
+                    <h1>Clínica CS2</h1>
                 </div>
-
-                <div class="welcome-text">
-                    <h2>Bienvenido al Sistema de Gestión Médica</h2>
-                    <p>Accede de forma segura y eficiente a todas las funcionalidades de la clínica.</p>
-
-                    <div class="features">
-                        <div class="feature-item">
-                            <i class="fas fa-users"></i>
-                            <span>Gestión de Usuarios</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-user-md"></i>
-                            <span>Control de Pacientes</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Sistema de Facturación</span>
-                        </div>
-                        <div class="feature-item">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Reportes y Estadísticas</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="welcome-actions">
-                    <button class="btn-primary" onclick="startApplication()">
-                        <i class="fas fa-play"></i>
-                        Iniciar Sesión
+                <nav class="main-nav">
+                    <a href="#inicio" class="nav-link active">Inicio</a>
+                    <a href="#caracteristicas" class="nav-link">Características</a>
+                    <a href="#api" class="nav-link">API</a>
+                    <a href="#documentacion" class="nav-link">Documentación</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="window.open('login.html', '_blank')">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
                     </button>
+                </div>
+            </div>
+        </header>
 
-                    <button class="btn-secondary" onclick="showInfo()">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="hero-title-main">Sistema de Gestión Médica</span>
+                    <span class="hero-title-sub">Clínica CS2</span>
+                </h1>
+                <p class="hero-description">
+                    Solución integral para la gestión de información clínica con arquitectura hexagonal,
+                    bases de datos híbridas y control de acceso granular por roles.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-large" onclick="window.open('login.html', '_blank')">
+                        <i class="fas fa-rocket"></i>
+                        Comenzar Ahora
+                    </button>
+                    <button class="btn btn-secondary btn-large" onclick="document.getElementById('caracteristicas').scrollIntoView({behavior: 'smooth'})">
                         <i class="fas fa-info-circle"></i>
-                        Más Información
+                        Saber Más
                     </button>
                 </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card medical-card">
+                    <i class="fas fa-stethoscope"></i>
+                    <span>Historia Clínica</span>
+                </div>
+                <div class="floating-card admin-card">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Gestión de Usuarios</span>
+                </div>
+                <div class="floating-card billing-card">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Facturación</span>
+                </div>
+                <div class="floating-card reports-card">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </div>
+            </div>
+        </section>
 
-                <div class="system-info">
-                    <div class="info-item">
+        <!-- Características Section -->
+        <section id="caracteristicas" class="features-section">
+            <div class="section-header">
+                <h2 class="section-title">Características Principales</h2>
+                <p class="section-subtitle">Tecnología de vanguardia para la gestión médica moderna</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3 class="feature-title">Arquitectura Hexagonal</h3>
+                    <p class="feature-description">
+                        Diseño limpio y modular con separación clara de responsabilidades,
+                        facilitando el mantenimiento y la escalabilidad.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3 class="feature-title">Bases de Datos Híbridas</h3>
+                    <p class="feature-description">
+                        MySQL para datos estructurados y MongoDB para historia clínica no estructurada,
+                        optimizando el rendimiento según el tipo de información.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
-                        <span>Seguro y Confiable</span>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-clock"></i>
-                        <span>Disponible 24/7</span>
+                    <h3 class="feature-title">Control de Acceso</h3>
+                    <p class="feature-description">
+                        Sistema granular de permisos por roles, asegurando que cada usuario
+                        acceda solo a la información correspondiente a su función.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
                     </div>
-                    <div class="info-item">
+                    <h3 class="feature-title">API REST Completa</h3>
+                    <p class="feature-description">
+                        Endpoints RESTful documentados con Swagger, listos para ser consumidos
+                        por aplicaciones frontend o integraciones externas.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Reportes Dinámicos</h3>
+                    <p class="feature-description">
+                        Generación de reportes de facturación, pacientes y estadísticas
+                        con filtros avanzados y exportación de datos.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
                         <i class="fas fa-mobile-alt"></i>
-                        <span>Compatible Móvil</span>
+                    </div>
+                    <h3 class="feature-title">Interfaz Responsiva</h3>
+                    <p class="feature-description">
+                        Diseño adaptativo que funciona perfectamente en dispositivos móviles,
+                        tablets y computadoras de escritorio.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Section -->
+        <section id="api" class="api-section">
+            <div class="section-header">
+                <h2 class="section-title">API REST Documentada</h2>
+                <p class="section-subtitle">Integración fácil con sistemas externos</p>
+            </div>
+
+            <div class="api-content">
+                <div class="api-info">
+                    <h3>Endpoints Principales</h3>
+                    <div class="endpoint-list">
+                        <div class="endpoint-item">
+                            <code class="endpoint-code">POST /api/auth/login</code>
+                            <span class="endpoint-desc">Autenticación de usuarios</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <code class="endpoint-code">GET /api/patients</code>
+                            <span class="endpoint-desc">Gestión de pacientes</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <code class="endpoint-code">POST /api/medical/orders</code>
+                            <span class="endpoint-desc">Órdenes médicas</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <code class="endpoint-code">POST /api/billing/invoices</code>
+                            <span class="endpoint-desc">Generación de facturas</span>
+                        </div>
+                        <div class="endpoint-item">
+                            <code class="endpoint-code">GET /api/reports/*</code>
+                            <span class="endpoint-desc">Reportes y estadísticas</span>
+                        </div>
+                    </div>
+                    <div class="api-actions">
+                        <button class="btn btn-outline" onclick="window.open('/api/swagger-ui.html', '_blank')">
+                            <i class="fas fa-book"></i>
+                            Ver Documentación API
+                        </button>
+                        <button class="btn btn-outline" onclick="window.open('test-api-complete.http', '_blank')">
+                            <i class="fas fa-vial"></i>
+                            Ver Casos de Prueba
+                        </button>
+                    </div>
+                </div>
+                <div class="api-visual">
+                    <div class="code-snippet">
+                        <div class="code-header">
+                            <span class="code-title">Ejemplo de uso</span>
+                            <div class="code-dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                        </div>
+                        <pre class="code-content">
+// Crear paciente
+POST /api/patients
+{
+  "idCard": "12345678",
+  "fullName": "María González",
+  "birthDate": "1990-01-15",
+  "email": "maria@email.com",
+  "phone": "3001234567",
+  "emergencyContact": {
+    "fullName": "Carlos González",
+    "relationship": "Hermano",
+    "phone": "3109876543"
+  }
+}</pre>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="welcome-footer">
-                <p>&copy; 2024 Clínica CS2 - Todos los derechos reservados</p>
-                <p class="version">Versión 1.0.0</p>
+        <!-- Roles Section -->
+        <section class="roles-section">
+            <div class="section-header">
+                <h2 class="section-title">Roles y Permisos</h2>
+                <p class="section-subtitle">Control de acceso granular según responsabilidades</p>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal de Información -->
-    <div id="infoModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-info-circle"></i> Información del Sistema</h3>
-                <span class="close" onclick="closeModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <h4>Características Principales:</h4>
-                <ul>
-                    <li><strong>Gestión de Usuarios:</strong> Control completo del personal médico y administrativo</li>
-                    <li><strong>Registro de Pacientes:</strong> Manejo de información y expedientes</li>
-                    <li><strong>Sistema de Facturación:</strong> Generación y control de facturas</li>
-                    <li><strong>Historia Clínica:</strong> Registro de consultas y tratamientos</li>
-                    <li><strong>Inventario:</strong> Control de medicamentos y suministros</li>
-                    <li><strong>Reportes:</strong> Estadísticas y análisis de datos</li>
-                </ul>
+            <div class="roles-grid">
+                <div class="role-card administrative">
+                    <div class="role-header">
+                        <i class="fas fa-user-tie"></i>
+                        <h3>Administrativo</h3>
+                    </div>
+                    <ul class="role-features">
+                        <li>Gestión completa de pacientes</li>
+                        <li>Programación de citas</li>
+                        <li>Control de facturación</li>
+                        <li>Generación de reportes</li>
+                    </ul>
+                </div>
 
-                <h4>Roles de Usuario:</h4>
-                <ul>
-                    <li><strong>Administrativo:</strong> Gestión general y facturación</li>
-                    <li><strong>Doctor:</strong> Atención médica y órdenes</li>
-                    <li><strong>Enfermera:</strong> Signos vitales y atención al paciente</li>
-                    <li><strong>Recursos Humanos:</strong> Gestión del personal</li>
-                    <li><strong>Soporte:</strong> Inventarios y mantenimiento</li>
-                </ul>
+                <div class="role-card doctor">
+                    <div class="role-header">
+                        <i class="fas fa-user-md"></i>
+                        <h3>Médico</h3>
+                    </div>
+                    <ul class="role-features">
+                        <li>Acceso a historia clínica</li>
+                        <li>Registro de diagnósticos</li>
+                        <li>Generación de órdenes médicas</li>
+                        <li>Seguimiento de tratamientos</li>
+                    </ul>
+                </div>
 
-                <div class="contact-info">
-                    <h4>Contacto Técnico:</h4>
-                    <p><i class="fas fa-envelope"></i> soporte@clinica-cs2.com</p>
-                    <p><i class="fas fa-phone"></i> +57 300 123 4567</p>
+                <div class="role-card nurse">
+                    <div class="role-header">
+                        <i class="fas fa-user-nurse"></i>
+                        <h3>Enfermera</h3>
+                    </div>
+                    <ul class="role-features">
+                        <li>Registro de signos vitales</li>
+                        <li>Aplicación de medicamentos</li>
+                        <li>Seguimiento de pacientes</li>
+                        <li>Observaciones clínicas</li>
+                    </ul>
+                </div>
+
+                <div class="role-card hr">
+                    <div class="role-header">
+                        <i class="fas fa-users"></i>
+                        <h3>Recursos Humanos</h3>
+                    </div>
+                    <ul class="role-features">
+                        <li>Gestión de personal médico</li>
+                        <li>Asignación de roles</li>
+                        <li>Control de permisos</li>
+                        <li>Información de empleados</li>
+                    </ul>
+                </div>
+
+                <div class="role-card support">
+                    <div class="role-header">
+                        <i class="fas fa-tools"></i>
+                        <h3>Soporte</h3>
+                    </div>
+                    <ul class="role-features">
+                        <li>Gestión de inventarios</li>
+                        <li>Control de medicamentos</li>
+                        <li>Mantenimiento de equipos</li>
+                        <li>Soporte técnico</li>
+                    </ul>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>🏥 Clínica CS2</h4>
+                    <p>Sistema de gestión médica avanzado con tecnología de vanguardia</p>
+                </div>
+                <div class="footer-section">
+                    <h4>📚 Recursos</h4>
+                    <ul>
+                        <li><a href="README_COMPLETO.md">Documentación Completa</a></li>
+                        <li><a href="test-api-complete.http">Casos de Prueba</a></li>
+                        <li><a href="INTERFACE.md">Interfaz Web</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>🚀 Inicio Rápido</h4>
+                    <ul>
+                        <li><a href="INICIAR.md">Guía de Inicio</a></li>
+                        <li><a href="quick-start.sh">Script Automático</a></li>
+                        <li><a href="docker-compose.yml">Docker Compose</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Clínica CS2 - Todos los derechos reservados</p>
+            </div>
+        </footer>
     </div>
 
     <script src="js/app.js"></script>

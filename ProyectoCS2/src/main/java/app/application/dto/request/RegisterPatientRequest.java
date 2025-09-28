@@ -78,9 +78,9 @@ public class RegisterPatientRequest {
     public RegisterPatientRequest() {}
     
     // Constructor with required fields
-    public RegisterPatientRequest(String idCard, String fullName, String birthDate, String gender, 
+    public RegisterPatientRequest(String idCard, String fullName, String birthDate, String gender,
                                 String phone, String email, String username, String password,
-                                String emergencyFirstName, String emergencyLastName, 
+                                String emergencyFirstName, String emergencyLastName,
                                 String emergencyRelationship, String emergencyPhone) {
         this.idCard = idCard;
         this.fullName = fullName;
@@ -94,6 +94,31 @@ public class RegisterPatientRequest {
         this.emergencyLastName = emergencyLastName;
         this.emergencyRelationship = emergencyRelationship;
         this.emergencyPhone = emergencyPhone;
+    }
+
+    // Constructor with domain objects
+    public RegisterPatientRequest(String idCard, String fullName, String birthDate, String gender,
+                                String address, String phone, String email, String username, String password,
+                                String emergencyFirstName, String emergencyLastName,
+                                String emergencyRelationship, String emergencyPhone,
+                                String insuranceCompany, String policyNumber, Boolean policyActive, String policyEndDate) {
+        this.idCard = idCard;
+        this.fullName = fullName;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.address = address;
+        this.phone = phone;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.emergencyFirstName = emergencyFirstName;
+        this.emergencyLastName = emergencyLastName;
+        this.emergencyRelationship = emergencyRelationship;
+        this.emergencyPhone = emergencyPhone;
+        this.insuranceCompany = insuranceCompany;
+        this.policyNumber = policyNumber;
+        this.policyActive = policyActive;
+        this.policyEndDate = policyEndDate;
     }
     
     // Getters - Datos del paciente
