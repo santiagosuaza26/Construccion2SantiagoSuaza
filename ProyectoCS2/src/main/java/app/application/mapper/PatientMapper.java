@@ -17,27 +17,27 @@ import app.domain.model.InsurancePolicy;
 import app.domain.model.Patient;
 
 /**
- * PatientMapper - Mapper profesional para conversiones Patient ↔ DTOs
- * 
- * RESPONSABILIDADES:
- * - Convertir RegisterPatientRequest → Patient (Domain)
- * - Convertir Patient (Domain) → PatientResponse
- * - Manejar estructuras complejas (EmergencyContact, InsurancePolicy)
- * - Validar y calcular información derivada (edad, estado del seguro)
- * - Aplicar reglas específicas de pacientes
- * 
- * REGLAS IMPLEMENTADAS:
- * - Contacto de emergencia OBLIGATORIO (mínimo y máximo uno)
- * - Seguro médico OPCIONAL (solo una póliza)
- * - Teléfonos exactamente 10 dígitos para pacientes
- * - Edad máxima 150 años
- * - Validación de géneros permitidos
+ * PatientMapper - Professional mapper for Patient ↔ DTO conversions
+ *
+ * RESPONSIBILITIES:
+ * - Convert RegisterPatientRequest → Patient (Domain)
+ * - Convert Patient (Domain) → PatientResponse
+ * - Handle complex structures (EmergencyContact, InsurancePolicy)
+ * - Validate and calculate derived information (age, insurance status)
+ * - Apply specific patient business rules
+ *
+ * IMPLEMENTED RULES:
+ * - Emergency contact REQUIRED (minimum and maximum one)
+ * - Medical insurance OPTIONAL (only one policy)
+ * - Phones exactly 10 digits for patients
+ * - Maximum age 150 years
+ * - Validation of allowed genders
  */
 @Component
 public class PatientMapper {
     
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final List<String> ALLOWED_GENDERS = List.of("masculino", "femenino", "otro");
+    private static final List<String> ALLOWED_GENDERS = List.of("masculino", "femenino", "otro"); // Allowed genders in Spanish as per business requirements
     
     /**
      * Convierte RegisterPatientRequest → Patient (Domain Model)

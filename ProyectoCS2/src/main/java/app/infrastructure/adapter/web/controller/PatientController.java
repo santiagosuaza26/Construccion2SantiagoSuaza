@@ -1,26 +1,36 @@
-package app.presentation.controller;
+package app.infrastructure.adapter.web.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import app.application.dto.request.RegisterPatientRequest;
 import app.application.dto.response.CommonResponse;
 import app.application.dto.response.PatientResponse;
 import app.application.service.PatientApplicationService;
-
+import app.domain.model.Role;
+import app.domain.services.AuthenticationService.AuthenticatedUser;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
- * Controlador REST para gestión de pacientes
+ * REST Controller for patient management
  *
  * Endpoints:
- * - GET /api/patients: Listar pacientes
- * - GET /api/patients/{idCard}: Obtener paciente por ID
- * - POST /api/patients: Registrar nuevo paciente
- * - PUT /api/patients/{idCard}: Actualizar paciente
- * - DELETE /api/patients/{idCard}: Eliminar paciente
+ * - GET /api/patients: List patients
+ * - GET /api/patients/{idCard}: Get patient by ID
+ * - POST /api/patients: Register new patient
+ * - PUT /api/patients/{idCard}: Update patient
+ * - DELETE /api/patients/{idCard}: Delete patient
  */
 @RestController
 @RequestMapping("/api/patients")
@@ -61,10 +71,16 @@ public class PatientController {
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
-            // TODO: Implementar búsqueda directa por ID cuando esté disponible
-            CommonResponse<PatientResponse> errorResponse = CommonResponse.error(
-                "Búsqueda de paciente no implementada - requiere autenticación", "PATIENT_SEARCH_501");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(errorResponse);
+            // TODO: Obtener usuario autenticado del contexto de seguridad
+            AuthenticatedUser currentUser = getCurrentAuthenticatedUser();
+
+            CommonResponse<PatientResponse> response = patientApplicationService.getPatientById(idCard, currentUser);
+
+            if (response.isSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
 
         } catch (Exception e) {
             CommonResponse<PatientResponse> errorResponse = CommonResponse.error(
@@ -78,10 +94,16 @@ public class PatientController {
             @Valid @RequestBody RegisterPatientRequest registerPatientRequest) {
 
         try {
-            // TODO: Implementar registro con autenticación
-            CommonResponse<PatientResponse> errorResponse = CommonResponse.error(
-                "Registro de paciente no implementado - requiere autenticación administrativa", "PATIENT_REGISTER_501");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(errorResponse);
+            // TODO: Obtener usuario autenticado del contexto de seguridad
+            AuthenticatedUser currentUser = getCurrentAuthenticatedUser();
+
+            CommonResponse<PatientResponse> response = patientApplicationService.registerPatient(registerPatientRequest, currentUser);
+
+            if (response.isSuccess()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
 
         } catch (Exception e) {
             CommonResponse<PatientResponse> errorResponse = CommonResponse.error(
@@ -102,10 +124,16 @@ public class PatientController {
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
-            // TODO: Implementar actualización con autenticación
-            CommonResponse<PatientResponse> errorResponse = CommonResponse.error(
-                "Actualización de paciente no implementada - requiere autenticación administrativa", "PATIENT_UPDATE_501");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(errorResponse);
+            // TODO: Obtener usuario autenticado del contexto de seguridad
+            AuthenticatedUser currentUser = getCurrentAuthenticatedUser();
+
+            CommonResponse<PatientResponse> response = patientApplicationService.updatePatient(idCard, updatePatientRequest, currentUser);
+
+            if (response.isSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
 
         } catch (Exception e) {
             CommonResponse<PatientResponse> errorResponse = CommonResponse.error(
@@ -125,15 +153,40 @@ public class PatientController {
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
-            // TODO: Implementar eliminación con autenticación
-            CommonResponse<String> errorResponse = CommonResponse.error(
-                "Eliminación de paciente no implementada - requiere autenticación administrativa", "PATIENT_DELETE_501");
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(errorResponse);
+            // TODO: Obtener usuario autenticado del contexto de seguridad
+            AuthenticatedUser currentUser = getCurrentAuthenticatedUser();
+
+            CommonResponse<String> response = patientApplicationService.removePatient(idCard, currentUser);
+
+            if (response.isSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
 
         } catch (Exception e) {
             CommonResponse<String> errorResponse = CommonResponse.error(
                 "Error interno del servidor al eliminar paciente", "PATIENT_DELETE_500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    // =============================================================================
+    // MÉTODOS PRIVADOS DE UTILIDAD
+    // =============================================================================
+
+    /**
+     * Obtiene el usuario actualmente autenticado
+     * TODO: Implementar con Spring Security cuando esté disponible
+     */
+    private AuthenticatedUser getCurrentAuthenticatedUser() {
+        // Implementación temporal - en producción usar Spring Security
+        // Para fines de demostración, creamos un usuario administrativo temporal
+        return new AuthenticatedUser(
+            "admin001",
+            "Administrador Sistema",
+            Role.ADMINISTRATIVE,
+            true // isStaff
+        );
     }
 }
