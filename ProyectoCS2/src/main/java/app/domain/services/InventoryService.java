@@ -162,4 +162,45 @@ public class InventoryService {
     public boolean isSpecialtyAvailable(String specialtyId) {
         return specialtyRepository.findById(specialtyId).isPresent();
     }
+
+    // Métodos de búsqueda
+    public List<Medication> searchMedications(String query) {
+        List<Medication> allMedications = getAllMedications();
+        return allMedications.stream()
+            .filter(medication ->
+                medication.getName().toLowerCase().contains(query.toLowerCase()) ||
+                medication.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+                medication.getMedicationId().toLowerCase().contains(query.toLowerCase())
+            )
+            .toList();
+    }
+
+    public List<ProcedureType> searchProcedures(String query) {
+        List<ProcedureType> allProcedures = getAllProcedures();
+        return allProcedures.stream()
+            .filter(procedure ->
+                procedure.getName().toLowerCase().contains(query.toLowerCase()) ||
+                procedure.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+                procedure.getProcedureId().toLowerCase().contains(query.toLowerCase())
+            )
+            .toList();
+    }
+
+    public List<DiagnosticTest> searchDiagnostics(String query) {
+        List<DiagnosticTest> allDiagnostics = getAllDiagnosticTests();
+        return allDiagnostics.stream()
+            .filter(diagnostic ->
+                diagnostic.getName().toLowerCase().contains(query.toLowerCase()) ||
+                diagnostic.getDescription().toLowerCase().contains(query.toLowerCase()) ||
+                diagnostic.getDiagnosticId().toLowerCase().contains(query.toLowerCase())
+            )
+            .toList();
+    }
+
+    public List<Medication> getLowStockMedications(int threshold) {
+        List<Medication> allMedications = getAllMedications();
+        return allMedications.stream()
+            .filter(medication -> medication.getStock() <= threshold)
+            .toList();
+    }
 }

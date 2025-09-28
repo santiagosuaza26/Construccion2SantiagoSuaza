@@ -498,4 +498,8 @@ public class PatientMapper {
                 "None"
         );
     }
+
+    public List<PatientResponse> toPatientResponseList(List<Patient> patients) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

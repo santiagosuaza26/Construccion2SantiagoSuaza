@@ -283,7 +283,7 @@ public class ReportApplicationService {
             start.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
             end.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
             patients.size(), patientsByGender, patientsByAgeGroup,
-            patientMapper.toPatientResponseList(patients)
+            patientMapper.toResponseList(patients)
         );
     }
 

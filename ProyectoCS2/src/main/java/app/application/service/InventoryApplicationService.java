@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import app.application.dto.request.InventoryItemRequest;
 import app.application.dto.response.CommonResponse;
 import app.application.dto.response.InventoryResponse;
+import app.application.dto.response.InventoryResponse.InventoryItemInfo;
 import app.application.mapper.InventoryMapper;
 import app.domain.model.DiagnosticTest;
 import app.domain.model.Medication;
@@ -590,8 +591,7 @@ public class InventoryApplicationService {
     public CommonResponse<InventoryResponse> updateMedication(String id, InventoryItemRequest request, AuthenticatedUser currentUser) {
         // Agregar ID al request para actualización
         InventoryItemRequest updateRequest = new InventoryItemRequest(
-            request.getName(), request.getDescription(), request.getCost(),
-            request.getType(), request.getStock(), id
+            request.getItemType(), id, request.getName(), request.getDescription(), request.getPrice(), request.getStock()
         );
         return updateMedication(updateRequest, currentUser);
     }
@@ -599,8 +599,7 @@ public class InventoryApplicationService {
     public CommonResponse<InventoryResponse> updateProcedure(String id, InventoryItemRequest request, AuthenticatedUser currentUser) {
         // Agregar ID al request para actualización
         InventoryItemRequest updateRequest = new InventoryItemRequest(
-            request.getName(), request.getDescription(), request.getCost(),
-            request.getType(), request.getStock(), id
+            request.getItemType(), id, request.getName(), request.getDescription(), request.getPrice()
         );
         return updateProcedure(updateRequest, currentUser);
     }
@@ -608,13 +607,12 @@ public class InventoryApplicationService {
     public CommonResponse<InventoryResponse> updateDiagnostic(String id, InventoryItemRequest request, AuthenticatedUser currentUser) {
         // Agregar ID al request para actualización
         InventoryItemRequest updateRequest = new InventoryItemRequest(
-            request.getName(), request.getDescription(), request.getCost(),
-            request.getType(), request.getStock(), id
+            request.getItemType(), id, request.getName(), request.getDescription(), request.getPrice()
         );
         return updateDiagnosticTest(updateRequest, currentUser);
     }
 
-    public CommonResponse<List<InventoryResponse>> searchInventory(String query, String type, AuthenticatedUser currentUser) {
+    public CommonResponse<List<InventoryItemInfo>> searchInventory(String query, String type, AuthenticatedUser currentUser) {
         try {
             if (!canManageInventory(currentUser)) {
                 logUnauthorizedAccess(currentUser, "SEARCH_INVENTORY");
@@ -641,7 +639,7 @@ public class InventoryApplicationService {
             }
 
             // Combinar resultados
-            List<InventoryResponse> results = new java.util.ArrayList<>();
+            List<InventoryItemInfo> results = new java.util.ArrayList<>();
             results.addAll(inventoryMapper.toMedicationListResponse(medications).getItems());
             results.addAll(inventoryMapper.toProcedureListResponse(procedures).getItems());
             results.addAll(inventoryMapper.toDiagnosticListResponse(diagnostics).getItems());
@@ -656,7 +654,7 @@ public class InventoryApplicationService {
         }
     }
 
-    public CommonResponse<List<InventoryResponse>> getLowStockItems(int threshold, AuthenticatedUser currentUser) {
+    public CommonResponse<List<InventoryItemInfo>> getLowStockItems(int threshold, AuthenticatedUser currentUser) {
         try {
             if (!canManageInventory(currentUser)) {
                 logUnauthorizedAccess(currentUser, "VIEW_LOW_STOCK");
@@ -664,7 +662,7 @@ public class InventoryApplicationService {
             }
 
             List<Medication> lowStockMedications = inventoryService.getLowStockMedications(threshold);
-            List<InventoryResponse> results = inventoryMapper.toMedicationListResponse(lowStockMedications).getItems();
+            List<InventoryItemInfo> results = inventoryMapper.toMedicationListResponse(lowStockMedications).getItems();
 
             logLowStockViewed(results.size(), threshold, currentUser);
 
