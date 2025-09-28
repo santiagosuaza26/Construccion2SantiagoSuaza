@@ -17,26 +17,28 @@
 # Verificar instalaciones
 java -version          # Java 17+
 mvn -version          # Maven 3.9+
-docker --version      # Docker (opcional)
 ```
 
-### 2. **Ejecución del Proyecto**
+### 2. **Ejecución del Proyecto (Sin dependencias externas)**
 ```bash
-# Opción 1: Con Docker (Más fácil)
+# ✅ OPCIÓN RECOMENDADA - Sin MongoDB ni Docker
 cd Construccion2SantiagoSuaza/ProyectoCS2
-docker-compose up --build
 
-# Opción 2: Desarrollo local
-./mvnw clean install
-./mvnw spring-boot:run
+# En Windows:
+simple-demo.bat    # ✅ MÁS FÁCIL - Sin problemas de dependencias
+
+# En Linux/Mac:
+./simple-demo.sh   # Necesitaría chmod +x simple-demo.sh
 ```
 
-### 3. **Acceso a la Aplicación**
-- **Aplicación principal:** http://localhost:8080
-- **Base de datos MySQL:** localhost:3306
-- **Base de datos MongoDB:** localhost:27017
-- **Adminer (MySQL GUI):** http://localhost:8082
-- **Mongo Express:** http://localhost:8081
+### 3. **URLs de Acceso (Demostración)**
+- **🏥 Aplicación principal:** http://localhost:8082
+- **💾 Base de datos H2:** http://localhost:8082/h2-console
+- **📚 Documentación API:** http://localhost:8082/swagger-ui.html
+- **📊 Health Check:** http://localhost:8082/actuator/health
+
+### 4. **Credenciales de Base de Datos**
+- **H2 Console:** Usuario: `sa`, Contraseña: `(vacío)`
 
 ---
 
@@ -143,12 +145,24 @@ public static class ProductionServiceConfiguration {
 #### **API REST Endpoints**
 ```bash
 # Listar pacientes
-curl http://localhost:8080/api/patients
+curl http://localhost:8082/api/patients
 
 # Crear paciente (necesitaría autenticación)
-curl -X POST http://localhost:8080/api/patients \
+curl -X POST http://localhost:8082/api/patients \
   -H "Content-Type: application/json" \
   -d '{"idCard":"12345678","fullName":"Juan Pérez"...}'
+```
+
+#### **Pruebas con Curl (Sin Interfaz Gráfica)**
+```bash
+# ✅ PRUEBA RECOMENDADA - Sin necesidad de navegador
+./curl-tests.bat all    # En Windows
+# ./curl-tests.sh all   # En Linux/Mac
+
+# Pruebas individuales:
+./curl-tests.bat health    # Verificar que la app está corriendo
+./curl-tests.bat h2        # Verificar base de datos H2
+./curl-tests.bat patients  # Probar endpoint de pacientes
 ```
 
 ### **Paso 4: Mostrar Bases de Datos (5 minutos)**
