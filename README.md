@@ -2,7 +2,6 @@
 
 ## Integrantes
 Santiago Suaza Cardona (Martes - Jueves 8-10)
-## Tencnologias
 
 # 🏥 Sistema de Gestión Médica - Clínica CS2
 
