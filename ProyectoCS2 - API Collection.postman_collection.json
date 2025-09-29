@@ -1,0 +1,914 @@
+{
+    "info": {
+        "name": "Sistema de Gestión Médica - Clínica CS2",
+        "description": "Colección completa de APIs para el sistema de gestión médica desarrollado por Santiago Suaza Cardona.\n\n**Configuración Base:**\n- URL Base: http://localhost:8081/api\n- Puerto del servidor: 8081\n- Context Path: /api\n\n**Tecnologías:**\n- Java Spring Boot\n- Base de datos H2 (desarrollo)\n- MongoDB (historia clínica)\n- Autenticación basada en headers (User-ID)\n\n**Notas importantes:**\n- La mayoría de endpoints requieren el header 'User-ID' para autenticación\n- Los endpoints marcados con 🔒 requieren autenticación\n- La aplicación usa H2 Console en http://localhost:8081/api/h2-console\n- MongoDB debe estar ejecutándose en localhost:27017",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "auth": {
+        "type": "noauth"
+    },
+    "variable": [
+        {
+        "key": "baseUrl",
+        "value": "http://localhost:8081/api",
+        "type": "string"
+        },
+        {
+        "key": "userId",
+        "value": "12345678",
+        "type": "string",
+        "description": "ID de usuario para autenticación (header User-ID)"
+        }
+    ],
+    "item": [
+        {
+        "name": "🔐 Autenticación",
+        "description": "Endpoints para manejo de autenticación y autorización",
+        "item": [
+            {
+            "name": "Iniciar Sesión",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/auth/login",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "login"]
+                },
+                "description": "Autenticar usuario en el sistema"
+            }
+            },
+            {
+            "name": "Cerrar Sesión",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/auth/logout",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "logout"]
+                },
+                "description": "Cerrar sesión del usuario"
+            }
+            },
+            {
+            "name": "Obtener Información del Usuario Actual",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/auth/me",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "me"]
+                },
+                "description": "Obtener información del usuario actualmente autenticado"
+            }
+            },
+            {
+            "name": "Verificar Permisos",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/auth/permissions?permission=CREATE_PATIENT",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "permissions"],
+                "query": [
+                    {
+                    "key": "permission",
+                    "value": "CREATE_PATIENT",
+                    "description": "Permiso a verificar"
+                    }
+                ]
+                },
+                "description": "Verificar si el usuario tiene un permiso específico"
+            }
+            },
+            {
+            "name": "Verificar Acceso a Recurso",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/auth/access?resourceType=PATIENT&action=CREATE",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "access"],
+                "query": [
+                    {
+                    "key": "resourceType",
+                    "value": "PATIENT",
+                    "description": "Tipo de recurso"
+                    },
+                    {
+                    "key": "action",
+                    "value": "CREATE",
+                    "description": "Acción a verificar"
+                    }
+                ]
+                },
+                "description": "Verificar si el usuario puede acceder a un recurso específico"
+            }
+            }
+        ]
+        },
+        {
+        "name": "👥 Gestión de Pacientes",
+        "description": "Endpoints para manejo de pacientes",
+        "item": [
+            {
+            "name": "Listar Todos los Pacientes",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/patients",
+                "host": ["{{baseUrl}}"],
+                "path": ["patients"]
+                },
+                "description": "Obtener lista de todos los pacientes"
+            }
+            },
+            {
+            "name": "Obtener Paciente por ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/patients/12345678",
+                "host": ["{{baseUrl}}"],
+                "path": ["patients", "12345678"]
+                },
+                "description": "Obtener información de un paciente específico por su cédula"
+            }
+            },
+            {
+            "name": "Registrar Nuevo Paciente",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"idCard\": \"12345678\",\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juan.perez@email.com\",\n  \"phone\": \"+57 300 123 4567\",\n  \"dateOfBirth\": \"1990-01-15\",\n  \"gender\": \"M\",\n  \"address\": \"Calle 123 #45-67, Bogotá\",\n  \"emergencyContact\": {\n    \"name\": \"María Pérez\",\n    \"phone\": \"+57 300 987 6543\",\n    \"relationship\": \"Esposa\"\n  },\n  \"insurancePolicy\": {\n    \"provider\": \"Sura\",\n    \"policyNumber\": \"POL123456\",\n    \"coverage\": 80.0\n  }\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/patients",
+                "host": ["{{baseUrl}}"],
+                "path": ["patients"]
+                },
+                "description": "Registrar un nuevo paciente en el sistema"
+            }
+            },
+            {
+            "name": "Actualizar Paciente",
+            "request": {
+                "method": "PUT",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"idCard\": \"12345678\",\n  \"firstName\": \"Juan Carlos\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juancarlos.perez@email.com\",\n  \"phone\": \"+57 300 123 4567\",\n  \"dateOfBirth\": \"1990-01-15\",\n  \"gender\": \"M\",\n  \"address\": \"Calle 123 #45-67, Bogotá\",\n  \"emergencyContact\": {\n    \"name\": \"María Pérez\",\n    \"phone\": \"+57 300 987 6543\",\n    \"relationship\": \"Esposa\"\n  },\n  \"insurancePolicy\": {\n    \"provider\": \"Sura\",\n    \"policyNumber\": \"POL123456\",\n    \"coverage\": 85.0\n  }\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/patients/12345678",
+                "host": ["{{baseUrl}}"],
+                "path": ["patients", "12345678"]
+                },
+                "description": "Actualizar información de un paciente existente"
+            }
+            },
+            {
+            "name": "Eliminar Paciente",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/patients/12345678",
+                "host": ["{{baseUrl}}"],
+                "path": ["patients", "12345678"]
+                },
+                "description": "Eliminar un paciente del sistema"
+            }
+            }
+        ]
+        },
+        {
+        "name": "⚕️ Servicios Médicos",
+        "description": "Endpoints para funcionalidades médicas",
+        "item": [
+            {
+            "name": "Crear Orden Médica",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del médico que crea la orden"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"patientIdCard\": \"12345678\",\n  \"doctorIdCard\": \"87654321\",\n  \"orderType\": \"MEDICATION\",\n  \"items\": [\n    {\n      \"type\": \"MEDICATION\",\n      \"medicationId\": \"MED001\",\n      \"quantity\": 30,\n      \"frequency\": \"Cada 8 horas\",\n      \"duration\": \"10 días\"\n    }\n  ],\n  \"diagnosis\": \"Hipertensión arterial\",\n  \"notes\": \"Control mensual requerido\"\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/medical/orders",
+                "host": ["{{baseUrl}}"],
+                "path": ["medical", "orders"]
+                },
+                "description": "Crear una nueva orden médica (medicamentos, procedimientos, etc.)"
+            }
+            },
+            {
+            "name": "Obtener Orden Médica",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/medical/orders/ORD001",
+                "host": ["{{baseUrl}}"],
+                "path": ["medical", "orders", "ORD001"]
+                },
+                "description": "Obtener información de una orden médica específica"
+            }
+            },
+            {
+            "name": "Actualizar Historia Clínica",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del médico que actualiza"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"patientIdCard\": \"12345678\",\n  \"doctorIdCard\": \"87654321\",\n  \"entryType\": \"CONSULTATION\",\n  \"title\": \"Control de hipertensión\",\n  \"description\": \"Paciente presenta mejoría en presión arterial. Se ajusta medicación.\",\n  \"diagnosis\": \"Hipertensión arterial controlada\",\n  \"treatment\": \"Continuar con Losartán 50mg/día\",\n  \"notes\": \"Próximo control en 3 meses\"\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/medical/clinical-history",
+                "host": ["{{baseUrl}}"],
+                "path": ["medical", "clinical-history"]
+                },
+                "description": "Agregar entrada a la historia clínica del paciente"
+            }
+            },
+            {
+            "name": "Obtener Historia Clínica",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/medical/clinical-history/12345678",
+                "host": ["{{baseUrl}}"],
+                "path": ["medical", "clinical-history", "12345678"]
+                },
+                "description": "Obtener historia clínica completa de un paciente"
+            }
+            },
+            {
+            "name": "Registrar Signos Vitales",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del personal médico"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"patientIdCard\": \"12345678\",\n  \"bloodPressureSystolic\": 120,\n  \"bloodPressureDiastolic\": 80,\n  \"heartRate\": 72,\n  \"temperature\": 36.5,\n  \"respiratoryRate\": 16,\n  \"oxygenSaturation\": 98,\n  \"weight\": 70.5,\n  \"height\": 175,\n  \"notes\": \"Paciente estable, sin signos de distress\"\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/medical/vital-signs",
+                "host": ["{{baseUrl}}"],
+                "path": ["medical", "vital-signs"]
+                },
+                "description": "Registrar signos vitales del paciente"
+            }
+            },
+            {
+            "name": "Procesar Consulta de Seguimiento",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del médico"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/medical/follow-up?patientIdCard=12345678&doctorIdCard=87654321&diagnosis=Hipertensión%20controlada&relatedOrderNumbers=ORD001,ORD002",
+                "host": ["{{baseUrl}}"],
+                "path": ["medical", "follow-up"],
+                "query": [
+                    {
+                    "key": "patientIdCard",
+                    "value": "12345678",
+                    "description": "Cédula del paciente"
+                    },
+                    {
+                    "key": "doctorIdCard",
+                    "value": "87654321",
+                    "description": "Cédula del médico"
+                    },
+                    {
+                    "key": "diagnosis",
+                    "value": "Hipertensión controlada",
+                    "description": "Diagnóstico de la consulta"
+                    },
+                    {
+                    "key": "relatedOrderNumbers",
+                    "value": "ORD001,ORD002",
+                    "description": "Números de órdenes relacionadas (opcional)"
+                    }
+                ]
+                },
+                "description": "Procesar consulta de seguimiento médico"
+            }
+            }
+        ]
+        },
+        {
+        "name": "💰 Facturación",
+        "description": "Endpoints para manejo de facturación y reportes",
+        "item": [
+            {
+            "name": "Generar Factura",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario administrativo"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"patientIdCard\": \"12345678\",\n  \"orderNumbers\": [\"ORD001\", \"ORD002\"],\n  \"invoiceDate\": \"2024-01-15\",\n  \"dueDate\": \"2024-02-15\",\n  \"notes\": \"Factura por consulta médica y medicamentos\"\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/billing/invoices",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "invoices"]
+                },
+                "description": "Generar nueva factura para servicios médicos"
+            }
+            },
+            {
+            "name": "Obtener Factura por ID",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/billing/invoices/INV001",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "invoices", "INV001"]
+                },
+                "description": "Obtener información de una factura específica"
+            }
+            },
+            {
+            "name": "Obtener Facturas por Paciente",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/billing/invoices/patient/12345678",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "invoices", "patient", "12345678"]
+                },
+                "description": "Obtener todas las facturas de un paciente específico"
+            }
+            },
+            {
+            "name": "Obtener Factura por Orden",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario autenticado"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/billing/invoices/order/ORD001",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "invoices", "order", "ORD001"]
+                },
+                "description": "Obtener factura asociada a una orden médica específica"
+            }
+            },
+            {
+            "name": "Reporte de Facturación por Paciente",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario administrativo"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/billing/reports/patient/12345678?year=2024",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "reports", "patient", "12345678"],
+                "query": [
+                    {
+                    "key": "year",
+                    "value": "2024",
+                    "description": "Año del reporte (opcional, por defecto año actual)"
+                    }
+                ]
+                },
+                "description": "Generar reporte detallado de facturación para un paciente"
+            }
+            },
+            {
+            "name": "Reporte de Facturación por Período",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario administrativo"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/billing/reports/period?startDate=2024-01-01&endDate=2024-12-31",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "reports", "period"],
+                "query": [
+                    {
+                    "key": "startDate",
+                    "value": "2024-01-01",
+                    "description": "Fecha de inicio del período"
+                    },
+                    {
+                    "key": "endDate",
+                    "value": "2024-12-31",
+                    "description": "Fecha de fin del período"
+                    }
+                ]
+                },
+                "description": "Generar reporte de facturación para un período específico"
+            }
+            },
+            {
+            "name": "Calcular Copago",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario administrativo"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/billing/calculate-copay?patientIdCard=12345678&orderNumber=ORD001",
+                "host": ["{{baseUrl}}"],
+                "path": ["billing", "calculate-copay"],
+                "query": [
+                    {
+                    "key": "patientIdCard",
+                    "value": "12345678",
+                    "description": "Cédula del paciente"
+                    },
+                    {
+                    "key": "orderNumber",
+                    "value": "ORD001",
+                    "description": "Número de la orden médica"
+                    }
+                ]
+                },
+                "description": "Calcular el copago para una orden específica (preview antes de facturar)"
+            }
+            }
+        ]
+        },
+        {
+        "name": "📦 Gestión de Inventario",
+        "description": "Endpoints para manejo de medicamentos, procedimientos y ayudas diagnósticas",
+        "item": [
+            {
+            "name": "Listar Medicamentos",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/inventory/medications",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "medications"]
+                },
+                "description": "Obtener lista de todos los medicamentos disponibles"
+            }
+            },
+            {
+            "name": "Listar Procedimientos",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/inventory/procedures",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "procedures"]
+                },
+                "description": "Obtener lista de todos los procedimientos disponibles"
+            }
+            },
+            {
+            "name": "Listar Ayudas Diagnósticas",
+            "request": {
+                "method": "GET",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/inventory/diagnostics",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "diagnostics"]
+                },
+                "description": "Obtener lista de todas las ayudas diagnósticas disponibles"
+            }
+            },
+            {
+            "name": "Crear Medicamento",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Paracetamol 500mg\",\n  \"description\": \"Analgésico y antipirético\",\n  \"type\": \"MEDICATION\",\n  \"unit\": \"Tableta\",\n  \"price\": 1500.00,\n  \"stock\": 100,\n  \"minStock\": 20,\n  \"active\": true\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/inventory/medications",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "medications"]
+                },
+                "description": "Agregar un nuevo medicamento al inventario"
+            }
+            },
+            {
+            "name": "Crear Procedimiento",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Hemograma completo\",\n  \"description\": \"Análisis de sangre completo\",\n  \"type\": \"PROCEDURE\",\n  \"unit\": \"Examen\",\n  \"price\": 45000.00,\n  \"stock\": 0,\n  \"minStock\": 0,\n  \"active\": true\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/inventory/procedures",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "procedures"]
+                },
+                "description": "Agregar un nuevo procedimiento al inventario"
+            }
+            },
+            {
+            "name": "Crear Ayuda Diagnóstica",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                },
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"Resonancia magnética\",\n  \"description\": \"Resonancia magnética de columna lumbar\",\n  \"type\": \"DIAGNOSTIC\",\n  \"unit\": \"Estudio\",\n  \"price\": 350000.00,\n  \"stock\": 0,\n  \"minStock\": 0,\n  \"active\": true\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/inventory/diagnostics",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "diagnostics"]
+                },
+                "description": "Agregar una nueva ayuda diagnóstica al inventario"
+            }
+            },
+            {
+            "name": "Actualizar Stock de Medicamento",
+            "request": {
+                "method": "PUT",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/inventory/medications/stock?medicationId=MED001&quantity=50&operation=ADD",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "medications", "stock"],
+                "query": [
+                    {
+                    "key": "medicationId",
+                    "value": "MED001",
+                    "description": "ID del medicamento"
+                    },
+                    {
+                    "key": "quantity",
+                    "value": "50",
+                    "description": "Cantidad a agregar/restar"
+                    },
+                    {
+                    "key": "operation",
+                    "value": "ADD",
+                    "description": "Operación: ADD o SUBTRACT"
+                    }
+                ]
+                },
+                "description": "Actualizar stock de un medicamento (agregar o restar)"
+            }
+            },
+            {
+            "name": "Eliminar Medicamento",
+            "request": {
+                "method": "DELETE",
+                "header": [
+                {
+                    "key": "User-ID",
+                    "value": "{{userId}}",
+                    "description": "ID del usuario de soporte"
+                }
+                ],
+                "url": {
+                "raw": "{{baseUrl}}/inventory/medications/MED001",
+                "host": ["{{baseUrl}}"],
+                "path": ["inventory", "medications", "MED001"]
+                },
+                "description": "Eliminar un medicamento del inventario"
+            }
+            }
+        ]
+        },
+        {
+        "name": "👤 Gestión de Usuarios",
+        "description": "Endpoints para manejo de usuarios del sistema",
+        "item": [
+            {
+            "name": "Listar Todos los Usuarios",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                "raw": "{{baseUrl}}/users",
+                "host": ["{{baseUrl}}"],
+                "path": ["users"]
+                },
+                "description": "Obtener lista de todos los usuarios del sistema"
+            }
+            },
+            {
+            "name": "Obtener Usuario por ID",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                "raw": "{{baseUrl}}/users/87654321",
+                "host": ["{{baseUrl}}"],
+                "path": ["users", "87654321"]
+                },
+                "description": "Obtener información de un usuario específico"
+            }
+            },
+            {
+            "name": "Crear Nuevo Usuario",
+            "request": {
+                "method": "POST",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"idCard\": \"87654321\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Médico\",\n  \"email\": \"carlos.medico@clinica.com\",\n  \"phone\": \"+57 300 555 0123\",\n  \"role\": \"DOCTOR\",\n  \"specialty\": \"Cardiología\",\n  \"licenseNumber\": \"MED123456\",\n  \"active\": true\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/users",
+                "host": ["{{baseUrl}}"],
+                "path": ["users"]
+                },
+                "description": "Crear un nuevo usuario en el sistema"
+            }
+            },
+            {
+            "name": "Actualizar Usuario",
+            "request": {
+                "method": "PUT",
+                "header": [
+                {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                }
+                ],
+                "body": {
+                "mode": "raw",
+                "raw": "{\n  \"idCard\": \"87654321\",\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Médico\",\n  \"email\": \"carlos.medico@clinica.com\",\n  \"phone\": \"+57 300 555 0123\",\n  \"role\": \"DOCTOR\",\n  \"specialty\": \"Cardiología\",\n  \"licenseNumber\": \"MED123456\",\n  \"active\": true\n}"
+                },
+                "url": {
+                "raw": "{{baseUrl}}/users/87654321",
+                "host": ["{{baseUrl}}"],
+                "path": ["users", "87654321"]
+                },
+                "description": "Actualizar información de un usuario existente"
+            }
+            },
+            {
+            "name": "Eliminar Usuario",
+            "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                "raw": "{{baseUrl}}/users/87654321",
+                "host": ["{{baseUrl}}"],
+                "path": ["users", "87654321"]
+                },
+                "description": "Eliminar un usuario del sistema"
+            }
+            }
+        ]
+        }
+    ],
+    "event": [
+        {
+        "listen": "prerequest",
+        "script": {
+            "type": "text/javascript",
+            "exec": [
+            "// Script para configurar headers automáticamente",
+            "// Se ejecuta antes de cada request",
+            "pm.request.headers.add({key: 'User-Agent', value: 'PostmanRuntime/7.36.1'});",
+            "",
+            "// Si necesitas configurar headers específicos por endpoint,",
+            "// puedes hacerlo en el script de pre-request de cada request",
+            "console.log('Request configurado para: ' + pm.request.url.toString());"
+            ]
+        }
+        }
+    ]
+}

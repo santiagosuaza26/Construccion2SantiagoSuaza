@@ -1,0 +1,167 @@
+version: '3.8'
+
+services:
+  # ===============================================
+  # BASE DE DATOS MYSQL PARA PRODUCCIÓN
+  # ===============================================
+  mysql-db:
+    image: mysql:8.0
+    container_name: clinic-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password_2024}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-clinicdb}
+      MYSQL_USER: ${MYSQL_USER:-clinic_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secure_password_2024}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d
+    networks:
+      - clinic-network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # ===============================================
+  # MONGODB PARA HISTORIA CLÍNICA
+  # ===============================================
+  mongodb:
+    image: mongo:7.0
+    container_name: clinic-mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongo_password_2024}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-clinical_history_db}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo/init:/docker-entrypoint-initdb.d
+    networks:
+      - clinic-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ===============================================
+  # REDIS PARA CACHÉ (OPCIONAL)
+  # ===============================================
+  redis:
+    image: redis:7.2-alpine
+    container_name: clinic-redis
+    restart: always
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - clinic-network
+    command: redis-server --appendonly yes
+    profiles:
+      - with-redis
+
+  # ===============================================
+  # APLICACIÓN SPRING BOOT
+  # ===============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clinic-app
+    restart: always
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      DB_HOST: mysql-db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-clinicdb}
+      DB_USERNAME: ${MYSQL_USER:-clinic_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-secure_password_2024}
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DATABASE: ${MONGO_DATABASE:-clinical_history_db}
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-at-least-32-characters-long}
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - app_logs:/app/logs
+      - ./uploads:/app/uploads
+    networks:
+      - clinic-network
+
+  # ===============================================
+  # PHPMYADMIN PARA ADMINISTRAR MYSQL
+  # ===============================================
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: clinic-phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql-db
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER:-clinic_user}
+      PMA_PASSWORD: ${MYSQL_PASSWORD:-secure_password_2024}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password_2024}
+    ports:
+      - "${PMA_PORT:-8081}:80"
+    depends_on:
+      - mysql-db
+    networks:
+      - clinic-network
+    profiles:
+      - with-phpmyadmin
+
+  # ===============================================
+  # MONGODB EXPRESS PARA ADMINISTRAR MONGODB
+  # ===============================================
+  mongo-express:
+    image: mongo-express:1.0.0-alpha
+    container_name: clinic-mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USER:-admin}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD:-mongo_password_2024}
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    ports:
+      - "${MONGO_EXPRESS_PORT:-8082}:8081"
+    depends_on:
+      - mongodb
+    networks:
+      - clinic-network
+    profiles:
+      - with-mongo-express
+
+# ===============================================
+# VOLUMENES PERSISTENTES
+# ===============================================
+volumes:
+  mysql_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_logs:
+    driver: local
+
+# ===============================================
+# REDES
+# ===============================================
+networks:
+  clinic-network:
+    driver: bridge
