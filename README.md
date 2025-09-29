@@ -1,3 +1,16 @@
+# Construccion2SantiagoSuaza
+
+## Integrantes
+Santiago Suaza Cardona (Martes - Jueves 8-10)
+## Tencnologias
+Java 
+SpringBoot
+MongoDb
+Mysql
+Maven
+Docker
+
+
 # 🏥 Sistema de Gestión Médica - Clínica CS2
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/projects/jdk/17/)
