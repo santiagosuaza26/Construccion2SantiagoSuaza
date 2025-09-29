@@ -142,4 +142,25 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    /**
+     * Endpoint de health check para verificar que la aplicación está funcionando
+     * Accesible sin autenticación para verificar el estado del servidor
+     */
+    @GetMapping("/health")
+    public ResponseEntity<CommonResponse<String>> healthCheck() {
+        try {
+            CommonResponse<String> response = CommonResponse.success(
+                "Application is running correctly at " + System.currentTimeMillis(),
+                "HEALTH_OK"
+            );
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            CommonResponse<String> errorResponse = CommonResponse.error(
+                "Health check failed: " + e.getMessage(),
+                "HEALTH_ERROR"
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
 }
