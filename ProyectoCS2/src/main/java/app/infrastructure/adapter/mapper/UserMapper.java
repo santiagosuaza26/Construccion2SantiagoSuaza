@@ -1,10 +1,13 @@
 package app.infrastructure.adapter.mapper;
 
-import app.domain.model.User;
-import app.infrastructure.adapter.entity.UserEntity;
 import org.springframework.stereotype.Component;
 
-@Component
+import app.domain.model.Credentials;
+import app.domain.model.Role;
+import app.domain.model.User;
+import app.infrastructure.adapter.jpa.entity.UserEntity;
+
+@Component("infrastructureUserMapper")
 public class UserMapper {
 
     public UserEntity toEntity(User user) {
@@ -14,14 +17,15 @@ public class UserMapper {
 
         UserEntity entity = new UserEntity();
         entity.setIdCard(user.getIdCard());
-        entity.setFirstName(user.getFirstName());
-        entity.setLastName(user.getLastName());
+        entity.setFullName(user.getFullName());
         entity.setEmail(user.getEmail());
         entity.setPhone(user.getPhone());
-        entity.setActive(user.isActive());
+        entity.setBirthDate(user.getBirthDate());
+        entity.setAddress(user.getAddress());
 
         if (user.getCredentials() != null) {
-            entity.setUsername(user.getCredentials().getUsername());
+            // TODO: Implementar conversión de Credentials a CredentialsEntity
+            // entity.setUsername(user.getCredentials().getUsername());
         }
 
         return entity;
@@ -32,13 +36,19 @@ public class UserMapper {
             return null;
         }
 
+        // TODO: Implementar conversión de RoleEntity a Role y CredentialsEntity a Credentials
+        Role role = Role.ADMINISTRATIVE; // Valor por defecto temporal
+        Credentials credentials = new Credentials("temp", "TempPass123!"); // Valor por defecto temporal
+
         return new User(
+            entity.getFullName(),
             entity.getIdCard(),
-            entity.getFirstName(),
-            entity.getLastName(),
             entity.getEmail(),
             entity.getPhone(),
-            entity.isActive()
+            entity.getBirthDate(),
+            entity.getAddress(),
+            role,
+            credentials
         );
     }
 }

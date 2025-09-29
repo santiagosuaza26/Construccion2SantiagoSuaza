@@ -1,15 +1,16 @@
 package app.infrastructure.adapter;
 
-import app.domain.model.User;
-import app.domain.port.UserRepository;
-import app.infrastructure.adapter.entity.UserEntity;
-import app.infrastructure.adapter.mapper.UserMapper;
-import app.infrastructure.adapter.repository.UserJpaRepository;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+
+import app.domain.model.User;
+import app.domain.port.UserRepository;
+import app.infrastructure.adapter.jpa.entity.UserEntity;
+import app.infrastructure.adapter.mapper.UserMapper;
+import app.infrastructure.adapter.repository.UserJpaRepository;
 
 @Component
 public class UserRepositoryAdapter implements UserRepository {
@@ -30,7 +31,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return userJpaRepository.findByCredentials_Username(username)
+        return userJpaRepository.findByUsername(username)
                 .map(userMapper::toDomain);
     }
 
@@ -48,7 +49,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public boolean existsByUsername(String username) {
-        return userJpaRepository.existsByCredentials_Username(username);
+        return userJpaRepository.existsByUsername(username);
     }
 
     @Override

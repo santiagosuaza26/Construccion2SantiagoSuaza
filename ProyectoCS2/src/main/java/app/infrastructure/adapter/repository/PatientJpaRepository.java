@@ -8,14 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import app.infrastructure.adapter.entity.PatientEntity;
+import app.infrastructure.adapter.jpa.entity.PatientEntity;
 
 @Repository
 public interface PatientJpaRepository extends JpaRepository<PatientEntity, String> {
     Optional<PatientEntity> findByIdCard(String idCard);
-    Optional<PatientEntity> findByCredentials_Username(String username);
+    Optional<PatientEntity> findByUsername(String username);
     Optional<PatientEntity> findByEmail(String email);
-    boolean existsByCredentials_Username(String username);
+    boolean existsByUsername(String username);
     boolean existsByIdCard(String idCard);
     boolean existsByEmail(String email);
     List<PatientEntity> findAll();

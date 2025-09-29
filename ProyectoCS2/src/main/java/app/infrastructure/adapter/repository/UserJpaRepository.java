@@ -6,14 +6,14 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import app.infrastructure.adapter.entity.UserEntity;
+import app.infrastructure.adapter.jpa.entity.UserEntity;
 
 @Repository
 public interface UserJpaRepository extends JpaRepository<UserEntity, String> {
     Optional<UserEntity> findByIdCard(String idCard);
-    Optional<UserEntity> findByCredentials_Username(String username);
+    Optional<UserEntity> findByUsername(String username);
     Optional<UserEntity> findByEmail(String email);
-    boolean existsByCredentials_Username(String username);
+    boolean existsByUsername(String username);
     boolean existsByIdCard(String idCard);
     boolean existsByEmail(String email);
     List<UserEntity> findAll();

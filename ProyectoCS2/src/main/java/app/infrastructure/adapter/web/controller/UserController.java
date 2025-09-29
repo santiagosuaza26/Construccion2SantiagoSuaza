@@ -1,16 +1,24 @@
-package app.presentation.controller;
+package app.infrastructure.adapter.web.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import app.application.dto.request.CreateUserRequest;
 import app.application.dto.response.CommonResponse;
 import app.application.dto.response.UserResponse;
 import app.application.service.UserApplicationService;
-
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Controlador REST para gestión de usuarios del sistema
@@ -27,10 +35,38 @@ import java.util.List;
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:4200"})
 public class UserController {
 
+    // Constantes para mensajes de error
+    private static final String USER_ID_REQUIRED_MESSAGE = "ID de usuario es requerido";
+    private static final String USER_ID_REQUIRED_CODE = "USER_ID_REQUIRED";
+    private static final String USERS_ERROR_MESSAGE = "Error interno del servidor al obtener usuarios";
+    private static final String USER_SEARCH_ERROR_MESSAGE = "Error interno del servidor al buscar usuario";
+    private static final String USER_CREATE_ERROR_MESSAGE = "Error interno del servidor al crear usuario";
+    private static final String USER_UPDATE_ERROR_MESSAGE = "Error interno del servidor al actualizar usuario";
+    private static final String USER_DELETE_ERROR_MESSAGE = "Error interno del servidor al eliminar usuario";
+
     private final UserApplicationService userApplicationService;
 
     public UserController(UserApplicationService userApplicationService) {
         this.userApplicationService = userApplicationService;
+    }
+
+    /**
+     * Valida que el ID del usuario no sea nulo o vacío
+     * @param idCard ID del usuario a validar
+     * @return true si el ID es válido, false si es inválido
+     */
+    private boolean isUserIdValid(String idCard) {
+        return idCard != null && !idCard.trim().isEmpty();
+    }
+
+    /**
+     * Crea una respuesta de error para ID de usuario requerido
+     * @return ResponseEntity con error de ID requerido
+     */
+    private ResponseEntity<CommonResponse<UserResponse>> createUserIdRequiredErrorResponse() {
+        CommonResponse<UserResponse> errorResponse = CommonResponse.error(
+            USER_ID_REQUIRED_MESSAGE, USER_ID_REQUIRED_CODE);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @GetMapping
@@ -41,11 +77,11 @@ public class UserController {
             if (response.isSuccess()) {
                 return ResponseEntity.ok(response);
             } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
         } catch (Exception e) {
             CommonResponse<List<UserResponse>> errorResponse = CommonResponse.error(
-                "Error interno del servidor al obtener usuarios", "USERS_500");
+                USERS_ERROR_MESSAGE, "USERS_500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -55,10 +91,9 @@ public class UserController {
             @PathVariable String idCard) {
 
         try {
-            if (idCard == null || idCard.trim().isEmpty()) {
-                CommonResponse<UserResponse> errorResponse = CommonResponse.error(
-                    "ID de usuario es requerido", "USER_ID_REQUIRED");
-                return ResponseEntity.badRequest().body(errorResponse);
+            // Validar ID del usuario
+            if (!isUserIdValid(idCard)) {
+                return createUserIdRequiredErrorResponse();
             }
 
             CommonResponse<UserResponse> response = userApplicationService.getUserByIdCard(idCard.trim());
@@ -70,7 +105,7 @@ public class UserController {
             }
         } catch (Exception e) {
             CommonResponse<UserResponse> errorResponse = CommonResponse.error(
-                "Error interno del servidor al buscar usuario", "USER_SEARCH_500");
+                USER_SEARCH_ERROR_MESSAGE, "USER_SEARCH_500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -89,7 +124,7 @@ public class UserController {
             }
         } catch (Exception e) {
             CommonResponse<UserResponse> errorResponse = CommonResponse.error(
-                "Error interno del servidor al crear usuario", "USER_CREATE_500");
+                USER_CREATE_ERROR_MESSAGE, "USER_CREATE_500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -100,10 +135,9 @@ public class UserController {
             @Valid @RequestBody CreateUserRequest updateUserRequest) {
 
         try {
-            if (idCard == null || idCard.trim().isEmpty()) {
-                CommonResponse<UserResponse> errorResponse = CommonResponse.error(
-                    "ID de usuario es requerido", "USER_ID_REQUIRED");
-                return ResponseEntity.badRequest().body(errorResponse);
+            // Validar ID del usuario
+            if (!isUserIdValid(idCard)) {
+                return createUserIdRequiredErrorResponse();
             }
 
             CommonResponse<UserResponse> response = userApplicationService.updateUser(idCard.trim(), updateUserRequest);
@@ -115,7 +149,7 @@ public class UserController {
             }
         } catch (Exception e) {
             CommonResponse<UserResponse> errorResponse = CommonResponse.error(
-                "Error interno del servidor al actualizar usuario", "USER_UPDATE_500");
+                USER_UPDATE_ERROR_MESSAGE, "USER_UPDATE_500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
@@ -125,9 +159,10 @@ public class UserController {
             @PathVariable String idCard) {
 
         try {
-            if (idCard == null || idCard.trim().isEmpty()) {
+            // Validar ID del usuario
+            if (!isUserIdValid(idCard)) {
                 CommonResponse<String> errorResponse = CommonResponse.error(
-                    "ID de usuario es requerido", "USER_ID_REQUIRED");
+                    USER_ID_REQUIRED_MESSAGE, USER_ID_REQUIRED_CODE);
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
@@ -140,7 +175,7 @@ public class UserController {
             }
         } catch (Exception e) {
             CommonResponse<String> errorResponse = CommonResponse.error(
-                "Error interno del servidor al eliminar usuario", "USER_DELETE_500");
+                USER_DELETE_ERROR_MESSAGE, "USER_DELETE_500");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }

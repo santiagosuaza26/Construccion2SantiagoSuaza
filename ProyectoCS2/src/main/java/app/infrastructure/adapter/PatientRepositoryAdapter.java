@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import app.domain.model.Patient;
 import app.domain.port.PatientRepository;
-import app.infrastructure.adapter.entity.PatientEntity;
+import app.infrastructure.adapter.jpa.entity.PatientEntity;
 import app.infrastructure.adapter.mapper.PatientMapper;
 import app.infrastructure.adapter.repository.PatientJpaRepository;
 
@@ -18,7 +19,7 @@ public class PatientRepositoryAdapter implements PatientRepository {
     private final PatientJpaRepository patientJpaRepository;
     private final PatientMapper patientMapper;
 
-    public PatientRepositoryAdapter(PatientJpaRepository patientJpaRepository, PatientMapper patientMapper) {
+    public PatientRepositoryAdapter(PatientJpaRepository patientJpaRepository, @Qualifier("infrastructurePatientMapper") PatientMapper patientMapper) {
         this.patientJpaRepository = patientJpaRepository;
         this.patientMapper = patientMapper;
     }
@@ -31,13 +32,13 @@ public class PatientRepositoryAdapter implements PatientRepository {
 
     @Override
     public Optional<Patient> findByUsername(String username) {
-        return patientJpaRepository.findByCredentials_Username(username)
+        return patientJpaRepository.findByUsername(username)
                 .map(patientMapper::toDomain);
     }
 
     @Override
     public Patient save(Patient patient) {
-        PatientEntity entity = patientMapper.toEntity(patient);
+        PatientEntity entity = (PatientEntity) patientMapper.toEntity(patient);
         PatientEntity savedEntity = patientJpaRepository.save(entity);
         return patientMapper.toDomain(savedEntity);
     }
@@ -60,7 +61,7 @@ public class PatientRepositoryAdapter implements PatientRepository {
 
     @Override
     public boolean existsByUsername(String username) {
-        return patientJpaRepository.existsByCredentials_Username(username);
+        return patientJpaRepository.existsByUsername(username);
     }
 
     @Override
@@ -68,5 +69,17 @@ public class PatientRepositoryAdapter implements PatientRepository {
         return patientJpaRepository.findAll().stream()
                 .map(patientMapper::toDomain)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public long count() {
+        return patientJpaRepository.count();
+    }
+
+    @Override
+    public List<Patient> findByRegistrationDateRange(java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        // TODO: Implementar cuando se agregue el campo registrationDate a PatientEntity
+        // Por ahora retorna lista vacía
+        return List.of();
     }
 }

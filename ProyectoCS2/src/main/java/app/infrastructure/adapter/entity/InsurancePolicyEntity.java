@@ -1,16 +1,16 @@
 package app.infrastructure.adapter.entity;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "insurance_policies")
-public class InsurancePolicyEntity {
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Embeddable
+public class InsurancePolicyEntity {
 
     @Column(name = "policy_number", nullable = false, unique = true)
     private String policyNumber;
@@ -29,13 +29,13 @@ public class InsurancePolicyEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
-    private PatientEntity patient;
+    private app.infrastructure.adapter.jpa.entity.PatientEntity patient;
 
     // Constructors
     public InsurancePolicyEntity() {}
 
     public InsurancePolicyEntity(String policyNumber, String provider, BigDecimal coverageAmount,
-                                LocalDateTime startDate, LocalDateTime endDate, PatientEntity patient) {
+                                LocalDateTime startDate, LocalDateTime endDate, app.infrastructure.adapter.jpa.entity.PatientEntity patient) {
         this.policyNumber = policyNumber;
         this.provider = provider;
         this.coverageAmount = coverageAmount;
@@ -45,13 +45,6 @@ public class InsurancePolicyEntity {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getPolicyNumber() {
         return policyNumber;
@@ -93,11 +86,11 @@ public class InsurancePolicyEntity {
         this.endDate = endDate;
     }
 
-    public PatientEntity getPatient() {
+    public app.infrastructure.adapter.jpa.entity.PatientEntity getPatient() {
         return patient;
     }
 
-    public void setPatient(PatientEntity patient) {
+    public void setPatient(app.infrastructure.adapter.jpa.entity.PatientEntity patient) {
         this.patient = patient;
     }
 }
