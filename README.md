@@ -3,15 +3,10 @@
 ## Integrantes
 Santiago Suaza Cardona (Martes - Jueves 8-10)
 ## Tencnologias
-Java 
-SpringBoot
-MongoDb
-Mysql
-Maven
-Docker
-
 
 # 🏥 Sistema de Gestión Médica - Clínica CS2
+
+## Tencnologias
 
 [![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://openjdk.java.net/projects/jdk/17/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -38,7 +33,6 @@ Sistema integral de gestión médica desarrollado con **Spring Boot 3.5.4** y ar
 
 **Desarrollador Principal:**
 - **Santiago Suaza Cardona**
-- Horario: Martes - Jueves 8:00-10:00
 
 ## 🛠️ Tecnologías Utilizadas
 
