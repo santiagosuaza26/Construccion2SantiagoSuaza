@@ -4,10 +4,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import app.domain.factory.OrderFactory;
+import app.domain.port.ClinicalHistoryRepository;
+import app.domain.port.DiagnosticTestRepository;
+import app.domain.port.MedicationRepository;
+import app.domain.port.OrderHeaderRepository;
+import app.domain.port.OrderItemRepository;
 import app.domain.port.PatientRepository;
+import app.domain.port.ProcedureTypeRepository;
+import app.domain.port.SpecialtyRepository;
 import app.domain.port.UserRepository;
 import app.domain.services.AdministrativeService;
 import app.domain.services.AuthenticationService;
+import app.domain.services.BillingService;
+import app.domain.services.DoctorService;
+import app.domain.services.HumanResourcesService;
+import app.domain.services.InsuranceCalculationService;
+import app.domain.services.InventoryService;
+import app.domain.services.NurseService;
+import app.domain.services.OrderValidationService;
 import app.domain.services.PatientValidationService;
 import app.domain.services.PatientVisitService;
 
@@ -43,13 +58,69 @@ public class ServiceConfiguration {
 
         @Bean
         public AuthenticationService authenticationService(UserRepository userRepository,
-                                                         PatientRepository patientRepository) {
+                                                            PatientRepository patientRepository) {
             return new AuthenticationService(userRepository, patientRepository);
         }
 
         @Bean
         public PatientVisitService patientVisitService(app.domain.port.PatientVisitRepository patientVisitRepository) {
             return new PatientVisitService(patientVisitRepository);
+        }
+
+        @Bean
+        public OrderFactory orderFactory(OrderHeaderRepository orderHeaderRepository) {
+            return new OrderFactory(orderHeaderRepository);
+        }
+
+        @Bean
+        public HumanResourcesService humanResourcesService(UserRepository userRepository) {
+            return new HumanResourcesService(userRepository);
+        }
+
+        @Bean
+        public InsuranceCalculationService insuranceCalculationService() {
+            return new InsuranceCalculationService();
+        }
+
+        @Bean
+        public BillingService billingService(app.domain.port.InvoiceRepository invoiceRepository,
+                                            app.domain.port.OrderItemRepository orderItemRepository,
+                                            app.domain.port.PatientRepository patientRepository,
+                                            InsuranceCalculationService insuranceCalculationService) {
+            return new BillingService(invoiceRepository, orderItemRepository, patientRepository, insuranceCalculationService);
+        }
+
+        @Bean
+        public InventoryService inventoryService(MedicationRepository medicationRepository,
+                                                ProcedureTypeRepository procedureTypeRepository,
+                                                DiagnosticTestRepository diagnosticTestRepository,
+                                                SpecialtyRepository specialtyRepository) {
+            return new InventoryService(medicationRepository, procedureTypeRepository,
+                                        diagnosticTestRepository, specialtyRepository);
+        }
+
+        @Bean
+        public OrderValidationService orderValidationService() {
+            return new OrderValidationService();
+        }
+
+        @Bean
+        public NurseService nurseService(ClinicalHistoryRepository clinicalHistoryRepository) {
+            return new NurseService(clinicalHistoryRepository);
+        }
+
+        @Bean
+        public DoctorService doctorService(OrderHeaderRepository orderHeaderRepository,
+                                            OrderItemRepository orderItemRepository,
+                                            ClinicalHistoryRepository clinicalHistoryRepository,
+                                            MedicationRepository medicationRepository,
+                                            ProcedureTypeRepository procedureTypeRepository,
+                                            DiagnosticTestRepository diagnosticTestRepository,
+                                            SpecialtyRepository specialtyRepository,
+                                            OrderValidationService orderValidationService) {
+            return new DoctorService(orderHeaderRepository, orderItemRepository, clinicalHistoryRepository,
+                                    medicationRepository, procedureTypeRepository, diagnosticTestRepository,
+                                    specialtyRepository, orderValidationService);
         }
     }
 
@@ -78,13 +149,23 @@ public class ServiceConfiguration {
 
         @Bean
         public AuthenticationService authenticationService(UserRepository userRepository,
-                                                         PatientRepository patientRepository) {
+                                                            PatientRepository patientRepository) {
             return new AuthenticationService(userRepository, patientRepository);
         }
 
         @Bean
         public PatientVisitService patientVisitService(app.domain.port.PatientVisitRepository patientVisitRepository) {
             return new PatientVisitService(patientVisitRepository);
+        }
+
+        @Bean
+        public OrderFactory orderFactory(OrderHeaderRepository orderHeaderRepository) {
+            return new OrderFactory(orderHeaderRepository);
+        }
+
+        @Bean
+        public HumanResourcesService humanResourcesService(UserRepository userRepository) {
+            return new HumanResourcesService(userRepository);
         }
     }
 
@@ -113,13 +194,23 @@ public class ServiceConfiguration {
 
         @Bean
         public AuthenticationService authenticationService(UserRepository userRepository,
-                                                         PatientRepository patientRepository) {
+                                                             PatientRepository patientRepository) {
             return new AuthenticationService(userRepository, patientRepository);
         }
 
         @Bean
         public PatientVisitService patientVisitService(app.domain.port.PatientVisitRepository patientVisitRepository) {
             return new PatientVisitService(patientVisitRepository);
+        }
+
+        @Bean
+        public OrderFactory orderFactory(OrderHeaderRepository orderHeaderRepository) {
+            return new OrderFactory(orderHeaderRepository);
+        }
+
+        @Bean
+        public HumanResourcesService humanResourcesService(UserRepository userRepository) {
+            return new HumanResourcesService(userRepository);
         }
     }
 }
