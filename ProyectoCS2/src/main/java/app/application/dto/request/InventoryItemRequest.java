@@ -6,9 +6,19 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class InventoryItemRequest {
-    
+
+    // Constantes para tipos de ítem
+    public static final String MEDICATION = "MEDICATION";
+    public static final String PROCEDURE = "PROCEDURE";
+    public static final String DIAGNOSTIC = "DIAGNOSTIC";
+    public static final String SPECIALTY = "SPECIALTY";
+
+    // Constantes para operaciones de stock
+    public static final String ADD_OPERATION = "ADD";
+    public static final String SUBTRACT_OPERATION = "SUBTRACT";
+
     @NotBlank(message = "Item type is required")
-    @Pattern(regexp = "MEDICATION|PROCEDURE|DIAGNOSTIC|SPECIALTY", 
+    @Pattern(regexp = MEDICATION + "|" + PROCEDURE + "|" + DIAGNOSTIC + "|" + SPECIALTY,
                 message = "Item type must be: MEDICATION, PROCEDURE, DIAGNOSTIC, or SPECIALTY")
     private String itemType;
     
@@ -31,7 +41,7 @@ public class InventoryItemRequest {
     // Para operaciones de actualización de stock
     private Integer stockChange;
     
-    @Pattern(regexp = "ADD|SUBTRACT", message = "Stock operation must be ADD or SUBTRACT")
+    @Pattern(regexp = ADD_OPERATION + "|" + SUBTRACT_OPERATION, message = "Stock operation must be ADD or SUBTRACT")
     private String stockOperation;
     
     // Default constructor
@@ -86,19 +96,19 @@ public class InventoryItemRequest {
     
     // Utility methods
     public boolean isMedication() {
-        return "MEDICATION".equals(itemType);
+        return MEDICATION.equals(itemType);
     }
-    
+
     public boolean isProcedure() {
-        return "PROCEDURE".equals(itemType);
+        return PROCEDURE.equals(itemType);
     }
-    
+
     public boolean isDiagnostic() {
-        return "DIAGNOSTIC".equals(itemType);
+        return DIAGNOSTIC.equals(itemType);
     }
-    
+
     public boolean isSpecialty() {
-        return "SPECIALTY".equals(itemType);
+        return SPECIALTY.equals(itemType);
     }
     
     public boolean isStockOperation() {
@@ -106,11 +116,11 @@ public class InventoryItemRequest {
     }
     
     public boolean isAddOperation() {
-        return "ADD".equals(stockOperation);
+        return ADD_OPERATION.equals(stockOperation);
     }
-    
+
     public boolean isSubtractOperation() {
-        return "SUBTRACT".equals(stockOperation);
+        return SUBTRACT_OPERATION.equals(stockOperation);
     }
     
     @Override
@@ -130,45 +140,41 @@ public class InventoryItemRequest {
     // Clases internas específicas para cada tipo de inventario
     public static class MedicationRequest extends InventoryItemRequest {
         public MedicationRequest() {
-            super();
-            setItemType("MEDICATION");
+            super(MEDICATION, "", "", "", 0L, 0);
         }
-        
+
         public MedicationRequest(String itemId, String name, String description, Long price, Integer stock) {
-            super("MEDICATION", itemId, name, description, price, stock);
+            super(MEDICATION, itemId, name, description, price, stock);
         }
     }
     
     public static class ProcedureRequest extends InventoryItemRequest {
         public ProcedureRequest() {
-            super();
-            setItemType("PROCEDURE");
+            super(PROCEDURE, "", "", "", 0L, null);
         }
-        
+
         public ProcedureRequest(String itemId, String name, String description, Long price) {
-            super("PROCEDURE", itemId, name, description, price);
+            super(PROCEDURE, itemId, name, description, price);
         }
     }
     
     public static class DiagnosticRequest extends InventoryItemRequest {
         public DiagnosticRequest() {
-            super();
-            setItemType("DIAGNOSTIC");
+            super(DIAGNOSTIC, "", "", "", 0L, null);
         }
-        
+
         public DiagnosticRequest(String itemId, String name, String description, Long price) {
-            super("DIAGNOSTIC", itemId, name, description, price);
+            super(DIAGNOSTIC, itemId, name, description, price);
         }
     }
     
     public static class SpecialtyRequest extends InventoryItemRequest {
         public SpecialtyRequest() {
-            super();
-            setItemType("SPECIALTY");
+            super(SPECIALTY, "", "", "", 0L, null);
         }
-        
+
         public SpecialtyRequest(String itemId, String name, String description) {
-            super("SPECIALTY", itemId, name, description, 0L);
+            super(SPECIALTY, itemId, name, description, 0L);
         }
     }
     
