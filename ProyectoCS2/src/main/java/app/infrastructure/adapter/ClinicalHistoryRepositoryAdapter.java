@@ -10,7 +10,6 @@ import app.domain.model.ClinicalHistoryEntry;
 import app.domain.port.ClinicalHistoryRepository;
 import app.infrastructure.adapter.entity.ClinicalHistoryDocument;
 import app.infrastructure.adapter.entity.ClinicalHistoryDocument.ClinicalHistoryEntryDocument;
-import app.infrastructure.adapter.entity.ClinicalHistoryDocument.VitalSignsDocument;
 import app.infrastructure.adapter.mapper.ClinicalHistoryMapper;
 import app.infrastructure.adapter.repository.ClinicalHistoryMongoRepository;
 

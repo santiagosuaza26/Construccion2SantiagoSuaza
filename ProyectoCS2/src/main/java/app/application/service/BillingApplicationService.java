@@ -182,7 +182,7 @@ public class BillingApplicationService {
     }
     
     public CommonResponse<List<InvoiceResponse>> getInvoiceHistory(String patientIdCard, Integer year, 
-                                                                  AuthenticatedUser currentUser) {
+                                                                    AuthenticatedUser currentUser) {
         try {
             if (!canViewInvoiceHistory(currentUser)) {
                 logUnauthorizedAccess(currentUser, "VIEW_INVOICE_HISTORY");
