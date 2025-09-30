@@ -65,4 +65,29 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
         // TODO: Implementar consulta personalizada para calcular promedio
         return 0.0;
     }
+
+    @Override
+    public java.util.Optional<Invoice> findById(String invoiceId) {
+        return springInvoiceRepository.findById(invoiceId)
+                .map(invoiceMapper::toDomain);
+    }
+
+    @Override
+    public List<Invoice> findByPatientIdCard(String patientIdCard) {
+        // Usar JpaRepository methods para buscar por patientIdCard
+        List<InvoiceEntity> entities = springInvoiceRepository.findAll().stream()
+                .filter(entity -> patientIdCard.equals(entity.getPatientIdCard()))
+                .toList();
+        return entities.stream()
+                .map(invoiceMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Invoice> findAll() {
+        List<InvoiceEntity> entities = springInvoiceRepository.findAll();
+        return entities.stream()
+                .map(invoiceMapper::toDomain)
+                .toList();
+    }
 }

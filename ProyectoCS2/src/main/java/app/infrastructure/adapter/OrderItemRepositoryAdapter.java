@@ -72,8 +72,55 @@ public class OrderItemRepositoryAdapter implements OrderItemRepository {
     }
 
     private OrderItem toDomain(OrderItemEntity entity) {
-        // TODO: Implementar conversión completa basada en el tipo de item
-        // Por ahora, retornar null para evitar errores de compilación
-        return null;
+        if (entity == null) {
+            return null;
+        }
+
+        try {
+            switch (entity.getType()) {
+                case "MEDICATION":
+                    return new MedicationOrderItem(
+                        entity.getOrderNumber(),
+                        entity.getItemNumber(),
+                        entity.getReferenceId() != null ? entity.getReferenceId() : "MED001",
+                        entity.getName(),
+                        entity.getDose() != null ? entity.getDose() : "1 tableta",
+                        entity.getFrequency() != null ? entity.getFrequency() : "Cada 8 horas",
+                        entity.getCost()
+                    );
+
+                case "PROCEDURE":
+                    return new ProcedureOrderItem(
+                        entity.getOrderNumber(),
+                        entity.getItemNumber(),
+                        entity.getReferenceId() != null ? entity.getReferenceId() : "PROC001",
+                        entity.getName(),
+                        entity.getQuantity(),
+                        entity.getFrequency() != null ? entity.getFrequency() : "Una vez",
+                        false, // specialistRequired
+                        null,  // specialtyId
+                        entity.getCost()
+                    );
+
+                case "DIAGNOSTIC":
+                    return new DiagnosticOrderItem(
+                        entity.getOrderNumber(),
+                        entity.getItemNumber(),
+                        entity.getReferenceId() != null ? entity.getReferenceId() : "DIAG001",
+                        entity.getName(),
+                        entity.getQuantity(),
+                        false, // specialistRequired
+                        null,  // specialtyId
+                        entity.getCost()
+                    );
+
+                default:
+                    throw new IllegalArgumentException("Tipo de ítem desconocido: " + entity.getType());
+            }
+        } catch (Exception e) {
+            // Log del error y retornar null para evitar fallos en cascada
+            System.err.println("Error convirtiendo OrderItemEntity a dominio: " + e.getMessage());
+            return null;
+        }
     }
 }

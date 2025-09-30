@@ -13,4 +13,9 @@ public interface InvoiceRepository {
     long count();
     long countInvoicesThisMonth();
     double getAverageInvoiceAmount();
+
+    // Métodos adicionales necesarios para el servicio
+    java.util.Optional<Invoice> findById(String invoiceId);
+    List<Invoice> findByPatientIdCard(String patientIdCard);
+    List<Invoice> findAll();
 }

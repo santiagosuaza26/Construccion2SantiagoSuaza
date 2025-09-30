@@ -38,14 +38,20 @@ public class OrderHeaderRepositoryAdapter implements OrderHeaderRepository {
 
     @Override
     public Optional<OrderHeader> findByNumber(String orderNumber) {
-        // TODO: Implementar consulta personalizada cuando se agregue el campo orderNumber a OrderHeaderEntity
-        // Por ahora, retornar vacío
-        return Optional.empty();
+        return springOrderHeaderRepository.findById(orderNumber)
+                .map(this::toDomain);
     }
 
     private OrderHeader toDomain(OrderHeaderEntity entity) {
-        // TODO: Implementar conversión completa de OrderHeaderEntity a OrderHeader
-        // Por ahora, retornar null para evitar errores de compilación
-        return null;
+        if (entity == null) {
+            return null;
+        }
+
+        return new OrderHeader(
+            entity.getOrderNumber(),
+            entity.getPatientIdCard(),
+            entity.getDoctorIdCard(),
+            entity.getCreationDate()
+        );
     }
 }
