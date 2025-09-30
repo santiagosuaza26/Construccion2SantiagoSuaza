@@ -1,0 +1,496 @@
+/* Sistema de Gestión Clínica CS2 - Diseño Responsivo */
+
+/* Breakpoints:
+   - xs: 0px - 575px (móviles pequeños)
+   - sm: 576px - 767px (móviles grandes)
+   - md: 768px - 991px (tabletas)
+   - lg: 992px - 1199px (escritorios pequeños)
+   - xl: 1200px+ (escritorios grandes)
+*/
+
+/* Móviles pequeños (xs) */
+@media (max-width: 575px) {
+    /* Header móvil */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        padding: 0 0.75rem;
+        z-index: 1000;
+    }
+
+    .header-left .logo span {
+        display: none;
+    }
+
+    .header-center {
+        display: none;
+    }
+
+    .user-info {
+        display: none;
+    }
+
+    .logout-btn span {
+        display: none;
+    }
+
+    .logout-btn {
+        padding: 0.5rem;
+        border-radius: 50%;
+    }
+
+    /* Sidebar móvil */
+    .sidebar {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 280px;
+        height: calc(100vh - 50px);
+        transform: translateX(-100%);
+        z-index: 999;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    /* Overlay para sidebar móvil */
+    .sidebar-overlay {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 50px);
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+        display: none;
+    }
+
+    .sidebar-overlay.show {
+        display: block;
+    }
+
+    /* Contenido principal móvil */
+    .main-content {
+        margin-left: 0;
+        margin-top: 50px;
+        padding: 1rem 0.75rem;
+        width: 100%;
+        min-height: calc(100vh - 50px);
+    }
+
+    /* Tarjetas del dashboard móvil */
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+
+    .card-number {
+        font-size: 1.5rem;
+    }
+
+    /* Secciones móviles */
+    .section-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .section-header h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Filtros móviles */
+    .filters {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .filters .search-box {
+        min-width: auto;
+    }
+
+    /* Tablas móviles */
+    .data-table {
+        overflow-x: auto;
+        border-radius: 0.5rem;
+    }
+
+    .data-table table {
+        min-width: 600px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    /* Modales móviles */
+    .modal {
+        padding: 0.5rem;
+        align-items: flex-end;
+    }
+
+    .modal-content {
+        max-height: 90vh;
+        border-radius: 1rem 1rem 0 0;
+        margin: 0;
+    }
+
+    .modal-header {
+        padding: 1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    .modal-actions {
+        flex-direction: column-reverse;
+        gap: 0.75rem;
+    }
+
+    /* Formulario de login móvil */
+    .login-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+        max-width: none;
+    }
+
+    .login-header h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Grid de reportes móvil */
+    .reports-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    /* Grid de signos vitales móvil */
+    .vitals-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    /* Estadísticas rápidas móvil */
+    .quick-stats {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    /* Pestañas móviles */
+    .inventory-tabs {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .tab-btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    /* Actividades recientes móvil */
+    .recent-activity {
+        padding: 1rem;
+    }
+
+    .activity-timeline {
+        padding-left: 1.5rem;
+    }
+
+    .activity-item::before {
+        left: -1.25rem;
+        width: 10px;
+        height: 10px;
+    }
+}
+
+/* Móviles grandes (sm) */
+@media (min-width: 576px) and (max-width: 767px) {
+    .main-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .section-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .data-table table {
+        min-width: 500px;
+    }
+
+    .modal-content {
+        max-width: 500px;
+    }
+}
+
+/* Tabletas (md) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .header-center {
+        max-width: 300px;
+        margin: 0 1rem;
+    }
+
+    .sidebar {
+        width: 240px;
+    }
+
+    .main-content {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+        padding: 1.5rem;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .reports-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Escritorios pequeños (lg) */
+@media (min-width: 992px) and (max-width: 1199px) {
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .reports-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Escritorios grandes (xl) */
+@media (min-width: 1200px) {
+    .dashboard-cards {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .reports-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .main-content {
+        padding: 2.5rem;
+    }
+}
+
+/* Utilidades responsivas */
+.mobile-only {
+    display: block;
+}
+
+.desktop-only {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+
+    .desktop-only {
+        display: block;
+    }
+}
+
+/* Ajustes para orientación landscape en móviles */
+@media (max-width: 767px) and (orientation: landscape) {
+    .modal {
+        align-items: center;
+    }
+
+    .modal-content {
+        max-height: 80vh;
+        border-radius: 1rem;
+    }
+}
+
+/* Impresión */
+@media print {
+    .header,
+    .sidebar,
+    .modal,
+    .btn-primary,
+    .btn-secondary {
+        display: none !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+    }
+
+    .data-table {
+        box-shadow: none !important;
+    }
+}
+
+/* Alto contraste para accesibilidad */
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: #000000;
+        --text-secondary: #000000;
+    }
+
+    .card {
+        border-width: 2px;
+    }
+
+    .nav-link.active {
+        background: #000000;
+        color: #ffffff;
+    }
+}
+
+/* Modo oscuro (si se implementa en el futuro) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #1f2937;
+        --bg-secondary: #111827;
+        --bg-tertiary: #374151;
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --border-color: #374151;
+        --border-light: #4b5563;
+    }
+
+    .login-container,
+    .card,
+    .data-table,
+    .modal-content,
+    .recent-activity,
+    .patient-info-card,
+    .history-entries,
+    #vital-signs-form,
+    #vitals-history {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+    }
+}
+
+/* Estados de carga responsivos */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    color: white;
+    padding: 2rem;
+}
+
+.loading-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+.loading-content h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 300;
+}
+
+.loading-bar {
+    width: min(300px, 80vw);
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.loading-progress {
+    height: 100%;
+    background: white;
+    border-radius: 2px;
+    animation: loading 2s ease-in-out infinite;
+}
+
+/* Animaciones responsivas */
+@keyframes mobileSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 575px) {
+    .modal-content {
+        animation: mobileSlideUp 0.3s ease-out;
+    }
+}
+
+/* Estados táctiles mejorados */
+@media (hover: none) and (pointer: coarse) {
+    .card:hover,
+    .report-card:hover {
+        transform: none;
+    }
+
+    .nav-link:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    /* Botones táctiles más grandes */
+    .btn-primary,
+    .btn-secondary,
+    .login-btn {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
+
+    .nav-link {
+        padding: 1rem 1.5rem;
+    }
+}
