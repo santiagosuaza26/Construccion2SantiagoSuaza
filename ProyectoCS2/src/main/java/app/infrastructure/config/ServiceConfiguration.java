@@ -111,16 +111,18 @@ public class ServiceConfiguration {
 
         @Bean
         public DoctorService doctorService(OrderHeaderRepository orderHeaderRepository,
-                                            OrderItemRepository orderItemRepository,
-                                            ClinicalHistoryRepository clinicalHistoryRepository,
-                                            MedicationRepository medicationRepository,
-                                            ProcedureTypeRepository procedureTypeRepository,
-                                            DiagnosticTestRepository diagnosticTestRepository,
-                                            SpecialtyRepository specialtyRepository,
-                                            OrderValidationService orderValidationService) {
+                                             OrderItemRepository orderItemRepository,
+                                             ClinicalHistoryRepository clinicalHistoryRepository,
+                                             MedicationRepository medicationRepository,
+                                             ProcedureTypeRepository procedureTypeRepository,
+                                             DiagnosticTestRepository diagnosticTestRepository,
+                                             SpecialtyRepository specialtyRepository,
+                                             OrderValidationService orderValidationService) {
+
+            System.out.println("Configurando DoctorService con repositorios disponibles");
             return new DoctorService(orderHeaderRepository, orderItemRepository, clinicalHistoryRepository,
-                                    medicationRepository, procedureTypeRepository, diagnosticTestRepository,
-                                    specialtyRepository, orderValidationService);
+                                     medicationRepository, procedureTypeRepository, diagnosticTestRepository,
+                                     specialtyRepository, orderValidationService);
         }
     }
 

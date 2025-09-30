@@ -1,18 +1,26 @@
 package app.infrastructure.adapter.web.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import app.application.dto.request.GenerateInvoiceRequest;
 import app.application.dto.response.CommonResponse;
 import app.application.dto.response.InvoiceResponse;
 import app.application.service.BillingApplicationService;
 import app.domain.model.Role;
 import app.domain.services.AuthenticationService.AuthenticatedUser;
-
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Controlador REST para funcionalidades de facturación
@@ -292,5 +300,13 @@ public class BillingController {
             return new AuthenticatedUser("12345678", "Mock User", Role.valueOf(roleString), true);
         }
         return new AuthenticatedUser(userId, "Mock User", Role.valueOf(roleString), true);
+    }
+
+    /**
+     * Endpoint de prueba simple para verificar que el controlador funciona
+     */
+    @GetMapping("/test")
+    public ResponseEntity<String> testEndpoint() {
+        return ResponseEntity.ok("Billing controller is working!");
     }
 }

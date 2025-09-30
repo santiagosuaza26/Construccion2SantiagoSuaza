@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -19,7 +18,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 @EnableJpaAuditing
 @EnableTransactionManagement
 @EnableAsync
-@EnableMongoRepositories(basePackages = "app.infrastructure.adapter.repository")
 public class ApplicationConfig implements WebMvcConfigurer {
 
     /**
