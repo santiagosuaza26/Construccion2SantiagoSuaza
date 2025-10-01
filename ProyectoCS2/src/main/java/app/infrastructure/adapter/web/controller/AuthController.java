@@ -17,24 +17,56 @@ import app.application.dto.response.CommonResponse;
 import app.application.service.AuthApplicationService;
 import jakarta.validation.Valid;
 
-/**
- * Controlador REST para manejo de autenticación
- *
- * Endpoints:
- * - POST /api/auth/login: Autenticar usuarios
- * - POST /api/auth/logout: Cerrar sesión
- * - GET /api/auth/me: Obtener información del usuario actual
- * - GET /api/auth/permissions: Verificar permisos
- */
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:4200"})
 public class AuthController {
 
+    // Constantes para códigos de error (resuelve problemas de SonarQube)
+    private static final String ERROR_CODE_UNAUTHORIZED = "AUTH_401";
+    private static final String ERROR_CODE_SERVER_ERROR = "AUTH_500";
+    private static final String ERROR_CODE_LOGOUT_SERVER_ERROR = "LOGOUT_500";
+    private static final String ERROR_CODE_ME_SERVER_ERROR = "ME_500";
+    private static final String ERROR_CODE_PERMISSIONS_SERVER_ERROR = "PERM_500";
+    private static final String ERROR_CODE_ACCESS_SERVER_ERROR = "ACCESS_500";
+    private static final String ERROR_CODE_HEALTH_ERROR = "HEALTH_ERROR";
+
+    // Constantes para mensajes de error
+    private static final String MESSAGE_USER_NOT_AUTHENTICATED = "Usuario no autenticado";
+    private static final String MESSAGE_SERVER_ERROR_LOGOUT = "Error interno del servidor durante logout";
+    private static final String MESSAGE_SERVER_ERROR_ME = "Error interno del servidor";
+    private static final String MESSAGE_SERVER_ERROR_PERMISSIONS = "Error verificando permisos";
+    private static final String MESSAGE_SERVER_ERROR_ACCESS = "Error verificando acceso a recurso";
+
     private final AuthApplicationService authApplicationService;
 
     public AuthController(AuthApplicationService authApplicationService) {
         this.authApplicationService = authApplicationService;
+    }
+
+    /**
+     * Valida si el usuario está autenticado
+     */
+    private boolean isUserAuthenticated(String userId) {
+        return userId != null;
+    }
+
+    /**
+     * Crea una respuesta de error de autenticación
+     */
+    private <T> ResponseEntity<CommonResponse<T>> createUnauthorizedResponse() {
+        CommonResponse<T> errorResponse = CommonResponse.error(
+            MESSAGE_USER_NOT_AUTHENTICATED, ERROR_CODE_UNAUTHORIZED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    /**
+     * Maneja errores internos del servidor de forma genérica
+     */
+    private <T> ResponseEntity<CommonResponse<T>> handleServerError(String message, String errorCode, Exception e) {
+        System.err.println("ERROR AuthController - " + message + ": " + e.getMessage());
+        CommonResponse<T> errorResponse = CommonResponse.error(message, errorCode);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @PostMapping("/login")
@@ -50,9 +82,8 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
         } catch (Exception e) {
-            CommonResponse<AuthResponse> errorResponse = CommonResponse.error(
-                "Error interno del servidor durante autenticación", "AUTH_500");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return handleServerError("Error interno del servidor durante autenticación",
+                ERROR_CODE_SERVER_ERROR, e);
         }
     }
 
@@ -61,15 +92,12 @@ public class AuthController {
             @RequestHeader(value = "User-ID", required = false) String userId) {
 
         try {
-            // Si no hay header, intentar obtener de token JWT (futuro)
             String actualUserId = userId != null ? userId : "unknown";
-
             CommonResponse<String> response = authApplicationService.logout(actualUserId);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            CommonResponse<String> errorResponse = CommonResponse.error(
-                "Error interno del servidor durante logout", "LOGOUT_500");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return handleServerError(MESSAGE_SERVER_ERROR_LOGOUT,
+                ERROR_CODE_LOGOUT_SERVER_ERROR, e);
         }
     }
 
@@ -77,14 +105,11 @@ public class AuthController {
     public ResponseEntity<CommonResponse<AuthResponse>> getCurrentUser(
             @RequestHeader(value = "User-ID", required = false) String userId) {
 
-        try {
-            // Si no hay header, intentar obtener de token JWT (futuro)
-            if (userId == null) {
-                CommonResponse<AuthResponse> errorResponse = CommonResponse.error(
-                    "Usuario no autenticado", "AUTH_401");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-            }
+        if (!isUserAuthenticated(userId)) {
+            return createUnauthorizedResponse();
+        }
 
+        try {
             CommonResponse<AuthResponse> response = authApplicationService.getCurrentUserInfo(userId);
 
             if (response.isSuccess()) {
@@ -93,9 +118,7 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
             }
         } catch (Exception e) {
-            CommonResponse<AuthResponse> errorResponse = CommonResponse.error(
-                "Error interno del servidor", "ME_500");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return handleServerError(MESSAGE_SERVER_ERROR_ME, ERROR_CODE_ME_SERVER_ERROR, e);
         }
     }
 
@@ -104,19 +127,16 @@ public class AuthController {
             @RequestHeader(value = "User-ID", required = false) String userId,
             @RequestParam String permission) {
 
-        try {
-            if (userId == null) {
-                CommonResponse<Boolean> errorResponse = CommonResponse.error(
-                    "Usuario no autenticado", "AUTH_401");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-            }
+        if (!isUserAuthenticated(userId)) {
+            return createUnauthorizedResponse();
+        }
 
+        try {
             CommonResponse<Boolean> response = authApplicationService.hasPermission(userId, permission);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            CommonResponse<Boolean> errorResponse = CommonResponse.error(
-                "Error verificando permisos", "PERM_500");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return handleServerError(MESSAGE_SERVER_ERROR_PERMISSIONS,
+                ERROR_CODE_PERMISSIONS_SERVER_ERROR, e);
         }
     }
 
@@ -126,27 +146,20 @@ public class AuthController {
             @RequestParam String resourceType,
             @RequestParam String action) {
 
-        try {
-            if (userId == null) {
-                CommonResponse<Boolean> errorResponse = CommonResponse.error(
-                    "Usuario no autenticado", "AUTH_401");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-            }
+        if (!isUserAuthenticated(userId)) {
+            return createUnauthorizedResponse();
+        }
 
+        try {
             CommonResponse<Boolean> response = authApplicationService.canAccessResource(
                 userId, resourceType, action);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            CommonResponse<Boolean> errorResponse = CommonResponse.error(
-                "Error verificando acceso a recurso", "ACCESS_500");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return handleServerError(MESSAGE_SERVER_ERROR_ACCESS,
+                ERROR_CODE_ACCESS_SERVER_ERROR, e);
         }
     }
 
-    /**
-     * Endpoint de health check para verificar que la aplicación está funcionando
-     * Accesible sin autenticación para verificar el estado del servidor
-     */
     @GetMapping("/health")
     public ResponseEntity<CommonResponse<String>> healthCheck() {
         try {
@@ -156,11 +169,8 @@ public class AuthController {
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            CommonResponse<String> errorResponse = CommonResponse.error(
-                "Health check failed: " + e.getMessage(),
-                "HEALTH_ERROR"
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return handleServerError("Health check failed: " + e.getMessage(),
+                ERROR_CODE_HEALTH_ERROR, e);
         }
     }
 }
