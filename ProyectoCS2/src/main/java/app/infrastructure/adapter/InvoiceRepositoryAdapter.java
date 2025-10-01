@@ -90,4 +90,11 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
                 .map(invoiceMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public java.util.Optional<Invoice> findByInvoiceNumber(String invoiceNumber) {
+        // Buscar por invoiceId que corresponde al número de factura
+        return springInvoiceRepository.findById(invoiceNumber)
+                .map(invoiceMapper::toDomain);
+    }
 }

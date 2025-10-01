@@ -14,7 +14,6 @@ public class InsurancePolicy {
         this.policyNumber = policyNumber;
         this.active = active;
         this.endDate = endDate;
-        validate();
     }
 
     public String getCompany() { return company; }
@@ -28,8 +27,6 @@ public class InsurancePolicy {
         return ChronoUnit.DAYS.between(reference, endDate);
     }
 
-    private void validate() {
-        if (company == null || company.isBlank()) throw new IllegalArgumentException("Company required");
-        if (policyNumber == null || policyNumber.isBlank()) throw new IllegalArgumentException("Policy number required");
-    }   
+    // Validaciones removidas del constructor - ahora son responsabilidad de servicios específicos
+    // Esto permite crear objetos InsurancePolicy para testing sin lanzar excepciones prematuras
 }

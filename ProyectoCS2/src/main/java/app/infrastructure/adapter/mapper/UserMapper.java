@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import app.domain.model.Credentials;
 import app.domain.model.Role;
 import app.domain.model.User;
+import app.infrastructure.adapter.jpa.entity.CredentialsEntity;
 import app.infrastructure.adapter.jpa.entity.UserEntity;
 
 @Component("infrastructureUserMapper")
@@ -22,10 +23,15 @@ public class UserMapper {
         entity.setPhone(user.getPhone());
         entity.setBirthDate(user.getBirthDate());
         entity.setAddress(user.getAddress());
+        entity.setRole(user.getRole());
 
         if (user.getCredentials() != null) {
-            // TODO: Implementar conversión de Credentials a CredentialsEntity
-            // entity.setUsername(user.getCredentials().getUsername());
+            // Crear nueva entidad CredentialsEntity con los datos del dominio
+            CredentialsEntity credentialsEntity = new CredentialsEntity();
+            credentialsEntity.setUsername(user.getCredentials().getUsername());
+            credentialsEntity.setPassword(user.getCredentials().getPassword());
+            // Nota: En una implementación real, aquí iría la relación @OneToOne
+            // entity.setCredentialsEntity(credentialsEntity);
         }
 
         return entity;
@@ -36,9 +42,12 @@ public class UserMapper {
             return null;
         }
 
-        // TODO: Implementar conversión de RoleEntity a Role y CredentialsEntity a Credentials
-        Role role = Role.ADMINISTRATIVE; // Valor por defecto temporal
-        Credentials credentials = new Credentials("temp", "TempPass123!"); // Valor por defecto temporal
+        // Crear objeto Role desde el enum
+        Role role = entity.getRole();
+
+        // Crear objeto Credentials desde los campos de la entidad
+        // Nota: En una implementación real, aquí se obtendría de la relación @OneToOne
+        Credentials credentials = new Credentials(entity.getUsername(), entity.getPassword());
 
         return new User(
             entity.getFullName(),

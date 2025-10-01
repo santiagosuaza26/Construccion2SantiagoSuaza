@@ -2,6 +2,7 @@ package app.domain.port;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import app.domain.model.Invoice;
 
@@ -15,7 +16,10 @@ public interface InvoiceRepository {
     double getAverageInvoiceAmount();
 
     // Métodos adicionales necesarios para el servicio
-    java.util.Optional<Invoice> findById(String invoiceId);
+    Optional<Invoice> findById(String invoiceId);
     List<Invoice> findByPatientIdCard(String patientIdCard);
     List<Invoice> findAll();
+    
+    // Método agregado para BillingService
+    Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
 }

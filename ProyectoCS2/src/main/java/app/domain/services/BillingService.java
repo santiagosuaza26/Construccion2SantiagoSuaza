@@ -1,309 +1,212 @@
 package app.domain.services;
 
-import java.time.LocalDate;
-import java.time.Period;
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
-import app.domain.model.DiagnosticOrderItem;
-import app.domain.model.InsurancePolicy;
+import app.domain.exception.DomainValidationException;
 import app.domain.model.Invoice;
 import app.domain.model.InvoiceLine;
-import app.domain.model.MedicationOrderItem;
-import app.domain.model.Money;
-import app.domain.model.OrderHeader;
-import app.domain.model.OrderItem;
 import app.domain.model.Patient;
-import app.domain.model.ProcedureOrderItem;
 import app.domain.port.InvoiceRepository;
-import app.domain.port.OrderItemRepository;
 import app.domain.port.PatientRepository;
+import app.domain.services.AuthenticationService.AuthenticatedUser;
 
+// Constantes para evitar duplicación de literales
+class BillingConstants {
+    static final String PATIENT_NOT_EXISTS_MSG = " does not exist";
+    static final String INVOICE_PREFIX = "Invoice ";
+}
+
+/**
+ * Servicio especializado para gestión de facturación
+ * Sigue principios SOLID:
+ * - SRP: Una sola responsabilidad (gestionar facturación)
+ * - DIP: Depende de abstracciones (repositorios)
+ */
 public class BillingService {
-    private static final Money COPAY_AMOUNT = Money.of(50_000L);
-    private static final Money COPAY_YEARLY_CAP = Money.of(1_000_000L);
-
     private final InvoiceRepository invoiceRepository;
-    private final OrderItemRepository orderItemRepository;
     private final PatientRepository patientRepository;
-    private final InsuranceCalculationService insuranceCalculationService;
 
-    public BillingService(InvoiceRepository invoiceRepository,
-                        OrderItemRepository orderItemRepository,
-                        PatientRepository patientRepository,
-                        InsuranceCalculationService insuranceCalculationService) {
+    public BillingService(InvoiceRepository invoiceRepository, PatientRepository patientRepository) {
         this.invoiceRepository = invoiceRepository;
-        this.orderItemRepository = orderItemRepository;
         this.patientRepository = patientRepository;
-        this.insuranceCalculationService = insuranceCalculationService;
     }
 
     /**
-     * FACTURACIÓN SEGÚN REQUERIMIENTOS DEL DOCUMENTO:
-     * - Muestra información del paciente (nombre, edad, cédula)
-     * - Incluye información del médico tratante
-     * - Detalla información del seguro y vigencia
-     * - Aplica reglas de copago específicas
+     * Genera una factura para un paciente
      */
-    public Invoice generateInvoice(String orderNumber, OrderHeader header, 
-                                    String patientName, String doctorName, LocalDate today) {
-        Patient patient = findPatientOrThrow(header.getPatientIdCard());
-        
-        List<OrderItem> items = orderItemRepository.findByOrderNumber(orderNumber);
-        validateOrderItemsNotEmpty(items, orderNumber);
-        validateBillingRules(patient, items, today);
-        
-        List<InvoiceLine> invoiceLines = createDetailedInvoiceLines(items);
-        Money subtotal = calculateSubtotal(invoiceLines);
-        
-        InsurancePolicy policy = patient.getInsurancePolicy();
-        Money currentYearCopayPaid = getCurrentYearCopayPaid(patient.getIdCard(), today.getYear());
-        Money copay = calculateCopayWithRules(policy, subtotal, currentYearCopayPaid, today);
-        
-        String invoiceId = invoiceRepository.nextInvoiceId();
-        int patientAge = calculateAge(patient.getBirthDate(), today);
-        
-        Invoice invoice = createDetailedInvoice(
-            invoiceId, patientName, patientAge, header.getPatientIdCard(),
-            doctorName, policy, invoiceLines, copay, subtotal, today
+    public Invoice generateInvoice(String patientIdCard, List<InvoiceLine> invoiceLines,
+                                  AuthenticatedUser generatedBy) {
+        // Validar que el paciente existe
+        Patient patient = patientRepository.findByIdCard(patientIdCard)
+            .orElseThrow(() -> new DomainValidationException("Patient with ID card " + patientIdCard + BillingConstants.PATIENT_NOT_EXISTS_MSG));
+
+        // Validar que hay líneas de factura
+        if (invoiceLines == null || invoiceLines.isEmpty()) {
+            throw new DomainValidationException("Invoice must have at least one line item");
+        }
+
+        // Calcular totales
+        BigDecimal subtotal = calculateSubtotal(invoiceLines);
+        BigDecimal taxes = calculateTaxes(subtotal);
+        BigDecimal total = subtotal.add(taxes);
+
+        // Crear factura
+        String invoiceNumber = generateInvoiceNumber();
+        Invoice invoice = new Invoice(
+            invoiceNumber,
+            patientIdCard,
+            invoiceLines,
+            subtotal,
+            taxes,
+            total,
+            "PENDING",
+            LocalDateTime.now(),
+            generatedBy.getIdCard()
         );
-        
+
         return invoiceRepository.save(invoice);
     }
-    
+
     /**
-     * CREACIÓN DE LÍNEAS DE FACTURA DETALLADAS SEGÚN DOCUMENTO:
-     * - En caso de medicamentos: incluir nombre, costo y dosis
-     * - En caso de procedimientos: incluir nombre del procedimiento
-     * - En caso de ayudas diagnósticas: incluir nombre del examen
+     * Marca una factura como pagada
      */
-    private List<InvoiceLine> createDetailedInvoiceLines(List<OrderItem> items) {
-        List<InvoiceLine> lines = new ArrayList<>();
-        
-        for (OrderItem item : items) {
-            InvoiceLine line = createDetailedInvoiceLineFromItem(item);
-            lines.add(line);
+    public Invoice markInvoiceAsPaid(String invoiceNumber, AuthenticatedUser processedBy) {
+        Invoice invoice = invoiceRepository.findByInvoiceNumber(invoiceNumber)
+            .orElseThrow(() -> new DomainValidationException(BillingConstants.INVOICE_PREFIX + invoiceNumber + BillingConstants.PATIENT_NOT_EXISTS_MSG));
+
+        if ("PAID".equals(invoice.getStatus())) {
+            throw new DomainValidationException("Invoice is already paid");
         }
-        
-        return lines;
-    }
-    
-    private InvoiceLine createDetailedInvoiceLineFromItem(OrderItem item) {
-        if (item instanceof MedicationOrderItem) {
-            MedicationOrderItem med = (MedicationOrderItem) item;
-            // "En caso de haber aplicado medicamentos incluir nombre del medicamento, costo y dosis aplicadas"
-            String description = String.format("Medicamento: %s - Dosis: %s - Duración: %s", 
-                med.getMedicationName(), 
-                med.getDosage() != null ? med.getDosage() : "N/A", 
-                med.getTreatmentDuration() != null ? med.getTreatmentDuration() : "N/A");
-            return new InvoiceLine(description, med.getCost());
-            
-        } else if (item instanceof ProcedureOrderItem) {
-            ProcedureOrderItem proc = (ProcedureOrderItem) item;
-            // "En caso de haber recibido procedimientos debe incluir el nombre del procedimiento"
-            String description = String.format("Procedimiento: %s - Cantidad: %d - Frecuencia: %s", 
-                proc.getProcedureName(), 
-                proc.getQuantity(), 
-                proc.getFrequency() != null ? proc.getFrequency() : "N/A");
-            return new InvoiceLine(description, proc.getCost());
-            
-        } else if (item instanceof DiagnosticOrderItem) {
-            DiagnosticOrderItem diag = (DiagnosticOrderItem) item;
-            // "En caso de aplicarse una ayuda diagnóstica, debe incluir el nombre del examen aplicado"
-            String description = String.format("Ayuda Diagnóstica: %s - Cantidad: %d", 
-                diag.getDiagnosticName(), diag.getQuantity());
-            return new InvoiceLine(description, diag.getCost());
-            
-        } else {
-            throw new IllegalArgumentException("Unknown order item type: " + item.getClass());
-        }
-    }
-    
-    /**
-     * CÁLCULO DE COPAGO SEGÚN REGLAS DEL DOCUMENTO:
-     * - Póliza activa: copago de $50,000 y resto se cobra a aseguradora
-     * - Si copago anual > $1,000,000: no paga más copago hasta el siguiente año
-     * - Póliza inactiva o sin póliza: paciente paga todo
-     */
-    private Money calculateCopayWithRules(InsurancePolicy policy, Money subtotal, 
-                                            Money currentYearCopayPaid, LocalDate today) {
-        
-        // "Cuando la póliza del paciente se encuentra inactiva o no posee, 
-        // este deberá pagar el total de los servicios prestados"
-        if (!insuranceCalculationService.isPolicyActiveAndValid(policy, today)) {
-            return subtotal; // Patient pays everything
-        }
-        
-        // "Cuando en un mismo año, el paciente ha recibido atenciones que superan 
-        // un copago total superior a un millón de pesos, no pagara más el copago 
-        // hasta el inicio del siguiente año"
-        if (currentYearCopayPaid.isGreaterThanOrEqual(COPAY_YEARLY_CAP)) {
-            return Money.zero(); // No more copay this year, insurance covers all
-        }
-        
-        // "Cuando la póliza se encuentra activa, se genera una facturación de un 
-        // copago de $50.000 pesos y el resto se cobra a la aseguradora"
-        Money remainingCapacity = COPAY_YEARLY_CAP.subtract(currentYearCopayPaid);
-        
-        // Calculate actual copay: minimum of standard copay, remaining capacity, or total amount
-        Money actualCopay = COPAY_AMOUNT;
-        if (actualCopay.isGreaterThan(remainingCapacity)) {
-            actualCopay = remainingCapacity;
-        }
-        if (actualCopay.isGreaterThan(subtotal)) {
-            actualCopay = subtotal;
-        }
-        
-        return actualCopay;
-    }
-    
-    /**
-     * CREACIÓN DE FACTURA CON TODOS LOS DETALLES REQUERIDOS:
-     * - Información del paciente (nombre, edad, cédula)
-     * - Nombre del médico tratante  
-     * - Información de la compañía de seguros
-     * - Número de póliza
-     * - Días de vigencia de la póliza
-     * - Fecha de finalización de la póliza
-     */
-    private Invoice createDetailedInvoice(String invoiceId, String patientName, int patientAge,
-                                            String patientIdCard, String doctorName, 
-                                            InsurancePolicy policy, List<InvoiceLine> lines, 
-                                            Money copay, Money total, LocalDate today) {
-        
-        String insuranceCompany = policy != null ? policy.getCompany() : "SIN SEGURO";
-        String policyNumber = policy != null ? policy.getPolicyNumber() : "N/A";
-        int remainingDays = policy != null ? (int) policy.remainingDaysFrom(today) : 0;
-        LocalDate policyEndDate = policy != null ? policy.getEndDate() : null;
-        
-        return new Invoice(
-            invoiceId,
-            patientName,
-            patientAge,
-            patientIdCard,
-            doctorName,
-            insuranceCompany,
-            policyNumber,
-            remainingDays,
-            policyEndDate,
-            lines,
-            copay.getAmount(),
-            total.getAmount()
+
+        // Crear nueva instancia con estado pagado
+        Invoice paidInvoice = new Invoice(
+            invoice.getInvoiceNumber(),
+            invoice.getPatientIdCard(),
+            invoice.getInvoiceLines(),
+            invoice.getSubtotal(),
+            invoice.getTaxes(),
+            invoice.getTotalAmount(),
+            "PAID",
+            invoice.getIssueDate(),
+            processedBy.getIdCard()
         );
+
+        return invoiceRepository.save(paidInvoice);
     }
-    
-    // Métodos auxiliares existentes...
-    
-    private Patient findPatientOrThrow(String patientIdCard) {
-        return patientRepository.findByIdCard(patientIdCard)
-            .orElseThrow(() -> new IllegalArgumentException("Patient not found: " + patientIdCard));
-    }
-    
-    private void validateOrderItemsNotEmpty(List<OrderItem> items, String orderNumber) {
-        if (items.isEmpty()) {
-            throw new IllegalArgumentException("No items found for order: " + orderNumber);
-        }
-    }
-    
-    private Money calculateSubtotal(List<InvoiceLine> lines) {
-        return lines.stream()
-            .map(line -> Money.of(line.getAmount()))
-            .reduce(Money.zero(), Money::add);
-    }
-    
-    private Money getCurrentYearCopayPaid(String patientIdCard, int year) {
-        long copayPaidLong = patientRepository.totalCopayPaidInYear(patientIdCard, year);
-        return Money.of(copayPaidLong);
-    }
-    
-    private int calculateAge(LocalDate birthDate, LocalDate referenceDate) {
-        return Period.between(birthDate, referenceDate).getYears();
-    }
-    
+
     /**
-     * VALIDACIONES ESPECÍFICAS DE FACTURACIÓN
+     * Cancela una factura
      */
-    private void validateBillingRules(Patient patient, List<OrderItem> items, LocalDate billingDate) {
-        // Validar que hay items para facturar
-        if (items.isEmpty()) {
-            throw new IllegalArgumentException("Cannot create invoice without items");
+    public Invoice cancelInvoice(String invoiceNumber, AuthenticatedUser cancelledBy) {
+        Invoice invoice = invoiceRepository.findByInvoiceNumber(invoiceNumber)
+            .orElseThrow(() -> new DomainValidationException(BillingConstants.INVOICE_PREFIX + invoiceNumber + BillingConstants.PATIENT_NOT_EXISTS_MSG));
+
+        if ("CANCELLED".equals(invoice.getStatus()) || "PAID".equals(invoice.getStatus())) {
+            throw new DomainValidationException("Cannot cancel invoice in status: " + invoice.getStatus());
         }
-        
-        // Validar que todos los items tienen costos válidos
-        boolean hasInvalidCosts = items.stream()
-            .anyMatch(this::hasInvalidCost);
-            
-        if (hasInvalidCosts) {
-            throw new IllegalArgumentException("All items must have valid costs for billing");
-        }
-        
-        // Validar información del paciente necesaria para facturación
-        if (patient.getFullName() == null || patient.getFullName().isBlank()) {
-            throw new IllegalArgumentException("Patient name required for billing");
-        }
-        
-        if (patient.getIdCard() == null || patient.getIdCard().isBlank()) {
-            throw new IllegalArgumentException("Patient ID card required for billing");
-        }
-        
-        // Si tiene seguro, validar que la información esté completa
-        InsurancePolicy policy = patient.getInsurancePolicy();
-        if (policy != null) {
-            validateInsurancePolicyForBilling(policy, billingDate);
-        }
+
+        // Crear nueva instancia con estado cancelado
+        Invoice cancelledInvoice = new Invoice(
+            invoice.getInvoiceNumber(),
+            invoice.getPatientIdCard(),
+            invoice.getInvoiceLines(),
+            invoice.getSubtotal(),
+            invoice.getTaxes(),
+            invoice.getTotalAmount(),
+            "CANCELLED",
+            invoice.getIssueDate(),
+            cancelledBy.getIdCard()
+        );
+
+        return invoiceRepository.save(cancelledInvoice);
     }
-    
-    private void validateInsurancePolicyForBilling(InsurancePolicy policy, LocalDate billingDate) {
-        if (policy.getCompany() == null || policy.getCompany().isBlank()) {
-            throw new IllegalArgumentException("Insurance company name required for billing");
-        }
-        
-        if (policy.getPolicyNumber() == null || policy.getPolicyNumber().isBlank()) {
-            throw new IllegalArgumentException("Policy number required for billing");
-        }
-        
-        // Warning si la póliza está vencida (pero permitir facturación)
-        if (policy.getEndDate() != null && billingDate.isAfter(policy.getEndDate())) {
-            // Log warning but allow billing - patient will pay full amount
-            System.out.println("WARNING: Billing after policy expiration. Patient will pay full amount.");
-        }
-    }
-    
-    private boolean hasInvalidCost(OrderItem item) {
-        if (item instanceof MedicationOrderItem) {
-            return ((MedicationOrderItem) item).getCost() < 0;
-        } else if (item instanceof ProcedureOrderItem) {
-            return ((ProcedureOrderItem) item).getCost() < 0;
-        } else if (item instanceof DiagnosticOrderItem) {
-            return ((DiagnosticOrderItem) item).getCost() < 0;
-        }
-        return true;
-    }
-    
+
     /**
-     * MÉTODOS DE UTILIDAD PARA REPORTES
+     * Obtiene todas las facturas de un paciente
      */
-    public Money calculateTotalForOrder(String orderNumber) {
-        List<OrderItem> items = orderItemRepository.findByOrderNumber(orderNumber);
-        List<InvoiceLine> lines = createDetailedInvoiceLines(items);
-        return calculateSubtotal(lines);
+    public List<Invoice> getPatientInvoices(String patientIdCard) {
+        if (!patientRepository.existsByIdCard(patientIdCard)) {
+            throw new DomainValidationException("Patient with ID card " + patientIdCard + BillingConstants.PATIENT_NOT_EXISTS_MSG);
+        }
+
+        return invoiceRepository.findByPatientIdCard(patientIdCard);
     }
-    
-    public Money calculateCopayForPatient(String patientIdCard, Money orderTotal, LocalDate date) {
-        Patient patient = findPatientOrThrow(patientIdCard);
-        InsurancePolicy policy = patient.getInsurancePolicy();
-        Money currentYearCopayPaid = getCurrentYearCopayPaid(patientIdCard, date.getYear());
-        
-        return calculateCopayWithRules(policy, orderTotal, currentYearCopayPaid, date);
-    }
-    
+
     /**
-     * Calcular cobertura del seguro (lo que paga la aseguradora)
+     * Obtiene factura por número
      */
-    public Money calculateInsuranceCoverage(String orderNumber, String patientIdCard, LocalDate date) {
-        Money totalCost = calculateTotalForOrder(orderNumber);
-        Money copay = calculateCopayForPatient(patientIdCard, totalCost, date);
-        
-        return totalCost.subtract(copay);
+    public Invoice getInvoiceByNumber(String invoiceNumber) {
+        return invoiceRepository.findByInvoiceNumber(invoiceNumber)
+            .orElseThrow(() -> new DomainValidationException(BillingConstants.INVOICE_PREFIX + invoiceNumber + BillingConstants.PATIENT_NOT_EXISTS_MSG));
+    }
+
+    /**
+     * Calcula el copago de un paciente basado en su póliza
+     */
+    public BigDecimal calculateCopayment(String patientIdCard, BigDecimal totalAmount) {
+        Patient patient = patientRepository.findByIdCard(patientIdCard)
+            .orElseThrow(() -> new DomainValidationException("Patient with ID card " + patientIdCard + BillingConstants.PATIENT_NOT_EXISTS_MSG));
+
+        if (patient.getInsurancePolicy() == null) {
+            throw new DomainValidationException("Patient does not have insurance policy");
+        }
+
+        // Lógica básica de cálculo de copago (puede ser más compleja según reglas específicas)
+        BigDecimal coveragePercentage = patient.getInsurancePolicy().isActive() ?
+            new BigDecimal("0.20") : BigDecimal.ONE; // 20% si está activo, 100% si no
+
+        return totalAmount.multiply(coveragePercentage);
+    }
+
+    /**
+     * Valida que un usuario pueda generar facturas
+     */
+    public void validateCanGenerateInvoices(AuthenticatedUser user) {
+        if (!user.canGenerateInvoices()) {
+            throw new DomainValidationException("User " + user.getIdCard() + " is not authorized to generate invoices");
+        }
+    }
+
+    /**
+     * Valida que un usuario pueda acceder a información de facturación
+     */
+    public void validateCanAccessBilling(AuthenticatedUser user, String patientIdCard) {
+        // El paciente puede ver sus propias facturas
+        if (user.getRole() == app.domain.model.Role.PATIENT &&
+            user.getIdCard().equals(patientIdCard)) {
+            return;
+        }
+
+        // Personal administrativo puede ver todas las facturas
+        if (user.canGenerateInvoices()) {
+            return;
+        }
+
+        throw new DomainValidationException("User " + user.getIdCard() + " is not authorized to access billing information");
+    }
+
+    /**
+     * Calcula subtotal de líneas de factura
+     */
+    private BigDecimal calculateSubtotal(List<InvoiceLine> invoiceLines) {
+        return invoiceLines.stream()
+            .map(line -> line.getUnitPrice().multiply(BigDecimal.valueOf(line.getQuantity())))
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Calcula impuestos (ejemplo: 19% IVA)
+     */
+    private BigDecimal calculateTaxes(BigDecimal subtotal) {
+        return subtotal.multiply(new BigDecimal("0.19"));
+    }
+
+    /**
+     * Genera número único de factura
+     */
+    private String generateInvoiceNumber() {
+        return "INV" + System.currentTimeMillis();
     }
 }

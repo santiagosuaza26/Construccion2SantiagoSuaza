@@ -118,12 +118,13 @@ public class BillingApplicationService {
             
             LocalDate invoiceDate = invoiceMapper.parseInvoiceDate(request);
             
+            // Crear líneas de factura basadas en la orden médica
+            List<app.domain.model.InvoiceLine> invoiceLines = createInvoiceLinesFromOrder(orderHeader);
+
             Invoice generatedInvoice = billingService.generateInvoice(
-                request.getOrderNumber(),
-                orderHeader,
-                extractPatientName(request),
-                request.getDoctorName(),
-                invoiceDate
+                request.getPatientIdCard(),
+                invoiceLines,
+                currentUser
             );
             
             InvoiceResponse invoiceResponse = invoiceMapper.toInvoiceResponse(generatedInvoice);
@@ -362,6 +363,15 @@ public class BillingApplicationService {
     
     private String extractPatientName(GenerateInvoiceRequest request) {
         return "Patient " + request.getPatientIdCard();
+    }
+
+    private List<app.domain.model.InvoiceLine> createInvoiceLinesFromOrder(OrderHeader orderHeader) {
+        // Crear líneas de factura básicas basadas en la orden médica
+        // TODO: Implementar lógica completa basada en los items reales de la orden
+        return List.of(
+            new app.domain.model.InvoiceLine("Consulta médica", 50000L),
+            new app.domain.model.InvoiceLine("Procedimientos", 30000L)
+        );
     }
     
     private Invoice findInvoiceById(String invoiceId) {

@@ -84,10 +84,8 @@ public class ServiceConfiguration {
 
         @Bean
         public BillingService billingService(app.domain.port.InvoiceRepository invoiceRepository,
-                                            app.domain.port.OrderItemRepository orderItemRepository,
-                                            app.domain.port.PatientRepository patientRepository,
-                                            InsuranceCalculationService insuranceCalculationService) {
-            return new BillingService(invoiceRepository, orderItemRepository, patientRepository, insuranceCalculationService);
+                                            app.domain.port.PatientRepository patientRepository) {
+            return new BillingService(invoiceRepository, patientRepository);
         }
 
         @Bean

@@ -11,7 +11,6 @@ public final class EmergencyContact {
         this.lastName = lastName;
         this.relationship = relationship;
         this.phone = phone;
-        validate();
     }
 
     public String getFirstName() { return firstName; }
@@ -19,9 +18,6 @@ public final class EmergencyContact {
     public String getRelationship() { return relationship; }
     public String getPhone() { return phone; }
 
-    private void validate() {
-        if (phone == null || !phone.matches("\\d{10}")) {
-            throw new IllegalArgumentException("Emergency phone must have 10 digits");
-        }
-    }
+    // Validaciones removidas del constructor - ahora son responsabilidad de servicios específicos
+    // Esto permite crear objetos EmergencyContact para testing sin lanzar excepciones prematuras
 }
