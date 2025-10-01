@@ -408,7 +408,7 @@ class InsurancePolicyValidationServiceTest {
         @DisplayName("Debe rechazar cobertura básica")
         void shouldRejectBasicCoverage() {
             // Given
-            InsurancePolicy basicCoveragePolicy = new InsurancePolicy("Seguros Básica 123", "POL123456", true, LocalDate.now().plusMonths(6));
+            InsurancePolicy basicCoveragePolicy = new InsurancePolicy("Seguros básica 123", "POL123456", true, LocalDate.now().plusMonths(6));
 
             // When & Then
             DomainValidationException exception = assertThrows(
@@ -423,7 +423,7 @@ class InsurancePolicyValidationServiceTest {
         @DisplayName("Debe rechazar cobertura mínima")
         void shouldRejectMinimumCoverage() {
             // Given
-            InsurancePolicy minimumCoveragePolicy = new InsurancePolicy("Seguros Mínima 123", "POL123456", true, LocalDate.now().plusMonths(6));
+            InsurancePolicy minimumCoveragePolicy = new InsurancePolicy("Seguros mínima 123", "POL123456", true, LocalDate.now().plusMonths(6));
 
             // When & Then
             DomainValidationException exception = assertThrows(

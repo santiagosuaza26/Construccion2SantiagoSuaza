@@ -19,10 +19,10 @@ public class InsurancePolicyValidationService {
             throw new DomainValidationException("Insurance policy cannot be null");
         }
 
-        validateEndDate(insurancePolicy.getEndDate());
         validateCompany(insurancePolicy.getCompany());
         validatePolicyNumber(insurancePolicy.getPolicyNumber());
         validatePolicyStatus(insurancePolicy);
+        validateEndDate(insurancePolicy.getEndDate());
     }
 
     /**
@@ -122,6 +122,9 @@ public class InsurancePolicyValidationService {
         validateInsurancePolicy(insurancePolicy);
 
         // Validar que la póliza tenga cobertura para servicios básicos
+        // Nota: Esta validación es un ejemplo y puede ser implementada
+        // basado en criterios específicos del negocio como monto de cobertura,
+        // servicios incluidos, etc.
         if (insurancePolicy.getCompany() != null) {
             String company = insurancePolicy.getCompany().toLowerCase();
             if (company.contains("básica") || company.contains("mínima")) {

@@ -92,7 +92,7 @@ public class CredentialsValidationService {
         }
 
         if (newPassword == null || newPassword.isEmpty()) {
-            throw new DomainValidationException("New password is required");
+            throw new DomainValidationException("Password must be at least " + MIN_PASSWORD_LENGTH + " characters long");
         }
 
         validatePasswordStrength(newPassword);

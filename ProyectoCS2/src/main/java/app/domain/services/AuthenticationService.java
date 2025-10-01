@@ -150,8 +150,7 @@ public class AuthenticationService {
          * Solo el mismo paciente puede ver su propia información (para sistema de pacientes)
          */
         public boolean canAccessOwnPatientData(String patientIdCard) {
-            return (role == Role.PATIENT && this.idCard.equals(patientIdCard)) || 
-                    canAccessPatientData();
+            return role == Role.PATIENT && this.idCard.equals(patientIdCard);
         }
     }
 }
