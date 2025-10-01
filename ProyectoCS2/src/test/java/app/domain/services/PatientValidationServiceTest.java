@@ -49,6 +49,12 @@ class PatientValidationServiceTest {
     @DisplayName("Validaciones de datos básicos del paciente")
     class BasicPatientValidationTests {
 
+        private PatientValidationService validationService;
+
+        public BasicPatientValidationTests() {
+            this.validationService = new PatientValidationService(patientRepository);
+        }
+
         @Test
         @DisplayName("Debe validar paciente correctamente cuando todos los datos son válidos")
         void shouldValidatePatientSuccessfully() {
@@ -251,6 +257,241 @@ class PatientValidationServiceTest {
     }
 
     @Nested
+    @DisplayName("Validaciones de formato de datos")
+    class FormatValidationTests {
+
+        @Test
+        @DisplayName("Debe rechazar teléfono con formato inválido")
+        void shouldRejectInvalidPhoneFormat() {
+            // Given
+            Patient patientWithInvalidPhone = createPatientWithInvalidPhone();
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientForRegistration(patientWithInvalidPhone)
+            );
+
+            assertEquals("Patient phone must have exactly 10 digits", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Debe rechazar email con formato inválido")
+        void shouldRejectInvalidEmailFormat() {
+            // Given
+            Patient patientWithInvalidEmail = createPatientWithInvalidEmail();
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientForRegistration(patientWithInvalidEmail)
+            );
+
+            assertEquals("Invalid email format", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Debe rechazar dirección muy larga")
+        void shouldRejectAddressTooLong() {
+            // Given
+            Patient patientWithLongAddress = createPatientWithLongAddress();
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientForRegistration(patientWithLongAddress)
+            );
+
+            assertEquals("Patient address must be maximum 30 characters", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Debe aceptar email válido")
+        void shouldAcceptValidEmail() {
+            // Given
+            Patient patientWithValidEmail = createPatientWithValidEmail();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForRegistration(patientWithValidEmail));
+        }
+
+        @Test
+        @DisplayName("Debe aceptar teléfono válido")
+        void shouldAcceptValidPhone() {
+            // Given
+            Patient patientWithValidPhone = createPatientWithValidPhone();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForRegistration(patientWithValidPhone));
+        }
+    }
+
+    @Nested
+    @DisplayName("Validaciones de actualización")
+    class UpdateValidationTests {
+
+        @Test
+        @DisplayName("Debe validar paciente para actualización correctamente")
+        void shouldValidatePatientForUpdateSuccessfully() {
+            // Given
+            Patient existingPatient = createValidPatient();
+            Patient updatedPatient = createValidUpdatedPatient();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForUpdate(existingPatient, updatedPatient));
+        }
+
+        @Test
+        @DisplayName("Debe rechazar cambio de ID card durante actualización")
+        void shouldRejectIdCardChangeDuringUpdate() {
+            // Given
+            Patient existingPatient = createValidPatient();
+            Patient updatedPatient = createPatientWithDifferentIdCard();
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientForUpdate(existingPatient, updatedPatient)
+            );
+
+            assertEquals("Cannot change patient ID card during update", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("Debe validar unicidad para actualización correctamente")
+        void shouldValidateUniquenessForUpdateSuccessfully() {
+            // Given
+            String currentIdCard = "12345678";
+            String newIdCard = "87654321";
+            String username = "newuser";
+            when(patientRepository.existsByIdCard(newIdCard)).thenReturn(false);
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientUniquenessForUpdate(currentIdCard, newIdCard, username));
+        }
+
+        @Test
+        @DisplayName("Debe rechazar ID card duplicado durante actualización")
+        void shouldRejectDuplicateIdCardDuringUpdate() {
+            // Given
+            String currentIdCard = "12345678";
+            String newIdCard = "87654321";
+            String username = "newuser";
+            when(patientRepository.existsByIdCard(newIdCard)).thenReturn(true);
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientUniquenessForUpdate(currentIdCard, newIdCard, username)
+            );
+
+            assertEquals("Patient with ID card " + newIdCard + " already exists", exception.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("Validaciones de eliminación")
+    class RemovalValidationTests {
+
+        @Test
+        @DisplayName("Debe permitir eliminación cuando usuario tiene permisos")
+        void shouldAllowRemovalWhenUserHasPermissions() {
+            // Given
+            Patient patient = createValidPatient();
+            AuthenticatedUser authorizedUser = new AuthenticatedUser(
+                "admin001",
+                "Administrador",
+                Role.ADMINISTRATIVE,
+                true
+            );
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientCanBeRemoved(patient, authorizedUser));
+        }
+
+        @Test
+        @DisplayName("Debe rechazar eliminación cuando usuario no tiene permisos")
+        void shouldRejectRemovalWhenUserHasNoPermissions() {
+            // Given
+            Patient patient = createValidPatient();
+            AuthenticatedUser unauthorizedUser = new AuthenticatedUser(
+                "hr001",
+                "Recursos Humanos",
+                Role.HUMAN_RESOURCES,
+                true
+            );
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientCanBeRemoved(patient, unauthorizedUser)
+            );
+
+            assertEquals("User hr001 is not authorized to remove patients", exception.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("Casos extremos y edge cases")
+    class EdgeCasesTests {
+
+        @Test
+        @DisplayName("Debe manejar edad mínima válida (recién nacido)")
+        void shouldHandleMinimumValidAge() {
+            // Given
+            Patient newbornPatient = createNewbornPatient();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForRegistration(newbornPatient));
+        }
+
+        @Test
+        @DisplayName("Debe manejar edad máxima válida (150 años)")
+        void shouldHandleMaximumValidAge() {
+            // Given
+            Patient elderlyPatient = createElderlyPatient();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForRegistration(elderlyPatient));
+        }
+
+        @Test
+        @DisplayName("Debe manejar dirección null")
+        void shouldHandleNullAddress() {
+            // Given
+            Patient patientWithNullAddress = createPatientWithNullAddress();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForRegistration(patientWithNullAddress));
+        }
+
+        @Test
+        @DisplayName("Debe manejar email con caracteres especiales")
+        void shouldHandleEmailWithSpecialCharacters() {
+            // Given
+            Patient patientWithSpecialEmail = createPatientWithSpecialEmail();
+
+            // When & Then
+            assertDoesNotThrow(() -> validationService.validatePatientForRegistration(patientWithSpecialEmail));
+        }
+
+        @Test
+        @DisplayName("Debe rechazar teléfono con letras")
+        void shouldRejectPhoneWithLetters() {
+            // Given
+            Patient patientWithInvalidPhone = createPatientWithPhoneWithLetters();
+
+            // When & Then
+            PatientValidationException exception = assertThrows(
+                PatientValidationException.class,
+                () -> validationService.validatePatientForRegistration(patientWithInvalidPhone)
+            );
+
+            assertEquals("Patient phone must have exactly 10 digits", exception.getMessage());
+        }
+    }
+
+    @Nested
     @DisplayName("Validaciones de acceso y permisos")
     class AccessValidationTests {
 
@@ -288,7 +529,7 @@ class PatientValidationServiceTest {
                 () -> validationService.validatePatientAccess(patient, unauthorizedUser)
             );
 
-            assertEquals("User does not have permission to access patient data", exception.getMessage());
+            assertEquals("User hr001 is not authorized to access patient data", exception.getMessage());
         }
 
         @Test
@@ -319,7 +560,7 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             new InsurancePolicy("Seguros ABC", "POL123456", true, LocalDate.of(2025, 12, 31))
         );
@@ -327,14 +568,14 @@ class PatientValidationServiceTest {
 
     private Patient createPatientWithoutIdCard() {
         return new Patient(
-            null, // ID card nulo
+            null, // ID card nulo para probar validación de requerido
             "Juan Pérez García",
             LocalDate.of(1990, 5, 15),
             "masculino",
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -349,7 +590,7 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -364,7 +605,7 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -379,7 +620,7 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -394,7 +635,7 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -409,7 +650,7 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -420,11 +661,11 @@ class PatientValidationServiceTest {
             "12345678",
             "Juan Pérez García",
             LocalDate.of(1990, 5, 15),
-            "invalid_gender", // Género no permitido
+            "desconocido", // Género no permitido (no es masculino, femenino, ni otro)
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
             null
         );
@@ -439,8 +680,194 @@ class PatientValidationServiceTest {
             "Calle 123 #45-67",
             "1234567890",
             "juan.perez@email.com",
-            new Credentials("jperez", "password123"),
+            new Credentials("jperez", "Password123!"),
             new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    // Métodos auxiliares para validaciones de formato
+
+    private Patient createPatientWithInvalidPhone() {
+        return new Patient(
+            "12345678",
+            "Juan Pérez García",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "123456789", // Teléfono inválido (9 dígitos)
+            "juan.perez@email.com",
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithInvalidEmail() {
+        return new Patient(
+            "12345678",
+            "Juan Pérez García",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "1234567890",
+            "juan.perez@invalid", // Email inválido (sin dominio completo)
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithLongAddress() {
+        return new Patient(
+            "12345678",
+            "Juan Pérez García",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Esta es una dirección muy larga que excede los 30 caracteres permitidos", // Dirección muy larga
+            "1234567890",
+            "juan.perez@email.com",
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithValidEmail() {
+        return new Patient(
+            "12345678",
+            "Juan Pérez García",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "1234567890",
+            "test.email+tag@example-domain.co.uk", // Email válido complejo
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithValidPhone() {
+        return new Patient(
+            "12345678",
+            "Juan Pérez García",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "9876543210", // Teléfono válido diferente
+            "juan.perez@email.com",
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    // Métodos auxiliares para validaciones de actualización
+
+    private Patient createValidUpdatedPatient() {
+        return new Patient(
+            "12345678", // Mismo ID card
+            "Juan Pérez García López", // Nombre ligeramente diferente
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67 Apto 101", // Dirección ligeramente diferente
+            "1234567890",
+            "juan.perez@gmail.com", // Email diferente
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithDifferentIdCard() {
+        return new Patient(
+            "87654321", // ID card diferente
+            "Juan Pérez García",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "1234567890",
+            "juan.perez@email.com",
+            new Credentials("jperez", "Password123!"),
+            new EmergencyContact("María", "Pérez", "Hermana", "0987654321"),
+            null
+        );
+    }
+
+    // Métodos auxiliares para casos extremos
+
+    private Patient createNewbornPatient() {
+        return new Patient(
+            "12345678",
+            "Bebé Recién Nacido",
+            LocalDate.now().minusDays(1), // Nacido ayer
+            "otro",
+            "Hospital Clínica CS2",
+            "1234567890",
+            "bebe@test.com",
+            new Credentials("bebe123", "Password123!"),
+            new EmergencyContact("María", "Madre", "Madre", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createElderlyPatient() {
+        return new Patient(
+            "12345678",
+            "Paciente Centenario",
+            LocalDate.now().minusYears(150), // Exactamente 150 años
+            "femenino",
+            "Calle 123 #45-67",
+            "1234567890",
+            "centenario@test.com",
+            new Credentials("centenario", "Password123!"),
+            new EmergencyContact("Familia", "Contacto", "Familiar", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithNullAddress() {
+        return new Patient(
+            "12345678",
+            "Paciente Sin Dirección",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            null, // Dirección null
+            "1234567890",
+            "sindireccion@test.com",
+            new Credentials("sindir", "Password123!"),
+            new EmergencyContact("Contacto", "Emergencia", "Familiar", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithSpecialEmail() {
+        return new Patient(
+            "12345678",
+            "Paciente Email Especial",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "1234567890",
+            "test_email+special@domain-test.co.uk", // Email con caracteres especiales
+            new Credentials("special", "Password123!"),
+            new EmergencyContact("Contacto", "Especial", "Familiar", "0987654321"),
+            null
+        );
+    }
+
+    private Patient createPatientWithPhoneWithLetters() {
+        return new Patient(
+            "12345678",
+            "Paciente Teléfono Inválido",
+            LocalDate.of(1990, 5, 15),
+            "masculino",
+            "Calle 123 #45-67",
+            "123456789A", // Teléfono con letra
+            "telefono_invalido@test.com",
+            new Credentials("telefono", "Password123!"),
+            new EmergencyContact("Contacto", "Teléfono", "Familiar", "0987654321"),
             null
         );
     }

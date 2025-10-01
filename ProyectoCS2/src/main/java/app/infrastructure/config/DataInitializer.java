@@ -1,7 +1,6 @@
 package app.infrastructure.config;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,7 +152,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Paciente 1
         EmergencyContact emergencyContact1 = new EmergencyContact(
-            "María González", "Hermana", "3001234567", "Calle 123 #45-67"
+            "María", "González", "Hermana", "3001234567"
         );
 
         InsurancePolicy insurance1 = new InsurancePolicy(
@@ -174,7 +173,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Paciente 2
         EmergencyContact emergencyContact2 = new EmergencyContact(
-            "Carlos Rodríguez", "Esposo", "3109876543", "Carrera 67 #89-01"
+            "Carlos", "Rodríguez", "Esposo", "3109876543"
         );
 
         InsurancePolicy insurance2 = new InsurancePolicy(
@@ -195,7 +194,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // Paciente 3 (sin seguro)
         EmergencyContact emergencyContact3 = new EmergencyContact(
-            "Pedro Ramírez", "Padre", "3204567890", "Avenida 45 #23-56"
+            "Pedro", "Ramírez", "Padre", "3204567890"
         );
 
         RegisterPatientRequest patient3 = new RegisterPatientRequest(
