@@ -1,32 +1,29 @@
 package app.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Configuración Web simplificada para la aplicación
  *
- * Configura únicamente CORS sin conflictos con la configuración automática de Spring Boot.
+ * Configura únicamente recursos estáticos sin conflictos con CORS.
+ * La configuración CORS se maneja en CorsConfig.
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOriginPatterns("*") // Permite todos los orígenes para desarrollo
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Configurar recursos estáticos con menor prioridad que los endpoints API
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
 
-        // CORS específico para Postman y herramientas de testing
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+        registry.addResourceHandler("/public/**")
+                .addResourceLocations("classpath:/public/");
+
+        // Configurar recursos webjars si se utilizan
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }

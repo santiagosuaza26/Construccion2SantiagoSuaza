@@ -100,14 +100,14 @@ class ApiClient {
             const contentType = response.headers.get('content-type');
             let data;
 
-            if (contentType && contentType.includes('application/json')) {
+            if (contentType?.includes('application/json')) {
                 data = await response.json();
             } else {
                 data = await response.text();
             }
 
             if (!response.ok) {
-                throw new ApiError(response.status, data.message || data || 'Error en la petición', data);
+                throw new ApiError(response.status, data?.message || data || 'Error en la petición', data);
             }
 
             return data;
@@ -136,7 +136,7 @@ class ApiClient {
     isRetryableError(error) {
         return error.name === 'AbortError' ||
                error.name === 'TypeError' ||
-               error.message.includes('fetch');
+               error.message?.includes('fetch');
     }
 
     /**
@@ -445,7 +445,7 @@ const ApiUtils = {
                     message = 'Error interno del servidor';
                     break;
                 default:
-                    message = error.message || defaultMessage;
+                    message = error?.message || defaultMessage;
             }
         } else if (error.message === 'Error de conexión con el servidor') {
             message = 'No se puede conectar con el servidor. Verifique su conexión a internet.';
@@ -462,8 +462,21 @@ const ApiUtils = {
         // Crear elemento de notificación
         const notification = document.createElement('div');
         notification.className = `alert alert-${type}`;
+
+        // Determinar el ícono basado en el tipo de notificación
+        const getNotificationIcon = (notificationType) => {
+            switch (notificationType) {
+                case 'success':
+                    return 'check-circle';
+                case 'error':
+                    return 'exclamation-triangle';
+                default:
+                    return 'info-circle';
+            }
+        };
+
         notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+            <i class="fas fa-${getNotificationIcon(type)}"></i>
             ${message}
         `;
 
@@ -488,7 +501,7 @@ const ApiUtils = {
             notification.style.transform = 'translateX(100%)';
             notification.style.opacity = '0';
             setTimeout(() => {
-                if (notification.parentNode) {
+                if (notification.parentNode && notification.parentNode.contains(notification)) {
                     notification.parentNode.removeChild(notification);
                 }
             }, 300);
@@ -602,7 +615,7 @@ const AuthManager = {
     /**
      * Verifica si el usuario tiene permisos para una acción
      */
-    canAccess(resource, action) {
+    canAccess(resource, action = 'read') {
         if (!currentUser) return false;
 
         // Lógica básica de permisos por rol
@@ -614,7 +627,12 @@ const AuthManager = {
             SUPPORT: ['inventory', 'reports']
         };
 
-        return permissions[currentUser.role]?.includes(resource) || false;
+        // Verificar permisos básicos por rol
+        const hasResourceAccess = permissions[currentUser.role]?.includes(resource) || false;
+
+        // Para futuras implementaciones más granulares de permisos por acción
+        // Por ahora, si tiene acceso al recurso, tiene acceso a todas las acciones
+        return hasResourceAccess;
     }
 };
 
@@ -636,6 +654,15 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('unhandledrejection', function(event) {
         console.error('Unhandled promise rejection:', event.reason);
         ApiUtils.handleError(event.reason, 'Error inesperado en la aplicación');
+
+        // Prevenir que el error se propague más
+        event.preventDefault();
+    });
+
+    // Manejar errores de JavaScript no capturados
+    window.addEventListener('error', function(event) {
+        console.error('Unhandled error:', event.error);
+        ApiUtils.handleError(event.error, 'Error inesperado en la aplicación');
     });
 });
 

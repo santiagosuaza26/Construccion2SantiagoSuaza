@@ -55,13 +55,14 @@ public class DataInitializer implements CommandLineRunner {
         logger.info("Inicializando datos de prueba...");
 
         try {
-            // Crear usuario autenticado mock para operaciones administrativas
+            // Crear usuarios autenticados mock según las reglas de negocio
             AuthenticatedUser adminUser = new AuthenticatedUser("00000000", "Admin System", Role.ADMINISTRATIVE, true);
+            AuthenticatedUser supportUser = new AuthenticatedUser("11111111", "Support System", Role.SUPPORT, true);
 
-            // Inicializar datos en orden
+            // Inicializar datos en orden con usuarios apropiados según permisos
             initializeUsers(adminUser);
             initializePatients(adminUser);
-            initializeInventory(adminUser);
+            initializeInventory(supportUser); // Usar usuario SUPPORT para inventario
 
             logger.info("Datos de prueba inicializados exitosamente");
 

@@ -249,7 +249,7 @@ class InsurancePolicyValidationServiceTest {
                 () -> validationService.validateInsurancePolicy(policyWithPastDate)
             );
 
-            assertEquals("Policy end date cannot be in the past", exception.getMessage());
+            assertEquals("Active policy cannot have end date in the past", exception.getMessage());
         }
 
         @Test
@@ -408,7 +408,7 @@ class InsurancePolicyValidationServiceTest {
         @DisplayName("Debe rechazar cobertura básica")
         void shouldRejectBasicCoverage() {
             // Given
-            InsurancePolicy basicCoveragePolicy = new InsurancePolicy("Seguros básica 123", "POL123456", true, LocalDate.now().plusMonths(6));
+            InsurancePolicy basicCoveragePolicy = new InsurancePolicy("Seguros Cobertura Basica", "POL123456", true, LocalDate.now().plusMonths(6));
 
             // When & Then
             DomainValidationException exception = assertThrows(
@@ -423,7 +423,7 @@ class InsurancePolicyValidationServiceTest {
         @DisplayName("Debe rechazar cobertura mínima")
         void shouldRejectMinimumCoverage() {
             // Given
-            InsurancePolicy minimumCoveragePolicy = new InsurancePolicy("Seguros mínima 123", "POL123456", true, LocalDate.now().plusMonths(6));
+            InsurancePolicy minimumCoveragePolicy = new InsurancePolicy("Seguros Cobertura Minima", "POL123456", true, LocalDate.now().plusMonths(6));
 
             // When & Then
             DomainValidationException exception = assertThrows(

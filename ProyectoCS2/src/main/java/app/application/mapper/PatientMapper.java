@@ -499,7 +499,17 @@ public class PatientMapper {
         );
     }
 
-    public List<PatientResponse> toPatientResponseList(List<Patient> patients) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    /**
+     * Convierte lista de Patients → lista de PatientResponses
+     * Método adicional con nombre diferente para evitar conflictos
+     */
+    public List<PatientResponse> toPatientResponseListFromPatients(List<Patient> patients) {
+        if (patients == null) {
+            throw new IllegalArgumentException("Patient list cannot be null");
+        }
+
+        return patients.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 }

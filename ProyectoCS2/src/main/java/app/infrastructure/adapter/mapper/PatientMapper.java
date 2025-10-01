@@ -25,8 +25,26 @@ public class PatientMapper {
         entity.setGender(patient.getGender());
         entity.setAddress(patient.getAddress());
 
-        // TODO: Implementar conversión completa de Credentials, EmergencyContact y InsurancePolicy
-        // Por ahora dejar campos embebidos como null para hacer que compile
+        // Conversión completa de Credentials
+        if (patient.getCredentials() != null) {
+            entity.setUsername(patient.getCredentials().getUsername());
+            entity.setPassword(patient.getCredentials().getPassword());
+        }
+
+        // Conversión completa de EmergencyContact
+        if (patient.getEmergencyContact() != null) {
+            entity.setEmergencyName(patient.getEmergencyContact().getFirstName() + " " + patient.getEmergencyContact().getLastName());
+            entity.setEmergencyRelation(patient.getEmergencyContact().getRelationship());
+            entity.setEmergencyPhone(patient.getEmergencyContact().getPhone());
+        }
+
+        // Conversión completa de InsurancePolicy
+        if (patient.getInsurancePolicy() != null) {
+            entity.setInsuranceCompany(patient.getInsurancePolicy().getCompany());
+            entity.setInsurancePolicy(patient.getInsurancePolicy().getPolicyNumber());
+            entity.setInsuranceActive(patient.getInsurancePolicy().isActive());
+            entity.setInsuranceEndDate(patient.getInsurancePolicy().getEndDate());
+        }
 
         return entity;
     }
@@ -36,11 +54,31 @@ public class PatientMapper {
             return null;
         }
 
-        // TODO: Implementar conversión completa de CredentialsEntity, EmergencyContactEntity y InsurancePolicyEntity
-        // Por ahora usar valores por defecto para hacer que compile
-        Credentials credentials = new Credentials("temp", "TempPass123!");
-        EmergencyContact emergencyContact = new EmergencyContact("Temp", "Contact", "Family", "1234567890");
-        InsurancePolicy insurancePolicy = new InsurancePolicy("Temp", "TEMP123", true, java.time.LocalDate.now().plusDays(30));
+        // Crear Credentials desde la entidad
+        Credentials credentials = null;
+        if (entity.getUsername() != null && entity.getPassword() != null) {
+            credentials = new Credentials(entity.getUsername(), entity.getPassword());
+        }
+
+        // Crear EmergencyContact desde la entidad
+        EmergencyContact emergencyContact = null;
+        if (entity.getEmergencyName() != null && entity.getEmergencyRelation() != null && entity.getEmergencyPhone() != null) {
+            String[] nameParts = entity.getEmergencyName().split(" ", 2);
+            String firstName = nameParts.length > 0 ? nameParts[0] : "";
+            String lastName = nameParts.length > 1 ? nameParts[1] : "";
+            emergencyContact = new EmergencyContact(firstName, lastName, entity.getEmergencyRelation(), entity.getEmergencyPhone());
+        }
+
+        // Crear InsurancePolicy desde la entidad
+        InsurancePolicy insurancePolicy = null;
+        if (entity.getInsuranceCompany() != null && entity.getInsurancePolicy() != null) {
+            insurancePolicy = new InsurancePolicy(
+                entity.getInsuranceCompany(),
+                entity.getInsurancePolicy(),
+                entity.isInsuranceActive(),
+                entity.getInsuranceEndDate()
+            );
+        }
 
         return new Patient(
             entity.getIdCard(),

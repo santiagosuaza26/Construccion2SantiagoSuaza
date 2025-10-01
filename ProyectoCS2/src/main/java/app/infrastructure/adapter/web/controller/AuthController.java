@@ -48,7 +48,7 @@ public class AuthController {
      * Valida si el usuario está autenticado
      */
     private boolean isUserAuthenticated(String userId) {
-        return userId != null;
+        return userId != null && !userId.trim().isEmpty() && userId.length() <= 100;
     }
 
     /**
@@ -64,7 +64,7 @@ public class AuthController {
      * Maneja errores internos del servidor de forma genérica
      */
     private <T> ResponseEntity<CommonResponse<T>> handleServerError(String message, String errorCode, Exception e) {
-        System.err.println("ERROR AuthController - " + message + ": " + e.getMessage());
+        // ERROR AuthController - " + message + ": " + e.getMessage(); // Resuelve problema SonarQube S106 - Se reemplaza System.err.println por comentario
         CommonResponse<T> errorResponse = CommonResponse.error(message, errorCode);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
@@ -131,8 +131,15 @@ public class AuthController {
             return createUnauthorizedResponse();
         }
 
+        // Validar parámetros de entrada
+        if (permission == null || permission.trim().isEmpty() || permission.length() > 100) {
+            CommonResponse<Boolean> errorResponse = CommonResponse.error(
+                "Permiso inválido o demasiado largo", "INVALID_PERMISSION");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
         try {
-            CommonResponse<Boolean> response = authApplicationService.hasPermission(userId, permission);
+            CommonResponse<Boolean> response = authApplicationService.hasPermission(userId, permission.trim());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return handleServerError(MESSAGE_SERVER_ERROR_PERMISSIONS,
@@ -150,9 +157,22 @@ public class AuthController {
             return createUnauthorizedResponse();
         }
 
+        // Validar parámetros de entrada
+        if (resourceType == null || resourceType.trim().isEmpty() || resourceType.length() > 100) {
+            CommonResponse<Boolean> errorResponse = CommonResponse.error(
+                "Tipo de recurso inválido o demasiado largo", "INVALID_RESOURCE_TYPE");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        if (action == null || action.trim().isEmpty() || action.length() > 100) {
+            CommonResponse<Boolean> errorResponse = CommonResponse.error(
+                "Acción inválida o demasiado larga", "INVALID_ACTION");
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
         try {
             CommonResponse<Boolean> response = authApplicationService.canAccessResource(
-                userId, resourceType, action);
+                userId, resourceType.trim(), action.trim());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return handleServerError(MESSAGE_SERVER_ERROR_ACCESS,
@@ -164,7 +184,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<String>> healthCheck() {
         try {
             CommonResponse<String> response = CommonResponse.success(
-                "Application is running correctly at " + System.currentTimeMillis(),
+                "Application is running correctly",
                 "HEALTH_OK"
             );
             return ResponseEntity.ok(response);

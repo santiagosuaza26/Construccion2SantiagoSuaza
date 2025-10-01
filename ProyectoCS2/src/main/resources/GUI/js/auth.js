@@ -102,7 +102,6 @@ async function handleLogin(event) {
 
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-    const errorDiv = document.getElementById('login-error');
 
     // Validación básica
     if (!username || !password) {
@@ -143,7 +142,7 @@ async function handleLogin(event) {
             password: password
         });
 
-        if (response && response.success) {
+        if (response && response.success && response.data) {
             // Guardar sesión
             AuthManager.setSession(response.data.user, response.data.token);
 
@@ -165,12 +164,12 @@ async function handleLogin(event) {
 
         let errorMessage = 'Error al iniciar sesión';
 
-        if (error.message && error.message.includes('Error de conexión')) {
+        if (error?.message?.includes('Error de conexión')) {
             errorMessage = 'No se puede conectar con el servidor. Asegúrese de que el servidor esté ejecutándose en el puerto 8081.';
-        } else if (error.message && error.message.includes('fetch')) {
+        } else if (error?.message?.includes('fetch')) {
             errorMessage = 'Error de red. Verifique su conexión a internet y que el servidor esté activo.';
         } else {
-            errorMessage = error.message || 'Credenciales incorrectas o problema con el servidor.';
+            errorMessage = error?.message || 'Credenciales incorrectas o problema con el servidor.';
         }
 
         showLoginError(errorMessage);
@@ -305,14 +304,20 @@ function togglePassword() {
     const passwordField = document.getElementById('password');
     const toggleBtn = document.querySelector('.toggle-password i');
 
-    if (passwordField.type === 'password') {
-        passwordField.type = 'text';
-        toggleBtn.classList.remove('fa-eye');
-        toggleBtn.classList.add('fa-eye-slash');
-    } else {
-        passwordField.type = 'password';
-        toggleBtn.classList.remove('fa-eye-slash');
-        toggleBtn.classList.add('fa-eye');
+    if (passwordField) {
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            if (toggleBtn) {
+                toggleBtn.classList.remove('fa-eye');
+                toggleBtn.classList.add('fa-eye-slash');
+            }
+        } else {
+            passwordField.type = 'password';
+            if (toggleBtn) {
+                toggleBtn.classList.remove('fa-eye-slash');
+                toggleBtn.classList.add('fa-eye');
+            }
+        }
     }
 }
 
@@ -574,7 +579,8 @@ function handlePermissionError() {
 // Eventos de teclado para mejorar UX
 document.addEventListener('keydown', function(event) {
     // Enter en formulario de login
-    if (event.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') {
+    const loginScreen = document.getElementById('login-screen');
+    if (event.key === 'Enter' && loginScreen && loginScreen.style.display !== 'none') {
         const loginForm = document.getElementById('login-form');
         if (loginForm && !isLoggingIn) {
             handleLogin(event);

@@ -1,13 +1,12 @@
 package app.infrastructure.config;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -16,12 +15,14 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Configuración para desarrollo - orígenes específicos
+        // Configuración para desarrollo - orígenes específicos incluyendo herramientas de testing
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:3000",
             "http://localhost:8080",
+            "http://localhost:8081",
             "http://127.0.0.1:3000",
             "http://127.0.0.1:8080",
+            "http://127.0.0.1:8081",
             "https://tu-dominio.com", // Reemplazar con dominio real en producción
             "https://www.tu-dominio.com" // Reemplazar con dominio real en producción
         ));

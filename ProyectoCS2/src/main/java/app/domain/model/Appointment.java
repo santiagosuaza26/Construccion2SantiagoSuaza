@@ -20,8 +20,8 @@ public class Appointment {
     private final String createdBy;
 
     public Appointment(String id, String patientIdCard, String doctorIdCard,
-                      LocalDateTime appointmentDateTime, String appointmentType,
-                      String status, String notes, String createdBy) {
+                        LocalDateTime appointmentDateTime, String appointmentType,
+                        String status, String notes, String createdBy) {
         this.id = id;
         this.patientIdCard = patientIdCard;
         this.doctorIdCard = doctorIdCard;
