@@ -1,0 +1,1619 @@
+{
+  "info": {
+    "name": "Sistema de Gestión Clínica - API Collection",
+    "description": "Colección completa de endpoints para el Sistema de Gestión Clínica. Incluye todos los módulos: pacientes, usuarios, citas, visitas, órdenes médicas, registros médicos, inventario y facturación.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "admin",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "Admin123!@#",
+      "type": "string"
+    },
+    {
+      "key": "patient_cedula",
+      "value": "12345678",
+      "type": "string"
+    },
+    {
+      "key": "doctor_cedula",
+      "value": "87654321",
+      "type": "string"
+    },
+    {
+      "key": "appointment_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "order_number",
+      "value": "ORD001",
+      "type": "string"
+    },
+    {
+      "key": "patient_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏠 Información Pública",
+      "item": [
+        {
+          "name": "Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Endpoint raíz de la aplicación"
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "health"]
+            },
+            "description": "Verificar el estado de salud de la aplicación"
+          }
+        },
+        {
+          "name": "Welcome Message",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/welcome",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "welcome"]
+            },
+            "description": "Mensaje de bienvenida de la aplicación"
+          }
+        },
+        {
+          "name": "Application Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/public/info",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "info"]
+            },
+            "description": "Información general de la aplicación"
+          }
+        }
+      ],
+      "description": "Endpoints públicos que no requieren autenticación"
+    },
+    {
+      "name": "🔐 Autenticación",
+      "item": [
+        {
+          "name": "Iniciar Sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Iniciar sesión en el sistema y obtener token JWT",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Extraer token JWT de la respuesta",
+                    "if (pm.response.code === 200) {",
+                    "    const response = pm.response.json();",
+                    "    if (response.success && response.token) {",
+                    "        pm.environment.set('jwt_token', response.token);",
+                    "        console.log('Token JWT guardado:', response.token);",
+                    "        pm.test('Login exitoso y token guardado', function () {",
+                    "            pm.expect(response.success).to.be.true;",
+                    "            pm.expect(response.token).to.not.be.empty;",
+                    "        });",
+                    "    } else {",
+                    "        console.log('Error en login:', response.message);",
+                    "        pm.test('Login fallido', function () {",
+                    "            pm.expect(response.success).to.be.false;",
+                    "        });",
+                    "    }",
+                    "} else {",
+                    "    console.log('Error HTTP:', pm.response.code, pm.response.text());",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Cerrar Sesión",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Cerrar sesión del usuario actual",
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "// Limpiar token después del logout",
+                    "if (pm.response.code === 200) {",
+                    "    pm.environment.set('jwt_token', '');",
+                    "    console.log('Token limpiado después del logout');",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Verificar Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify"]
+            },
+            "description": "Verificar validez del token JWT actual"
+          }
+        },
+        {
+          "name": "Refrescar Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Refrescar token JWT antes de que expire"
+          }
+        }
+      ],
+      "description": "Gestión de autenticación y sesiones de usuario",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// Script específico para endpoints de autenticación",
+              "// No requieren token para login, pero sí para otras operaciones",
+              "if (pm.request.url.getPath().includes('/auth/login')) {",
+              "    console.log('Ejecutando login - no se requiere token');",
+              "} else if (pm.request.url.getPath().includes('/auth/')) {",
+              "    if (!pm.environment.get('jwt_token')) {",
+              "        console.log('Operación requiere autenticación. Ejecute login primero.');",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Gestión de Usuarios",
+      "item": [
+        {
+          "name": "Crear Usuario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"87654321\",\n  \"username\": \"doctor1\",\n  \"password\": \"Password123@\",\n  \"fullName\": \"Dr. Juan Pérez\",\n  \"birthDate\": \"15/03/1980\",\n  \"address\": \"Calle 123 #45-67\",\n  \"phoneNumber\": \"3001234567\",\n  \"email\": \"doctor@clinic.com\",\n  \"role\": \"DOCTOR\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Crear un nuevo usuario en el sistema"
+          }
+        },
+        {
+          "name": "Obtener Usuario por Cédula",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/cedula/{{doctor_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "cedula", "{{doctor_cedula}}"]
+            },
+            "description": "Obtener información de un usuario por su cédula"
+          }
+        },
+        {
+          "name": "Obtener Usuario por Username",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/username/doctor1",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "username", "doctor1"]
+            },
+            "description": "Obtener información de un usuario por su nombre de usuario"
+          }
+        },
+        {
+          "name": "Listar Todos los Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Obtener lista de todos los usuarios activos"
+          }
+        },
+        {
+          "name": "Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Dr. Juan Pérez García\",\n  \"address\": \"Calle 123 #45-67 Apto 301\",\n  \"phoneNumber\": \"3001234567\",\n  \"email\": \"doctor@clinic.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{doctor_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{doctor_cedula}}"]
+            },
+            "description": "Actualizar información de un usuario existente"
+          }
+        },
+        {
+          "name": "Eliminar Usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/cedula/{{doctor_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "cedula", "{{doctor_cedula}}"]
+            },
+            "description": "Eliminar un usuario del sistema"
+          }
+        },
+        {
+          "name": "Obtener Usuarios por Rol",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/role/DOCTOR",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "role", "DOCTOR"]
+            },
+            "description": "Obtener usuarios filtrados por rol específico"
+          }
+        },
+        {
+          "name": "Obtener Usuario por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/id/{{user_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "id", "{{user_id}}"]
+            },
+            "description": "Obtener información de un usuario por su ID"
+          }
+        },
+        {
+          "name": "Listar Usuarios Activos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "active"]
+            },
+            "description": "Obtener lista de usuarios activos"
+          }
+        },
+        {
+          "name": "Eliminar Usuario por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/id/{{user_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "id", "{{user_id}}"]
+            },
+            "description": "Eliminar un usuario del sistema por su ID"
+          }
+        },
+        {
+          "name": "Activar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{doctor_cedula}}/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{doctor_cedula}}", "activate"]
+            },
+            "description": "Activar un usuario en el sistema"
+          }
+        },
+        {
+          "name": "Desactivar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{doctor_cedula}}/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{doctor_cedula}}", "deactivate"]
+            },
+            "description": "Desactivar un usuario en el sistema"
+          }
+        },
+        {
+          "name": "Verificar Permisos - Ver Pacientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{doctor_cedula}}/can-view-patients",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{doctor_cedula}}", "can-view-patients"]
+            },
+            "description": "Verificar si el usuario puede ver pacientes"
+          }
+        },
+        {
+          "name": "Verificar Permisos - Gestionar Usuarios",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{doctor_cedula}}/can-manage-users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{doctor_cedula}}", "can-manage-users"]
+            },
+            "description": "Verificar si el usuario puede gestionar usuarios"
+          }
+        },
+        {
+          "name": "Verificar Permisos - Registrar Pacientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{doctor_cedula}}/can-register-patients",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{doctor_cedula}}", "can-register-patients"]
+            },
+            "description": "Verificar si el usuario puede registrar pacientes"
+          }
+        }
+      ],
+      "description": "Gestión completa de usuarios del sistema"
+    },
+    {
+      "name": "🏥 Gestión de Pacientes",
+      "item": [
+        {
+          "name": "Crear Paciente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cedula\": \"12345678\",\n  \"username\": \"paciente1\",\n  \"password\": \"Password123@\",\n  \"fullName\": \"María González\",\n  \"birthDate\": \"25/08/1990\",\n  \"gender\": \"FEMENINO\",\n  \"address\": \"Carrera 50 #25-30\",\n  \"phoneNumber\": \"3109876543\",\n  \"email\": \"maria@email.com\",\n  \"emergencyContact\": {\n    \"name\": \"Carlos González\",\n    \"phoneNumber\": \"3114567890\",\n    \"relationship\": \"HERMANO\"\n  },\n  \"insurancePolicy\": {\n    \"policyNumber\": \"POL001\",\n    \"companyName\": \"Seguros ABC\",\n    \"expirationDate\": \"31/12/2024\",\n    \"validityDays\": 365,\n    \"status\": \"ACTIVE\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"]
+            },
+            "description": "Crear un nuevo paciente con información completa"
+          }
+        },
+        {
+          "name": "Obtener Paciente por Cédula",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/cedula/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "cedula", "{{patient_cedula}}"]
+            },
+            "description": "Obtener información completa de un paciente"
+          }
+        },
+        {
+          "name": "Obtener Paciente con Contacto de Emergencia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/cedula/{{patient_cedula}}/emergency-contact",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "cedula", "{{patient_cedula}}", "emergency-contact"]
+            },
+            "description": "Obtener paciente incluyendo información de contacto de emergencia"
+          }
+        },
+        {
+          "name": "Listar Todos los Pacientes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients"]
+            },
+            "description": "Obtener lista de todos los pacientes"
+          }
+        },
+        {
+          "name": "Actualizar Paciente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"María González López\",\n  \"address\": \"Carrera 50 #25-30 Apto 201\",\n  \"phoneNumber\": \"3109876543\",\n  \"email\": \"maria@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patient_cedula}}"]
+            },
+            "description": "Actualizar información básica del paciente"
+          }
+        },
+        {
+          "name": "Verificar Seguro Activo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patient_cedula}}/has-active-insurance",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patient_cedula}}", "has-active-insurance"]
+            },
+            "description": "Verificar si el paciente tiene seguro médico activo"
+          }
+        },
+        {
+          "name": "Calcular Edad del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/{{patient_cedula}}/age",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "{{patient_cedula}}", "age"]
+            },
+            "description": "Calcular y obtener la edad actual del paciente"
+          }
+        },
+        {
+          "name": "Obtener Paciente por Username",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/username/paciente1",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "username", "paciente1"]
+            },
+            "description": "Obtener información de un paciente por su nombre de usuario"
+          }
+        },
+        {
+          "name": "Obtener Paciente por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/id/{{patient_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "id", "{{patient_id}}"]
+            },
+            "description": "Obtener información completa de un paciente por su ID"
+          }
+        },
+        {
+          "name": "Eliminar Paciente por ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patients/id/{{patient_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patients", "id", "{{patient_id}}"]
+            },
+            "description": "Eliminar un paciente del sistema por su ID"
+          }
+        }
+      ],
+      "description": "Gestión completa de pacientes y su información"
+    },
+    {
+      "name": "📅 Gestión de Citas",
+      "item": [
+        {
+          "name": "Crear Cita",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientCedula\": \"12345678\",\n  \"doctorCedula\": \"87654321\",\n  \"appointmentDateTime\": \"15/01/2024 10:30\",\n  \"consultationReason\": \"Consulta general\",\n  \"requiresSpecialistAssistance\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments"]
+            },
+            "description": "Crear una nueva cita médica"
+          }
+        },
+        {
+          "name": "Obtener Cita por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointment_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointment_id}}"]
+            },
+            "description": "Obtener detalles de una cita específica"
+          }
+        },
+        {
+          "name": "Obtener Citas por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/patient/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "patient", "{{patient_cedula}}"]
+            },
+            "description": "Obtener todas las citas de un paciente"
+          }
+        },
+        {
+          "name": "Obtener Citas por Doctor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/doctor/{{doctor_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "doctor", "{{doctor_cedula}}"]
+            },
+            "description": "Obtener todas las citas de un doctor"
+          }
+        },
+        {
+          "name": "Obtener Citas por Rango de Fechas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/daterange/01/01/2024/31/12/2024",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "daterange", "01/01/2024", "31/12/2024"]
+            },
+            "description": "Obtener citas en un rango de fechas específico"
+          }
+        },
+        {
+          "name": "Cancelar Cita",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointment_id}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointment_id}}", "cancel"]
+            },
+            "description": "Cancelar una cita programada"
+          }
+        },
+        {
+          "name": "Completar Cita",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointment_id}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointment_id}}", "complete"]
+            },
+            "description": "Marcar una cita como completada"
+          }
+        },
+        {
+          "name": "Eliminar Cita",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/{{appointment_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "{{appointment_id}}"]
+            },
+            "description": "Eliminar una cita del sistema"
+          }
+        },
+        {
+          "name": "Verificar Disponibilidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/doctor/{{doctor_cedula}}/availability/15/01/2024 10:30",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "doctor", "{{doctor_cedula}}", "availability", "15/01/2024 10:30"]
+            },
+            "description": "Verificar disponibilidad de un doctor en fecha y hora específica"
+          }
+        },
+        {
+          "name": "Estadísticas del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/patient/{{patient_cedula}}/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "patient", "{{patient_cedula}}", "statistics"]
+            },
+            "description": "Obtener estadísticas de citas de un paciente"
+          }
+        },
+        {
+          "name": "Próximas Citas del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointments/patient/{{patient_cedula}}/upcoming",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointments", "patient", "{{patient_cedula}}", "upcoming"]
+            },
+            "description": "Obtener próximas citas programadas de un paciente"
+          }
+        }
+      ],
+      "description": "Gestión completa de citas médicas"
+    },
+    {
+      "name": "🏥 Gestión de Visitas",
+      "item": [
+        {
+          "name": "Crear Visita",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientCedula\": \"12345678\",\n  \"doctorCedula\": \"87654321\",\n  \"appointmentId\": 1,\n  \"symptoms\": \"Dolor de cabeza y fiebre\",\n  \"diagnosis\": \"Gripe común\",\n  \"observations\": \"Paciente presenta síntomas típicos de gripe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits"]
+            },
+            "description": "Crear una nueva visita médica"
+          }
+        },
+        {
+          "name": "Actualizar Signos Vitales",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"temperature\": 37.2,\n  \"pulse\": 75,\n  \"bloodPressure\": \"120/80\",\n  \"oxygenLevel\": 98,\n  \"nurseRecord\": {\n    \"nurseCedula\": \"87654321\",\n    \"observations\": \"Paciente estable\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/1/vital-signs",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "1", "vital-signs"]
+            },
+            "description": "Actualizar signos vitales de una visita"
+          }
+        },
+        {
+          "name": "Obtener Visita por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "1"]
+            },
+            "description": "Obtener detalles de una visita específica"
+          }
+        },
+        {
+          "name": "Obtener Visitas por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/patient/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "patient", "{{patient_cedula}}"]
+            },
+            "description": "Obtener todas las visitas de un paciente"
+          }
+        },
+        {
+          "name": "Validar Signos Vitales",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"temperature\": 37.2,\n  \"pulse\": 75,\n  \"bloodPressure\": \"120/80\",\n  \"oxygenLevel\": 98\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/vital-signs/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "vital-signs", "validate"]
+            },
+            "description": "Validar que los signos vitales estén dentro de parámetros normales"
+          }
+        },
+        {
+          "name": "Completar Visita",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/1/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "1", "complete"]
+            },
+            "description": "Marcar una visita como completada"
+          }
+        },
+        {
+          "name": "Actualizar Visita",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symptoms\": \"Dolor de cabeza intenso\",\n  \"diagnosis\": \"Migraña con aura\",\n  \"observations\": \"Paciente requiere seguimiento\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "1"]
+            },
+            "description": "Actualizar información de una visita existente"
+          }
+        },
+        {
+          "name": "Obtener Visitas por Rango de Fechas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/daterange/01/01/2024/31/12/2024",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "daterange", "01/01/2024", "31/12/2024"]
+            },
+            "description": "Obtener visitas en un rango de fechas específico"
+          }
+        },
+        {
+          "name": "Estadísticas de Visitas del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/patient/{{patient_cedula}}/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "patient", "{{patient_cedula}}", "statistics"]
+            },
+            "description": "Obtener estadísticas de visitas de un paciente"
+          }
+        },
+        {
+          "name": "Visitas Pendientes del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/patient-visits/patient/{{patient_cedula}}/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["patient-visits", "patient", "{{patient_cedula}}", "pending"]
+            },
+            "description": "Obtener visitas pendientes de un paciente"
+          }
+        }
+      ],
+      "description": "Gestión de visitas médicas y signos vitales"
+    },
+    {
+      "name": "📋 Gestión de Órdenes Médicas",
+      "item": [
+        {
+          "name": "Crear Orden",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientCedula\": \"12345678\",\n  \"doctorCedula\": \"87654321\",\n  \"orderType\": \"MEDICATION\",\n  \"medicationOrder\": {\n    \"medicationName\": \"Paracetamol\",\n    \"dosage\": \"500mg\",\n    \"frequency\": \"Cada 8 horas\",\n    \"treatmentDuration\": \"5 días\",\n    \"quantity\": 15\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"]
+            },
+            "description": "Crear una nueva orden médica"
+          }
+        },
+        {
+          "name": "Obtener Orden por Número",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/number/{{order_number}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "number", "{{order_number}}"]
+            },
+            "description": "Obtener detalles de una orden específica"
+          }
+        },
+        {
+          "name": "Obtener Órdenes por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/patient/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "patient", "{{patient_cedula}}"]
+            },
+            "description": "Obtener todas las órdenes de un paciente"
+          }
+        },
+        {
+          "name": "Obtener Próximo Número de Orden",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/next-number",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "next-number"]
+            },
+            "description": "Obtener el próximo número disponible para órdenes"
+          }
+        },
+        {
+          "name": "Validar Orden",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientCedula\": \"12345678\",\n  \"doctorCedula\": \"87654321\",\n  \"orderType\": \"MEDICATION\",\n  \"medicationOrder\": {\n    \"medicationName\": \"Paracetamol\",\n    \"dosage\": \"500mg\",\n    \"frequency\": \"Cada 8 horas\",\n    \"treatmentDuration\": \"5 días\",\n    \"quantity\": 15\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "validate"]
+            },
+            "description": "Validar reglas de negocio antes de crear una orden"
+          }
+        },
+        {
+          "name": "Obtener Órdenes por Doctor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/doctor/{{doctor_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "doctor", "{{doctor_cedula}}"]
+            },
+            "description": "Obtener todas las órdenes de un doctor específico"
+          }
+        },
+        {
+          "name": "Obtener Órdenes por Rango de Fechas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/daterange/01/01/2024/31/12/2024",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "daterange", "01/01/2024", "31/12/2024"]
+            },
+            "description": "Obtener órdenes en un rango de fechas específico"
+          }
+        },
+        {
+          "name": "Actualizar Orden",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CANCELLED\",\n  \"observations\": \"Orden cancelada por el médico\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{order_number}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{order_number}}"]
+            },
+            "description": "Actualizar información de una orden existente"
+          }
+        },
+        {
+          "name": "Eliminar Orden",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{order_number}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "{{order_number}}"]
+            },
+            "description": "Eliminar una orden del sistema"
+          }
+        },
+        {
+          "name": "Verificar Disponibilidad de Número de Orden",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/number/{{order_number}}/available",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "number", "{{order_number}}", "available"]
+            },
+            "description": "Verificar si un número de orden está disponible"
+          }
+        },
+        {
+          "name": "Estadísticas de Órdenes del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/patient/{{patient_cedula}}/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders", "patient", "{{patient_cedula}}", "statistics"]
+            },
+            "description": "Obtener estadísticas de órdenes de un paciente"
+          }
+        }
+      ],
+      "description": "Gestión de órdenes médicas y prescripciones"
+    },
+    {
+      "name": "📋 Gestión de Registros Médicos",
+      "item": [
+        {
+          "name": "Crear Registro Médico",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientCedula\": \"12345678\",\n  \"doctorCedula\": \"87654321\",\n  \"recordDate\": \"15/01/2024\",\n  \"data\": {\n    \"symptoms\": \"Dolor de cabeza\",\n    \"diagnosis\": \"Migraña\",\n    \"treatment\": \"Reposo y medicamentos\",\n    \"observations\": \"Paciente con historial de migrañas\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/medical-records",
+              "host": ["{{baseUrl}}"],
+              "path": ["medical-records"]
+            },
+            "description": "Crear un nuevo registro médico"
+          }
+        },
+        {
+          "name": "Obtener Registros por Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medical-records/patient/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["medical-records", "patient", "{{patient_cedula}}"]
+            },
+            "description": "Obtener todos los registros médicos de un paciente"
+          }
+        },
+        {
+          "name": "Obtener Registro por Fecha",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medical-records/patient/{{patient_cedula}}/date/15/01/2024",
+              "host": ["{{baseUrl}}"],
+              "path": ["medical-records", "patient", "{{patient_cedula}}", "date", "15/01/2024"]
+            },
+            "description": "Obtener registro médico de una fecha específica"
+          }
+        },
+        {
+          "name": "Verificar Existencia de Registro",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medical-records/patient/{{patient_cedula}}/exists",
+              "host": ["{{baseUrl}}"],
+              "path": ["medical-records", "patient", "{{patient_cedula}}", "exists"]
+            },
+            "description": "Verificar si existe registro médico para un paciente"
+          }
+        },
+        {
+          "name": "Contar Registros del Paciente",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/medical-records/patient/{{patient_cedula}}/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["medical-records", "patient", "{{patient_cedula}}", "count"]
+            },
+            "description": "Contar el número total de registros médicos de un paciente"
+          }
+        }
+      ],
+      "description": "Gestión de historial médico de pacientes"
+    },
+    {
+      "name": "💊 Gestión de Inventario",
+      "item": [
+        {
+          "name": "Crear Item de Inventario",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Paracetamol 500mg\",\n  \"type\": \"MEDICATION\",\n  \"cost\": 1500.00,\n  \"quantity\": 100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/inventory",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory"]
+            },
+            "description": "Crear un nuevo item en el inventario"
+          }
+        },
+        {
+          "name": "Obtener Item por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "1"]
+            },
+            "description": "Obtener detalles de un item específico"
+          }
+        },
+        {
+          "name": "Listar Todo el Inventario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory"]
+            },
+            "description": "Obtener lista completa del inventario"
+          }
+        },
+        {
+          "name": "Obtener Medicamentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/type/medications",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "type", "medications"]
+            },
+            "description": "Obtener todos los medicamentos disponibles"
+          }
+        },
+        {
+          "name": "Obtener Procedimientos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/type/procedures",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "type", "procedures"]
+            },
+            "description": "Obtener todos los procedimientos disponibles"
+          }
+        },
+        {
+          "name": "Buscar por Nombre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/search/Paracetamol",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "search", "Paracetamol"]
+            },
+            "description": "Buscar items por nombre o descripción"
+          }
+        },
+        {
+          "name": "Actualizar Costo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cost\": 1800.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/inventory/1/cost",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "1", "cost"]
+            },
+            "description": "Actualizar el costo de un item"
+          }
+        },
+        {
+          "name": "Verificar Disponibilidad",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/1/available",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "1", "available"]
+            },
+            "description": "Verificar si un item está disponible"
+          }
+        },
+        {
+          "name": "Eliminar Item de Inventario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "1"]
+            },
+            "description": "Eliminar un item del inventario"
+          }
+        },
+        {
+          "name": "Verificar Existencia de Item",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/1/exists",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "1", "exists"]
+            },
+            "description": "Verificar si existe un item en el inventario"
+          }
+        },
+        {
+          "name": "Obtener Ayudas Diagnósticas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/type/diagnostic-aids",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "type", "diagnostic-aids"]
+            },
+            "description": "Obtener todas las ayudas diagnósticas disponibles"
+          }
+        },
+        {
+          "name": "Estadísticas de Inventario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inventory/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["inventory", "statistics"]
+            },
+            "description": "Obtener estadísticas generales del inventario"
+          }
+        }
+      ],
+      "description": "Gestión completa del inventario médico"
+    },
+    {
+      "name": "💰 Gestión de Facturación",
+      "item": [
+        {
+          "name": "Calcular Factura",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/calculate/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "calculate", "{{patient_cedula}}"]
+            },
+            "description": "Calcular factura para un paciente específico"
+          }
+        },
+        {
+          "name": "Generar Factura",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/invoice/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "invoice", "{{patient_cedula}}"]
+            },
+            "description": "Generar factura oficial para un paciente"
+          }
+        },
+        {
+          "name": "Obtener Detalles de Factura",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/details/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "details", "{{patient_cedula}}"]
+            },
+            "description": "Obtener detalles completos de facturación"
+          }
+        },
+        {
+          "name": "Historial de Facturación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/history/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "history", "{{patient_cedula}}"]
+            },
+            "description": "Obtener historial completo de facturación"
+          }
+        },
+        {
+          "name": "Estadísticas de Facturación",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/statistics/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "statistics", "{{patient_cedula}}"]
+            },
+            "description": "Obtener estadísticas de facturación del paciente"
+          }
+        },
+        {
+          "name": "Validar Seguro",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/validate-insurance/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "validate-insurance", "{{patient_cedula}}"]
+            },
+            "description": "Validar cobertura de seguro del paciente"
+          }
+        },
+        {
+          "name": "Verificar Límite de Copago",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/copayment-limit/{{patient_cedula}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "copayment-limit", "{{patient_cedula}}"]
+            },
+            "description": "Verificar límite de copago del paciente"
+          }
+        },
+        {
+          "name": "Copago Acumulado por Año",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/billing/accumulated-copayment/{{patient_cedula}}/2024",
+              "host": ["{{baseUrl}}"],
+              "path": ["billing", "accumulated-copayment", "{{patient_cedula}}", "2024"]
+            },
+            "description": "Obtener copago acumulado del paciente en un año específico"
+          }
+        }
+      ],
+      "description": "Gestión completa de facturación y pagos"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Script de pre-request para configurar autenticación",
+          "// Se ejecuta antes de cada request",
+          "",
+          "// Lista de módulos que requieren autenticación",
+          "const protectedModules = [",
+          "    '/users', '/patients', '/appointments', '/patient-visits',",
+          "    '/orders', '/medical-records', '/inventory', '/billing'",
+          "];",
+          "",
+          "const requiresAuth = protectedModules.some(module => ",
+          "    pm.request.url.getPath().includes(module)",
+          ");",
+          "",
+          "if (requiresAuth) {",
+          "    if (!pm.environment.get('jwt_token')) {",
+          "        console.log('JWT token no encontrado. Por favor inicia sesión primero ejecutando el request \"Iniciar Sesión\".');",
+          "        pm.test('Requiere autenticación', function () {",
+          "            pm.expect(pm.environment.get('jwt_token')).to.not.be.empty;",
+          "        });",
+          "    } else {",
+          "        console.log('Usando token JWT:', pm.environment.get('jwt_token').substring(0, 20) + '...');",
+          "    }",
+          "}",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Script de test para validar respuestas",
+          "// Se ejecuta después de cada response",
+          "",
+          "// Verificar códigos de estado comunes",
+          "pm.test('Status code is not 500', function () {",
+          "    pm.response.to.not.have.status(500);",
+          "});",
+          "",
+          "// Verificar tiempo de respuesta",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "// Validaciones específicas por módulo",
+          "",
+          "// Para endpoints públicos",
+          "if (pm.request.url.getPath().includes('/public/')) {",
+          "    pm.test('Public endpoint should not require authentication', function () {",
+          "        pm.response.to.not.have.status(401);",
+          "        pm.response.to.not.have.status(403);",
+          "    });",
+          "}",
+          "",
+          "// Para endpoints de autenticación",
+          "if (pm.request.url.getPath().includes('/auth/login')) {",
+          "    pm.test('Login response should have proper structure', function () {",
+          "        const response = pm.response.json();",
+          "        pm.expect(response).to.have.property('success');",
+          "        pm.expect(response).to.have.property('message');",
+          "        ",
+          "        if (response.success) {",
+          "            pm.expect(response).to.have.property('token');",
+          "            pm.expect(response).to.have.property('user');",
+          "            pm.expect(response.token).to.be.a('string').and.not.be.empty;",
+          "        }",
+          "    });",
+          "}",
+          "",
+          "// Para endpoints protegidos",
+          "const protectedModules = ['/users', '/patients', '/appointments', '/patient-visits', '/orders', '/medical-records', '/inventory', '/billing'];",
+          "const isProtected = protectedModules.some(module => pm.request.url.getPath().includes(module));",
+          "",
+          "if (isProtected) {",
+          "    pm.test('Protected endpoint should require valid authentication', function () {",
+          "        // Si no hay token, debe devolver 401",
+          "        if (!pm.environment.get('jwt_token')) {",
+          "            pm.response.to.have.status(401);",
+          "        } else {",
+          "            // Si hay token, no debe devolver 401",
+          "            pm.response.to.not.have.status(401);",
+          "        }",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}
