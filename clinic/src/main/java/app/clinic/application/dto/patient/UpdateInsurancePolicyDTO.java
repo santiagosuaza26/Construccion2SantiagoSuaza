@@ -1,0 +1,73 @@
+package app.clinic.application.dto.patient;
+
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+/**
+ * Data Transfer Object for updating insurance policy information.
+ * All fields are optional for partial updates.
+ */
+public class UpdateInsurancePolicyDTO {
+
+    @Size(max = 100, message = "Insurance company name must not exceed 100 characters")
+    private String companyName;
+
+    @Size(max = 50, message = "Policy number must not exceed 50 characters")
+    private String policyNumber;
+
+    @Pattern(regexp = "^(ACTIVE|INACTIVE)$", message = "Policy status must be either ACTIVE or INACTIVE")
+    private String status;
+
+    @Pattern(regexp = "^\\d{2}/\\d{2}/\\d{4}$", message = "Policy expiration date must be in DD/MM/YYYY format")
+    private String expirationDate;
+
+    // Default constructor
+    public UpdateInsurancePolicyDTO() {}
+
+    // Constructor with parameters
+    public UpdateInsurancePolicyDTO(String companyName, String policyNumber, String status, String expirationDate) {
+        this.companyName = companyName;
+        this.policyNumber = policyNumber;
+        this.status = status;
+        this.expirationDate = expirationDate;
+    }
+
+    // Getters and Setters
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getPolicyNumber() {
+        return policyNumber;
+    }
+
+    public void setPolicyNumber(String policyNumber) {
+        this.policyNumber = policyNumber;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("UpdateInsurancePolicyDTO{companyName='%s', policyNumber='%s', status='%s'}",
+                           companyName, policyNumber, status);
+    }
+}

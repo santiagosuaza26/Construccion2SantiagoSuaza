@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Cs2Application<clinic>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "app.clinic.Cs2Application",
+            "projectName": "clinic",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
