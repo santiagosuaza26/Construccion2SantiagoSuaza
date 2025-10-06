@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión Clínica</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Página de bienvenida -->
+        <div id="welcome-page" class="welcome-container">
+            <div class="welcome-card">
+                <div class="welcome-header">
+                    <i class="fas fa-hospital welcome-icon"></i>
+                    <h1>Sistema de Gestión Clínica</h1>
+                    <p class="welcome-subtitle">Gestión integral de información médica</p>
+                </div>
+
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <i class="fas fa-user-md"></i>
+                        <span>Gestión de Pacientes</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Historias Clínicas</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Control de Citas</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Facturación</span>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="btn-primary">
+                    <i class="fas fa-play"></i>
+                    Iniciar Sesión
+                </button>
+            </div>
+        </div>
+
+        <!-- Formulario de login -->
+        <div id="login-page" class="login-container" style="display: none;">
+            <div class="login-card">
+                <div class="login-header">
+                    <i class="fas fa-stethoscope login-icon"></i>
+                    <h2>Iniciar Sesión</h2>
+                    <p>Accede al sistema con tus credenciales</p>
+                </div>
+
+                <form id="login-form" class="login-form">
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="fas fa-user"></i>
+                            Usuario
+                        </label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="fas fa-lock"></i>
+                            Contraseña
+                        </label>
+                        <div class="password-input">
+                            <input type="password" id="password" name="password" required>
+                            <button type="button" id="toggle-password" class="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="login-error" class="error-message" style="display: none;"></div>
+
+                    <button type="submit" class="btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Iniciar Sesión
+                    </button>
+                </form>
+
+                <div class="login-footer">
+                    <button id="back-to-welcome" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Volver
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard principal -->
+        <div id="dashboard" class="dashboard" style="display: none;">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <div class="logo">
+                        <i class="fas fa-hospital"></i>
+                        <span>Clínica</span>
+                    </div>
+                    <nav class="main-nav" id="main-nav">
+                        <!-- Navegación dinámica según rol -->
+                    </nav>
+                </div>
+
+                <div class="header-right">
+                    <div class="user-info">
+                        <span id="user-name"></span>
+                        <span id="user-role" class="user-role"></span>
+                    </div>
+                    <button id="logout-btn" class="btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Salir
+                    </button>
+                </div>
+            </header>
+
+            <!-- Contenido principal -->
+            <main class="main-content">
+                <div id="content-area">
+                    <!-- Contenido dinámico -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification-container" class="notification-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/auth-service.js"></script>
+    <script src="js/notification-service.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/patient-management.js"></script>
+    <script src="js/user-management.js"></script>
+    <script src="js/medical-records.js"></script>
+    <script src="js/inventory-management.js"></script>
+    <script src="js/billing.js"></script>
+</body>
+</html>

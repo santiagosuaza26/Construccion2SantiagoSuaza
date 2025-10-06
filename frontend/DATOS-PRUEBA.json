@@ -1,0 +1,176 @@
+{
+  "usuarios_prueba": [
+    {
+      "cedula": "12345678",
+      "username": "adminrrhh",
+      "password": "Admin123!@#",
+      "fullName": "María González",
+      "email": "maria.gonzalez@clinica.com",
+      "phoneNumber": "3001234567",
+      "birthDate": "15/03/1985",
+      "address": "Calle 123 #45-67",
+      "role": "HUMAN_RESOURCES",
+      "active": true
+    },
+    {
+      "cedula": "87654321",
+      "username": "adminpersonal",
+      "password": "Admin456!@#",
+      "fullName": "Carlos Rodríguez",
+      "email": "carlos.rodriguez@clinica.com",
+      "phoneNumber": "3107654321",
+      "birthDate": "22/07/1982",
+      "address": "Carrera 67 #89-01",
+      "role": "ADMINISTRATIVE_STAFF",
+      "active": true
+    },
+    {
+      "cedula": "11223344",
+      "username": "drmartinez",
+      "password": "Doctor789!@#",
+      "fullName": "Dr. Juan Martínez",
+      "email": "juan.martinez@clinica.com",
+      "phoneNumber": "3201122334",
+      "birthDate": "10/11/1978",
+      "address": "Avenida 45 #67-89",
+      "role": "DOCTOR",
+      "active": true
+    },
+    {
+      "cedula": "55667788",
+      "username": "enflopez",
+      "password": "Nurse101!@#",
+      "fullName": "Enf. Ana López",
+      "email": "ana.lopez@clinica.com",
+      "phoneNumber": "3005566778",
+      "birthDate": "05/06/1990",
+      "address": "Calle 78 #90-12",
+      "role": "NURSE",
+      "active": true
+    },
+    {
+      "cedula": "99001122",
+      "username": "soptecnico",
+      "password": "Support202!@#",
+      "fullName": "Luis Ramírez",
+      "email": "luis.ramirez@clinica.com",
+      "phoneNumber": "3159900112",
+      "birthDate": "18/09/1987",
+      "address": "Carrera 34 #56-78",
+      "role": "INFORMATION_SUPPORT",
+      "active": true
+    }
+  ],
+  "pacientes_prueba": [
+    {
+      "cedula": "10000001",
+      "username": "paciente001",
+      "password": "Paciente001!@#",
+      "fullName": "María Fernanda Castro",
+      "birthDate": "15/05/1980",
+      "gender": "FEMENINO",
+      "address": "Calle 100 #20-30",
+      "phoneNumber": "3001000001",
+      "email": "maria.castro@email.com",
+      "emergencyContact": {
+        "name": "Carlos Castro",
+        "relationship": "Esposo",
+        "phoneNumber": "3101000001"
+      },
+      "insurancePolicy": {
+        "companyName": "Seguros Bolívar",
+        "policyNumber": "POL001234567",
+        "isActive": true,
+        "expirationDate": "31/12/2024"
+      }
+    },
+    {
+      "cedula": "20000002",
+      "username": "paciente002",
+      "password": "Paciente002!@#",
+      "fullName": "Roberto Jiménez",
+      "birthDate": "22/08/1975",
+      "gender": "MASCULINO",
+      "address": "Carrera 50 #75-20",
+      "phoneNumber": "3102000002",
+      "email": "roberto.jimenez@email.com",
+      "emergencyContact": {
+        "name": "Carmen Jiménez",
+        "relationship": "Esposa",
+        "phoneNumber": "3202000002"
+      },
+      "insurancePolicy": {
+        "companyName": "Sura EPS",
+        "policyNumber": "POL002345678",
+        "isActive": true,
+        "expirationDate": "30/06/2024"
+      }
+    }
+  ],
+  "instrucciones_uso": {
+    "pasos_login": [
+      "Abrir la aplicación en el navegador",
+      "Hacer clic en 'Iniciar Sesión'",
+      "Usar las credenciales de prueba según el rol deseado",
+      "Explorar las funcionalidades específicas de cada rol"
+    ],
+    "credenciales_sugeridas": {
+      "recursos_humanos": {
+        "usuario": "adminrrhh",
+        "contraseña": "Admin123!@#",
+        "funcionalidades": [
+          "Crear nuevos usuarios",
+          "Editar información de empleados",
+          "Gestionar permisos y roles",
+          "Activar/desactivar cuentas"
+        ]
+      },
+      "personal_administrativo": {
+        "usuario": "adminpersonal",
+        "contraseña": "Admin456!@#",
+        "funcionalidades": [
+          "Registrar nuevos pacientes",
+          "Gestionar información de contacto",
+          "Procesar pólizas de seguros",
+          "Programar citas médicas"
+        ]
+      },
+      "medico": {
+        "usuario": "drmartinez",
+        "contraseña": "Doctor789!@#",
+        "funcionalidades": [
+          "Crear historias clínicas",
+          "Registrar diagnósticos",
+          "Recetar medicamentos",
+          "Gestionar órdenes médicas"
+        ]
+      },
+      "enfermera": {
+        "usuario": "enflopez",
+        "contraseña": "Nurse101!@#",
+        "funcionalidades": [
+          "Registrar visitas de pacientes",
+          "Tomar signos vitales",
+          "Administrar medicamentos",
+          "Documentar procedimientos"
+        ]
+      },
+      "soporte": {
+        "usuario": "soptecnico",
+        "contraseña": "Support202!@#",
+        "funcionalidades": [
+          "Gestionar inventario",
+          "Controlar medicamentos",
+          "Administrar procedimientos",
+          "Mantenimiento de datos"
+        ]
+      }
+    },
+    "notas_importantes": [
+      "Asegúrate de que el backend API esté ejecutándose en http://localhost:8080",
+      "Los usuarios deben estar registrados en el sistema backend",
+      "Las contraseñas deben cumplir con los requisitos de seguridad",
+      "Cada rol tiene acceso específico a diferentes funcionalidades"
+    ]
+  }
+}
