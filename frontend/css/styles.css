@@ -1,11 +1,11 @@
 /* Variables CSS para colores y configuración */
 :root {
     /* Colores principales */
-    --primary-color: #2563eb;
-    --primary-dark: #1d4ed8;
-    --primary-light: #3b82f6;
+    --primary-color: #870000;
+    --primary-dark: #333435;
+    --primary-light: #710000;
     --secondary-color: #64748b;
-    --accent-color: #06b6d4;
+    --accent-color: #557f84;
 
     /* Colores de estado */
     --success-color: #10b981;

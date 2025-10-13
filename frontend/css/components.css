@@ -1,100 +1,499 @@
 /* Estilos para componentes reutilizables */
 
-/* Botones */
+/* ==========================================
+   BOTONES - SISTEMA DE COMPONENTES PREMIUM
+   ========================================== */
+
+/* Variables CSS para variantes de botones */
 .btn {
+    /* Propiedades base del botón - Más grandes y atractivos */
+    --btn-bg: var(--bg-primary);
+    --btn-color: var(--text-primary);
+    --btn-border: var(--border-color);
+    --btn-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --btn-shadow-focus: rgba(37, 99, 235, 0.3);
+
+    /* Propiedades para estados interactivos - Más dramáticos */
+    --btn-bg-hover: var(--btn-bg);
+    --btn-color-hover: var(--btn-color);
+    --btn-border-hover: var(--btn-border);
+    --btn-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --btn-transform-hover: translateY(-2px) scale(1.02);
+
+    /* Propiedades para estados activos */
+    --btn-transform-active: translateY(-1px) scale(0.98);
+
+    /* Aplicar propiedades base - Tamaños más generosos */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: var(--font-size-sm);
-    font-weight: 500;
+    gap: var(--spacing-md);
+    padding: var(--btn-padding, var(--spacing-md) var(--spacing-xl));
+    border: var(--btn-border-width, 0);
+    border-color: var(--btn-border);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--btn-font-size, var(--font-size-base));
+    font-weight: 600;
+    font-family: var(--font-family);
     text-decoration: none;
     cursor: pointer;
-    transition: all var(--transition-fast);
+    background: var(--btn-bg);
+    color: var(--btn-color);
+    box-shadow: var(--btn-shadow);
     outline: none;
-    font-family: var(--font-family);
+    position: relative;
+    overflow: hidden;
+
+    /* Transiciones suaves y atractivas */
+    transition:
+        background-color var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        transform var(--transition-fast);
+
+    /* Efecto de brillo sutil */
+    background-image: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
 }
 
-.btn:focus {
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+@media (prefers-reduced-motion: reduce) {
+    .btn {
+        transition: none;
+        --btn-transform-hover: none;
+        --btn-transform-active: scale(0.98);
+    }
 }
 
+/* Estado de enfoque mejorado para accesibilidad */
+.btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--btn-shadow-focus);
+}
+
+/* Estado deshabilitado mejorado */
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    pointer-events: none;
+    --btn-shadow-hover: transparent;
+    --btn-transform-hover: none;
 }
 
+/* Estados interactivos genéricos */
+.btn:hover:not(:disabled) {
+    background: var(--btn-bg-hover);
+    border-color: var(--btn-border-hover);
+    color: var(--btn-color-hover);
+    box-shadow: var(--btn-shadow-hover);
+    transform: var(--btn-transform-hover);
+}
+
+.btn:active:not(:disabled) {
+    transform: var(--btn-transform-active);
+}
+
+/* Variantes de botones usando propiedades CSS personalizadas */
+
+/* Botón primario - Premium */
 .btn-primary {
-    background: var(--primary-color);
-    color: var(--text-white);
+    --btn-bg: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
+    --btn-color: var(--text-white);
+    --btn-bg-hover: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    --btn-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    --btn-shadow-hover: 0 8px 25px rgba(37, 99, 235, 0.4);
+    --btn-shadow-focus: rgba(37, 99, 235, 0.4);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.btn-primary:hover:not(:disabled) {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
+/* Botón secundario - Mejorado */
 .btn-secondary {
-    background: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    --btn-bg: var(--bg-tertiary);
+    --btn-color: var(--text-primary);
+    --btn-border-width: 2px;
+    --btn-bg-hover: var(--bg-secondary);
+    --btn-border-hover: var(--primary-color);
+    --btn-color-hover: var(--primary-color);
+    --btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
 }
 
-.btn-secondary:hover:not(:disabled) {
-    background: var(--bg-secondary);
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-}
-
+/* Botón de éxito - Premium */
 .btn-success {
-    background: var(--success-color);
-    color: var(--text-white);
+    --btn-bg: linear-gradient(135deg, var(--success-color) 0%, #047857 100%);
+    --btn-color: var(--text-white);
+    --btn-bg-hover: linear-gradient(135deg, #047857 0%, #065f46 100%);
+    --btn-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    --btn-shadow-hover: 0 8px 25px rgba(5, 150, 105, 0.4);
+    --btn-shadow-focus: rgba(5, 150, 105, 0.4);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.btn-success:hover:not(:disabled) {
-    background: #059669;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
+/* Botón de advertencia - Premium */
 .btn-warning {
-    background: var(--warning-color);
-    color: var(--text-white);
+    --btn-bg: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+    --btn-color: var(--text-white);
+    --btn-bg-hover: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    --btn-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);
+    --btn-shadow-hover: 0 8px 25px rgba(217, 119, 6, 0.4);
+    --btn-shadow-focus: rgba(217, 119, 6, 0.4);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.btn-warning:hover:not(:disabled) {
-    background: #d97706;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
+/* Botón de peligro - Premium */
 .btn-danger {
-    background: var(--error-color);
-    color: var(--text-white);
+    --btn-bg: linear-gradient(135deg, var(--error-color) 0%, #dc2626 100%);
+    --btn-color: var(--text-white);
+    --btn-bg-hover: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    --btn-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    --btn-shadow-hover: 0 8px 25px rgba(220, 38, 38, 0.4);
+    --btn-shadow-focus: rgba(220, 38, 38, 0.4);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.btn-danger:hover:not(:disabled) {
-    background: #dc2626;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+/* Botón fantasma (outline) */
+.btn-ghost {
+    --btn-bg: transparent;
+    --btn-color: var(--text-primary);
+    --btn-border-width: 1px;
+    --btn-bg-hover: var(--bg-secondary);
+    --btn-border-hover: var(--primary-color);
+    --btn-color-hover: var(--primary-color);
 }
 
+/* Botón enlace (link) */
+.btn-link {
+    --btn-bg: transparent;
+    --btn-color: var(--primary-color);
+    --btn-border: transparent;
+    --btn-bg-hover: transparent;
+    --btn-color-hover: var(--primary-dark);
+    --btn-shadow-hover: transparent;
+    --btn-transform-hover: none;
+    --btn-transform-active: none;
+
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+}
+
+.btn-link:hover:not(:disabled) {
+    text-decoration-thickness: 2px;
+}
+
+/* Modificadores de tamaño - Más generosos y atractivos */
 .btn-full {
     width: 100%;
+    justify-content: center;
 }
 
 .btn-sm {
-    padding: var(--spacing-xs) var(--spacing-md);
-    font-size: var(--font-size-xs);
+    --btn-padding: var(--spacing-sm) var(--spacing-lg);
+    --btn-font-size: var(--font-size-sm);
+    --btn-transform-hover: translateY(-1px) scale(1.01);
+    gap: var(--spacing-sm);
 }
 
 .btn-lg {
-    padding: var(--spacing-md) var(--spacing-xl);
-    font-size: var(--font-size-base);
+    --btn-padding: var(--spacing-lg) var(--spacing-2xl);
+    --btn-font-size: var(--font-size-lg);
+    --btn-transform-hover: translateY(-3px) scale(1.03);
+    gap: var(--spacing-lg);
+    font-weight: 700;
+    letter-spacing: 0.025em;
+}
+
+.btn-xl {
+    --btn-padding: var(--spacing-xl) var(--spacing-3xl);
+    --btn-font-size: var(--font-size-xl);
+    --btn-transform-hover: translateY(-4px) scale(1.04);
+    gap: var(--spacing-lg);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    --btn-shadow-hover: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Variantes premium con efectos visuales avanzados */
+.btn-gradient {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    --btn-bg-hover: linear-gradient(135deg, var(--primary-dark) 0%, #1e40af 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    --btn-shadow-hover: 0 8px 25px rgba(37, 99, 235, 0.4);
+}
+
+.btn-3d {
+    box-shadow:
+        0 4px 0 var(--primary-dark),
+        0 8px 15px rgba(0, 0, 0, 0.2);
+    --btn-shadow-hover:
+        0 2px 0 var(--primary-dark),
+        0 6px 20px rgba(0, 0, 0, 0.3);
+    --btn-transform-hover: translateY(-2px);
+    --btn-transform-active: translateY(2px);
+}
+
+.btn-glow {
+    box-shadow:
+        0 0 20px rgba(37, 99, 235, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    --btn-shadow-hover:
+        0 0 30px rgba(37, 99, 235, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-floating {
+    border-radius: 50%;
+    width: 3.5rem;
+    height: 3.5rem;
+    padding: 0;
+    gap: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --btn-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.25);
+    --btn-transform-hover: translateY(-3px) scale(1.1);
+}
+
+.btn-floating.btn-lg {
+    width: 4.5rem;
+    height: 4.5rem;
+}
+
+.btn-floating.btn-xl {
+    width: 5.5rem;
+    height: 5.5rem;
+}
+
+/* Estados especiales para mejor UX */
+.btn-loading {
+    position: relative;
+    color: transparent;
+    overflow: visible;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: -0.6rem 0 0 -0.6rem;
+    border: 3px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: btn-spin 0.8s linear infinite;
+    box-shadow: 0 0 10px currentColor;
+}
+
+@keyframes btn-spin {
+    0% {
+        transform: rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-loading::after {
+        animation: none;
+        border-top-color: currentColor;
+        box-shadow: none;
+    }
+}
+
+/* Efectos especiales avanzados */
+.btn-pulse {
+    animation: btn-pulse 2s infinite;
+}
+
+@keyframes btn-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
+}
+
+.btn-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-ripple::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-ripple:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn-shake:hover {
+    animation: btn-shake 0.5s ease-in-out;
+}
+
+@keyframes btn-shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+    20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+/* Grupos de botones mejorados */
+.btn-group {
+    display: inline-flex;
+    gap: var(--spacing-xs);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xs);
+    background: var(--bg-tertiary);
+}
+
+.btn-group .btn {
+    margin: 0;
+    border-radius: var(--border-radius);
+    box-shadow: none;
+    border: 1px solid var(--border-color);
+}
+
+.btn-group .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+    z-index: 1;
+}
+
+.btn-group .btn-primary {
+    --btn-bg: var(--primary-color);
+    --btn-color: var(--text-white);
+    --btn-bg-hover: var(--primary-dark);
+}
+
+/* Soporte para modo alto contraste */
+@media (prefers-contrast: high) {
+    .btn {
+        border-width: 2px;
+    }
+
+    .btn:focus-visible {
+        outline-width: 3px;
+    }
+}
+
+/* Mejoras para dispositivos táctiles */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        --btn-transform-hover: none;
+        min-height: 48px; /* Tamaño mínimo recomendado para touch targets */
+        min-width: 48px;
+        font-weight: 600;
+        --btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+        /* Feedback táctil inmediato */
+        -webkit-tap-highlight-color: rgba(37, 99, 235, 0.1);
+        tap-highlight-color: rgba(37, 99, 235, 0.1);
+    }
+
+    .btn:active:not(:disabled) {
+        transform: scale(0.96);
+        transition-duration: 0.1s;
+        --btn-shadow-hover: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Botones grandes más táctiles */
+    .btn-lg {
+        min-height: 56px;
+        min-width: 56px;
+        --btn-padding: var(--spacing-lg) var(--spacing-2xl);
+    }
+
+    .btn-xl {
+        min-height: 64px;
+        min-width: 64px;
+        --btn-padding: var(--spacing-xl) var(--spacing-3xl);
+    }
+
+    /* Botones flotantes más grandes en móvil */
+    .btn-floating {
+        width: 4rem;
+        height: 4rem;
+    }
+
+    .btn-floating.btn-lg {
+        width: 5rem;
+        height: 5rem;
+    }
+}
+
+/* Mejoras adicionales para mejor UX */
+@media (min-width: 768px) {
+    .btn:hover:not(:disabled) {
+        /* Efectos sutiles de brillo en hover para desktop */
+        background-image:
+            linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.15) 50%, transparent 100%),
+            var(--btn-bg-hover);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background-image:
+            linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.2) 50%, transparent 100%),
+            linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    }
+}
+
+/* Animaciones de entrada sutiles */
+@keyframes btn-fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-animate-in {
+    animation: btn-fadeInUp 0.6s ease-out;
+}
+
+/* Soporte para temas oscuros mejorado */
+@media (prefers-color-scheme: dark) {
+    .btn-secondary {
+        --btn-bg: rgba(255, 255, 255, 0.05);
+        --btn-border: rgba(255, 255, 255, 0.2);
+        --btn-bg-hover: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-ghost {
+        --btn-bg: transparent;
+        --btn-color: rgba(255, 255, 255, 0.9);
+        --btn-border: rgba(255, 255, 255, 0.2);
+        --btn-bg-hover: rgba(255, 255, 255, 0.1);
+    }
 }
 
 /* Tarjetas */
@@ -566,6 +965,127 @@
 .text-secondary { color: var(--text-secondary); }
 .text-light { color: var(--text-light); }
 .text-white { color: var(--text-white); }
+
+/* Utilidades adicionales para botones mejorados */
+.button-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 300px;
+}
+
+.btn-icon {
+    margin-right: var(--spacing-sm);
+    transition: transform var(--transition-fast);
+}
+
+.btn-text {
+    font-weight: 600;
+    letter-spacing: 0.025em;
+}
+
+/* Estados específicos del botón de inicio */
+.btn-success .btn-icon {
+    animation: btn-icon-success 0.6s ease-in-out;
+}
+
+@keyframes btn-icon-success {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.2) rotate(180deg); }
+    100% { transform: scale(1) rotate(360deg); }
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Estilos específicos para botones mejorados */
+.toggle-password {
+    position: absolute;
+    right: var(--spacing-sm);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.toggle-password:hover:not(:disabled) {
+    color: var(--primary-color);
+    background: rgba(37, 99, 235, 0.1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.toggle-password:active:not(:disabled) {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.password-input {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Estados específicos para botones de formulario */
+#login-submit-btn {
+    margin-top: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+#login-submit-btn:focus-visible {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+/* Efectos mejorados para botones de navegación */
+#back-to-welcome {
+    transition: all var(--transition-fast);
+}
+
+#back-to-welcome:hover {
+    transform: translateX(-2px);
+}
+
+/* Estilos específicos para botón de logout */
+#logout-btn {
+    transition: all var(--transition-fast);
+}
+
+#logout-btn:hover {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: var(--text-white);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* Animación para cambio de icono en toggle password */
+.toggle-password.active .fa-eye:before {
+    content: "\f070"; /* fa-eye-slash */
+}
+
+/* Responsive mejorado para botones específicos */
+@media (max-width: 768px) {
+    .toggle-password {
+        right: var(--spacing-md);
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    .password-input input {
+        padding-right: 3.5rem;
+    }
+}
 
 .font-light { font-weight: 300; }
 .font-normal { font-weight: 400; }

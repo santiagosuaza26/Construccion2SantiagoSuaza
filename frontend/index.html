@@ -21,29 +21,50 @@
                     <p class="welcome-subtitle">Gestión integral de información médica</p>
                 </div>
 
-                <div class="welcome-features">
-                    <div class="feature-item">
-                        <i class="fas fa-user-md"></i>
-                        <span>Gestión de Pacientes</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Historias Clínicas</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-calendar-check"></i>
-                        <span>Control de Citas</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                        <span>Facturación</span>
-                    </div>
-                </div>
+                <!-- Contenedor del botón de inicio con mejoras avanzadas -->
+                <div class="button-container" id="start-button-container">
+                    <!-- Botón de inicio mejorado con características avanzadas -->
+                    <button
+                        id="start-btn"
+                        class="btn btn-primary btn-lg btn-animate-in btn-ripple"
+                        type="button"
+                        aria-label="Iniciar sesión en el sistema de gestión clínica"
+                        data-testid="welcome-start-button"
+                        role="button"
+                        aria-describedby="start-btn-status"
+                    >
+                        <i class="fas fa-play btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">Iniciar Sesión</span>
+                    </button>
 
-                <button id="start-btn" class="btn-primary">
-                    <i class="fas fa-play"></i>
-                    Iniciar Sesión
-                </button>
+                    <!-- Estado de carga del botón -->
+                    <button
+                        id="start-btn-loading"
+                        class="btn btn-primary btn-lg btn-loading"
+                        type="button"
+                        aria-label="Cargando sistema..."
+                        style="display: none;"
+                        disabled
+                    >
+                        <i class="fas fa-spinner fa-spin btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">Cargando...</span>
+                    </button>
+
+                    <!-- Estado de error del botón -->
+                    <button
+                        id="start-btn-error"
+                        class="btn btn-danger btn-lg btn-shake"
+                        type="button"
+                        aria-label="Error al conectar con el sistema"
+                        style="display: none;"
+                    >
+                        <i class="fas fa-exclamation-triangle btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">Error de Conexión</span>
+                    </button>
+
+                    <!-- Mensaje de estado para lectores de pantalla -->
+                    <div id="start-btn-status" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+                </div>
             </div>
         </div>
 
@@ -72,24 +93,42 @@
                         </label>
                         <div class="password-input">
                             <input type="password" id="password" name="password" required>
-                            <button type="button" id="toggle-password" class="toggle-password">
-                                <i class="fas fa-eye"></i>
+                            <button
+                                type="button"
+                                id="toggle-password"
+                                class="btn btn-ghost btn-sm btn-floating toggle-password"
+                                aria-label="Mostrar contraseña"
+                                data-testid="toggle-password-button"
+                            >
+                                <i class="fas fa-eye" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
 
                     <div id="login-error" class="error-message" style="display: none;"></div>
 
-                    <button type="submit" class="btn-primary btn-full">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Iniciar Sesión
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-full btn-animate-in"
+                        id="login-submit-btn"
+                        data-testid="login-submit-button"
+                        aria-describedby="login-error"
+                    >
+                        <i class="fas fa-sign-in-alt btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">Iniciar Sesión</span>
                     </button>
                 </form>
 
                 <div class="login-footer">
-                    <button id="back-to-welcome" class="btn-secondary">
-                        <i class="fas fa-arrow-left"></i>
-                        Volver
+                    <button
+                        id="back-to-welcome"
+                        class="btn btn-secondary btn-animate-in"
+                        type="button"
+                        aria-label="Volver a la página de bienvenida"
+                        data-testid="back-to-welcome-button"
+                    >
+                        <i class="fas fa-arrow-left btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">Volver</span>
                     </button>
                 </div>
             </div>
@@ -114,9 +153,15 @@
                         <span id="user-name"></span>
                         <span id="user-role" class="user-role"></span>
                     </div>
-                    <button id="logout-btn" class="btn-secondary">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Salir
+                    <button
+                        id="logout-btn"
+                        class="btn btn-secondary btn-animate-in"
+                        type="button"
+                        aria-label="Cerrar sesión del sistema"
+                        data-testid="logout-button"
+                    >
+                        <i class="fas fa-sign-out-alt btn-icon" aria-hidden="true"></i>
+                        <span class="btn-text">Salir</span>
                     </button>
                 </div>
             </header>
@@ -142,16 +187,18 @@
     <div id="notification-container" class="notification-container"></div>
 
     <!-- Scripts -->
-    <script src="js/config.js"></script>
-    <script src="js/api-service.js"></script>
-    <script src="js/auth-service.js"></script>
-    <script src="js/notification-service.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/patient-management.js"></script>
-    <script src="js/user-management.js"></script>
-    <script src="js/medical-records.js"></script>
-    <script src="js/inventory-management.js"></script>
-    <script src="js/billing.js"></script>
+     <script src="js/config.js"></script>
+     <script src="js/api-service.js"></script>
+     <script src="js/auth-service.js"></script>
+     <script src="js/notification-service.js"></script>
+     <script src="js/welcome-button.js"></script>
+     <script src="js/button-enhancements.js"></script>
+     <script src="js/main.js"></script>
+     <script src="js/dashboard.js"></script>
+     <script src="js/patient-management.js"></script>
+     <script src="js/user-management.js"></script>
+     <script src="js/medical-records.js"></script>
+     <script src="js/inventory-management.js"></script>
+     <script src="js/billing.js"></script>
 </body>
 </html>
