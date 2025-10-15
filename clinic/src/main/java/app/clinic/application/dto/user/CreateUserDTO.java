@@ -40,7 +40,7 @@ public class CreateUserDTO {
     private String address;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^\\d{1,10}$", message = "Phone number must contain between 1 and 10 digits")
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must contain exactly 10 digits")
     private String phoneNumber;
 
     @NotBlank(message = "Email is required")
@@ -48,8 +48,8 @@ public class CreateUserDTO {
     private String email;
 
     @NotNull(message = "Role is required")
-    @Pattern(regexp = "^(HUMAN_RESOURCES|ADMINISTRATIVE_STAFF|INFORMATION_SUPPORT|NURSE|DOCTOR)$",
-             message = "Role must be one of: HUMAN_RESOURCES, ADMINISTRATIVE_STAFF, INFORMATION_SUPPORT, NURSE, DOCTOR")
+    @Pattern(regexp = "^(HUMAN_RESOURCES|ADMINISTRATIVE_STAFF|SUPPORT_STAFF|NURSE|DOCTOR)$",
+             message = "Role must be one of: HUMAN_RESOURCES, ADMINISTRATIVE_STAFF, SUPPORT_STAFF, NURSE, DOCTOR")
     private String role;
 
     // Default constructor

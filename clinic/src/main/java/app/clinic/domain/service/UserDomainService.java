@@ -3,7 +3,6 @@ package app.clinic.domain.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.User;
 import app.clinic.domain.model.UserCedula;
@@ -11,6 +10,8 @@ import app.clinic.domain.model.UserId;
 import app.clinic.domain.model.UserRole;
 import app.clinic.domain.model.UserUsername;
 import app.clinic.domain.port.UserRepository;
+
+import org.springframework.stereotype.Service;
 
 /**
  * Domain service for user management operations.

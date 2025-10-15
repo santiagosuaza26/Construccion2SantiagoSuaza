@@ -67,10 +67,10 @@ class DashboardService {
         // Cargar contenido según la sección
         switch(navId) {
             case 'nav-users':
-                this.loadUsersContent(contentArea);
+                this.loadHRContent(contentArea);
                 break;
             case 'nav-patients':
-                this.loadPatientsContent(contentArea);
+                this.loadAdministrativeContent(contentArea);
                 break;
             case 'nav-medical-records':
                 this.loadMedicalRecordsContent(contentArea);
@@ -105,42 +105,47 @@ class DashboardService {
     }
 
     /**
-     * Carga contenido de usuarios
+     * Carga contenido de Recursos Humanos
      */
-    async loadUsersContent(container) {
+    async loadHRContent(container) {
         try {
-            // Cargar datos reales si el servicio está disponible
-            if (window.userManagementService) {
-                await window.userManagementService.loadUsersList();
+            // Usar el nuevo servicio de Recursos Humanos
+            if (window.hrManagementService) {
+                await window.hrManagementService.initialize();
             } else {
-                container.innerHTML = `
-                     <div class="content-header">
-                         <h2><i class="fas fa-users"></i> Gestión de Usuarios</h2>
-                         <p>Administra los usuarios del sistema</p>
-                     </div>
-                     <div class="content-body">
-                         <div class="widget">
-                             <h3>Usuarios del Sistema</h3>
-                             <p>Funcionalidad de gestión de usuarios próximamente disponible.</p>
-                             <button class="btn-primary" onclick="alert('Funcionalidad en desarrollo')">
-                                 <i class="fas fa-plus"></i> Agregar Usuario
-                             </button>
+                // Fallback al servicio anterior si no está disponible el nuevo
+                if (window.userManagementService) {
+                    await window.userManagementService.loadUsersList();
+                } else {
+                    container.innerHTML = `
+                         <div class="content-header">
+                             <h2><i class="fas fa-user-tie"></i> Recursos Humanos</h2>
+                             <p>Sistema de gestión de empleados</p>
                          </div>
-                     </div>
-                 `;
+                         <div class="content-body">
+                             <div class="widget">
+                                 <h3>Sistema de Recursos Humanos</h3>
+                                 <p>Funcionalidad de gestión de empleados próximamente disponible.</p>
+                                 <button class="btn-primary" onclick="alert('Funcionalidad en desarrollo')">
+                                     <i class="fas fa-plus"></i> Agregar Empleado
+                                 </button>
+                             </div>
+                         </div>
+                     `;
+                }
             }
         } catch (error) {
-            console.error('Error loading users content:', error);
+            console.error('Error loading HR content:', error);
             container.innerHTML = `
                  <div class="content-header">
-                     <h2><i class="fas fa-users"></i> Gestión de Usuarios</h2>
-                     <p>Administra los usuarios del sistema</p>
+                     <h2><i class="fas fa-user-tie"></i> Recursos Humanos</h2>
+                     <p>Sistema de gestión de empleados</p>
                  </div>
                  <div class="content-body">
                      <div class="empty-state">
-                         <i class="fas fa-users"></i>
-                         <h3>Error al cargar usuarios</h3>
-                         <p>No se pudieron cargar los usuarios del sistema.</p>
+                         <i class="fas fa-user-tie"></i>
+                         <h3>Error al cargar Recursos Humanos</h3>
+                         <p>No se pudo cargar el sistema de gestión de empleados.</p>
                          <button class="btn btn-primary" onclick="window.dashboardService.loadContent('nav-users')">
                              <i class="fas fa-refresh"></i> Reintentar
                          </button>
@@ -151,42 +156,47 @@ class DashboardService {
     }
 
     /**
-     * Carga contenido de pacientes
+     * Carga contenido administrativo
      */
-    async loadPatientsContent(container) {
+    async loadAdministrativeContent(container) {
         try {
-            // Cargar datos reales si el servicio está disponible
-            if (window.patientManagementService) {
-                await window.patientManagementService.loadPatientsList();
+            // Usar el nuevo servicio administrativo
+            if (window.administrativeManagementService) {
+                await window.administrativeManagementService.initialize();
             } else {
-                container.innerHTML = `
-                     <div class="content-header">
-                         <h2><i class="fas fa-user-injured"></i> Gestión de Pacientes</h2>
-                         <p>Administra la información de los pacientes</p>
-                     </div>
-                     <div class="content-body">
-                         <div class="widget">
-                             <h3>Pacientes Registrados</h3>
-                             <p>Lista de pacientes próximamente disponible.</p>
-                             <button class="btn-primary" onclick="alert('Funcionalidad en desarrollo')">
-                                 <i class="fas fa-plus"></i> Registrar Paciente
-                             </button>
+                // Fallback al servicio anterior si no está disponible el nuevo
+                if (window.patientManagementService) {
+                    await window.patientManagementService.loadPatientsList();
+                } else {
+                    container.innerHTML = `
+                         <div class="content-header">
+                             <h2><i class="fas fa-user-cog"></i> Personal Administrativo</h2>
+                             <p>Sistema de gestión administrativa</p>
                          </div>
-                     </div>
-                 `;
+                         <div class="content-body">
+                             <div class="widget">
+                                 <h3>Sistema Administrativo</h3>
+                                 <p>Funcionalidad de gestión administrativa próximamente disponible.</p>
+                                 <button class="btn-primary" onclick="alert('Funcionalidad en desarrollo')">
+                                     <i class="fas fa-plus"></i> Registrar Paciente
+                                 </button>
+                             </div>
+                         </div>
+                     `;
+                }
             }
         } catch (error) {
-            console.error('Error loading patients content:', error);
+            console.error('Error loading administrative content:', error);
             container.innerHTML = `
                  <div class="content-header">
-                     <h2><i class="fas fa-user-injured"></i> Gestión de Pacientes</h2>
-                     <p>Administra la información de los pacientes</p>
+                     <h2><i class="fas fa-user-cog"></i> Personal Administrativo</h2>
+                     <p>Sistema de gestión administrativa</p>
                  </div>
                  <div class="content-body">
                      <div class="empty-state">
-                         <i class="fas fa-user-injured"></i>
-                         <h3>Error al cargar pacientes</h3>
-                         <p>No se pudieron cargar los pacientes del sistema.</p>
+                         <i class="fas fa-user-cog"></i>
+                         <h3>Error al cargar sistema administrativo</h3>
+                         <p>No se pudo cargar el sistema de gestión administrativa.</p>
                          <button class="btn btn-primary" onclick="window.dashboardService.loadContent('nav-patients')">
                              <i class="fas fa-refresh"></i> Reintentar
                          </button>
@@ -475,6 +485,8 @@ class DashboardService {
     async getAdminDashboardContent() {
         try {
             let patientsCount = 0;
+            let appointmentsCount = 0;
+            let pendingInvoicesCount = 0;
 
             if (window.patientApi) {
                 const patients = await window.patientApi.findAllPatients();
@@ -483,25 +495,64 @@ class DashboardService {
 
             return `
                 <div class="dashboard-section">
-                    <h3><i class="fas fa-user-injured"></i> Gestión de Pacientes</h3>
+                    <h3><i class="fas fa-user-cog"></i> Gestión Administrativa</h3>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-value">${patientsCount}</div>
                             <div class="stat-label">Pacientes Registrados</div>
                             <div class="stat-action">
                                 <button class="btn btn-sm btn-primary" onclick="window.dashboardService.loadContent('nav-patients')">
-                                    Ver Pacientes
+                                    Gestionar Pacientes
                                 </button>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-value">0</div>
-                            <div class="stat-label">Citas del Día</div>
+                            <div class="stat-value">${appointmentsCount}</div>
+                            <div class="stat-label">Citas Programadas</div>
                             <div class="stat-action">
                                 <button class="btn btn-sm btn-info" onclick="window.dashboardService.loadContent('nav-appointments')">
-                                    Ver Citas
+                                    Gestionar Citas
                                 </button>
                             </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${pendingInvoicesCount}</div>
+                            <div class="stat-label">Facturas Pendientes</div>
+                            <div class="stat-action">
+                                <button class="btn btn-sm btn-warning" onclick="window.dashboardService.loadContent('nav-billing')">
+                                    Ver Facturación
+                                </button>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">$${(patientsCount * 15000).toLocaleString()}</div>
+                            <div class="stat-label">Facturación Mensual Est.</div>
+                            <div class="stat-action">
+                                <button class="btn btn-sm btn-success" onclick="window.administrativeManagementService?.showBillingCalculator()">
+                                    Calcular Copagos
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h3><i class="fas fa-info-circle"></i> Funciones Administrativas</h3>
+                    <div class="admin-functions">
+                        <div class="function-card" onclick="window.dashboardService.loadContent('nav-patients')">
+                            <i class="fas fa-user-plus"></i>
+                            <h4>Registro de Pacientes</h4>
+                            <p>Registrar nuevos pacientes con validaciones estrictas</p>
+                        </div>
+                        <div class="function-card" onclick="window.dashboardService.loadContent('nav-appointments')">
+                            <i class="fas fa-calendar-alt"></i>
+                            <h4>Programación de Citas</h4>
+                            <p>Agendar y gestionar citas médicas</p>
+                        </div>
+                        <div class="function-card" onclick="window.dashboardService.loadContent('nav-billing')">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <h4>Sistema de Facturación</h4>
+                            <p>Generar facturas con lógica de copagos</p>
                         </div>
                     </div>
                 </div>

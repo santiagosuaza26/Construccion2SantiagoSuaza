@@ -18,10 +18,10 @@ public enum UserRole {
     ADMINISTRATIVE_STAFF,
 
     /**
-     * Information Support role - maintains data integrity,
+     * Support Staff role - maintains data integrity,
      * inventory management, and technical support.
      */
-    INFORMATION_SUPPORT,
+    SUPPORT_STAFF,
 
     /**
      * Nurse role - manages patient vital signs, administered medications,

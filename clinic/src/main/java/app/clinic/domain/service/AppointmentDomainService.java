@@ -3,7 +3,6 @@ package app.clinic.domain.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.Appointment;
 import app.clinic.domain.model.AppointmentDateTime;
@@ -12,6 +11,8 @@ import app.clinic.domain.model.AppointmentStatus;
 import app.clinic.domain.model.DoctorCedula;
 import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.port.AppointmentRepository;
+
+import org.springframework.stereotype.Service;
 
 /**
  * Domain service for appointment operations.

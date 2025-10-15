@@ -151,7 +151,7 @@ public class UserRepositoryAdapter implements UserRepository {
         return switch (role) {
             case HUMAN_RESOURCES -> UserEntity.UserRole.HUMAN_RESOURCES;
             case ADMINISTRATIVE_STAFF -> UserEntity.UserRole.ADMINISTRATIVE_STAFF;
-            case INFORMATION_SUPPORT -> UserEntity.UserRole.INFORMATION_SUPPORT;
+            case SUPPORT_STAFF -> UserEntity.UserRole.SUPPORT_STAFF;
             case NURSE -> UserEntity.UserRole.NURSE;
             case DOCTOR -> UserEntity.UserRole.DOCTOR;
         };
@@ -161,7 +161,7 @@ public class UserRepositoryAdapter implements UserRepository {
         return switch (role) {
             case HUMAN_RESOURCES -> UserRole.HUMAN_RESOURCES;
             case ADMINISTRATIVE_STAFF -> UserRole.ADMINISTRATIVE_STAFF;
-            case INFORMATION_SUPPORT -> UserRole.INFORMATION_SUPPORT;
+            case SUPPORT_STAFF -> UserRole.SUPPORT_STAFF;
             case NURSE -> UserRole.NURSE;
             case DOCTOR -> UserRole.DOCTOR;
         };

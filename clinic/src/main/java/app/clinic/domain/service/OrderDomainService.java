@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.DiagnosticAidOrder;
 import app.clinic.domain.model.DoctorCedula;
@@ -15,6 +14,8 @@ import app.clinic.domain.model.OrderNumber;
 import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.model.ProcedureOrder;
 import app.clinic.domain.port.OrderRepository;
+
+import org.springframework.stereotype.Service;
 
 /**
  * Domain service for medical order operations.

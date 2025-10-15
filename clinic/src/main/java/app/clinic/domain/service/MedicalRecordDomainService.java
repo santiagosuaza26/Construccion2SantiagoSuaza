@@ -1,6 +1,5 @@
 package app.clinic.domain.service;
 
-import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.model.PatientRecord;
@@ -10,9 +9,34 @@ import app.clinic.domain.model.PatientRecordKey;
 import app.clinic.domain.model.PatientRecordMap;
 import app.clinic.domain.port.MedicalRecordRepository;
 
+import org.springframework.stereotype.Service;
+
 /**
- * Domain service for medical record operations.
- * Contains business logic for medical record management following domain-driven design principles.
+ * Domain service for medical record operations in the clinic management system.
+ *
+ * This service manages patient medical histories using a MongoDB document-based approach
+ * that provides flexible storage for complex medical data structures. The service implements:
+ *
+ * - **Document-based storage**: Uses MongoDB for flexible schema medical records
+ * - **Temporal record management**: Handles chronological medical entries with dates
+ * - **Immutable record patterns**: Creates new document versions instead of updates
+ * - **Composite key navigation**: Supports lookup by patient + date combinations
+ * - **Audit trail maintenance**: Preserves complete medical history for compliance
+ *
+ * Architecture Pattern:
+ * - PatientRecordMap: Container for all patient records in the system
+ * - PatientRecord: Individual patient medical history collection
+ * - PatientRecordEntry: Single dated medical record entry (consultation, procedure, etc.)
+ * - PatientRecordKey: Composite key for precise record entry location
+ *
+ * Business Rules:
+ * - Each patient can have only one medical record document
+ * - Record entries are immutable once created (new entries for modifications)
+ * - Empty records are not allowed (must contain at least one entry)
+ * - Date-based ordering maintained for chronological medical history
+ *
+ * @author Clinic Development Team
+ * @version 2.0.0
  */
 @Service
 public class MedicalRecordDomainService {
@@ -24,7 +48,25 @@ public class MedicalRecordDomainService {
     }
 
     /**
-     * Creates a new medical record entry for a patient.
+     * Creates a new comprehensive medical record for a patient.
+     *
+     * This method initializes a patient's complete medical history in the system.
+     * The record must contain at least one entry (consultation, procedure, diagnosis, etc.)
+     * and will be stored as a MongoDB document for flexible schema support.
+     *
+     * Process Flow:
+     * 1. Validates record content and patient eligibility
+     * 2. Retrieves current system-wide record collection
+     * 3. Adds new patient record to the collection
+     * 4. Persists updated collection to MongoDB
+     *
+     * @param patientCedula Unique patient identifier
+     * @param record Complete medical record with initial entries
+     * @return Updated system-wide record collection
+     * @throws IllegalArgumentException if patient already has records or record is invalid
+     *
+     * @see PatientRecord for record structure requirements
+     * @see PatientRecordMap for collection management
      */
     public PatientRecordMap createMedicalRecord(PatientCedula patientCedula, PatientRecord record) {
         validateMedicalRecordForCreation(patientCedula, record);

@@ -180,11 +180,12 @@ public class UserEntity {
 
     /**
      * Enumeration for user roles in the database.
+     * Must match frontend role definitions exactly.
      */
     public enum UserRole {
         HUMAN_RESOURCES,
         ADMINISTRATIVE_STAFF,
-        INFORMATION_SUPPORT,
+        SUPPORT_STAFF,
         NURSE,
         DOCTOR
     }

@@ -521,12 +521,12 @@ class AuthService {
 
         const roleNavigations = {
             'HUMAN_RESOURCES': [
-                { id: 'nav-users', icon: 'fas fa-users', text: 'Usuarios', active: true },
+                { id: 'nav-users', icon: 'fas fa-user-tie', text: 'Recursos Humanos', active: true },
                 { id: 'nav-patients', icon: 'fas fa-user-injured', text: 'Pacientes' },
                 { id: 'nav-reports', icon: 'fas fa-chart-bar', text: 'Reportes' }
             ],
             'ADMINISTRATIVE_STAFF': [
-                { id: 'nav-patients', icon: 'fas fa-user-injured', text: 'Pacientes', active: true },
+                { id: 'nav-patients', icon: 'fas fa-user-cog', text: 'Personal Administrativo', active: true },
                 { id: 'nav-appointments', icon: 'fas fa-calendar-check', text: 'Citas' },
                 { id: 'nav-billing', icon: 'fas fa-file-invoice-dollar', text: 'Facturación' }
             ],

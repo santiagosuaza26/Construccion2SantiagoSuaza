@@ -3,13 +3,16 @@ package app.clinic.domain.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.Patient;
 import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.model.PatientId;
 import app.clinic.domain.model.PatientUsername;
 import app.clinic.domain.port.PatientRepository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 /**
  * Domain service for patient management operations.
@@ -26,7 +29,9 @@ public class PatientDomainService {
 
     /**
      * Registers a new patient with validation.
+     * Clears patient cache to ensure fresh data on next lookups.
      */
+    @CacheEvict(value = "patients", allEntries = true)
     public Patient registerPatient(Patient patient) {
         validatePatientForRegistration(patient);
         return patientRepository.save(patient);
@@ -34,7 +39,9 @@ public class PatientDomainService {
 
     /**
      * Updates an existing patient with validation.
+     * Clears patient cache to ensure fresh data on next lookups.
      */
+    @CacheEvict(value = "patients", allEntries = true)
     public Patient updatePatient(Patient patient) {
         validatePatientForUpdate(patient);
         return patientRepository.save(patient);
@@ -42,35 +49,46 @@ public class PatientDomainService {
 
     /**
      * Finds a patient by ID.
+     * Cached for improved performance on frequent lookups.
      */
+    @Cacheable(value = "patients", key = "#patientId.value")
     public Optional<Patient> findPatientById(PatientId patientId) {
         return patientRepository.findById(patientId);
     }
 
     /**
      * Finds a patient by cedula.
+     * Most frequently used lookup method - cached for optimal performance.
      */
+    @Cacheable(value = "patients", key = "#cedula.value")
     public Optional<Patient> findPatientByCedula(PatientCedula cedula) {
         return patientRepository.findByCedula(cedula);
     }
 
     /**
      * Finds a patient by username.
+     * Cached for improved authentication and user lookup performance.
      */
+    @Cacheable(value = "patients", key = "#username.value")
     public Optional<Patient> findPatientByUsername(PatientUsername username) {
         return patientRepository.findByUsername(username);
     }
 
     /**
      * Finds all patients.
+     * Cached for dashboard and reporting operations.
+     * Note: This is a less granular cache due to the nature of the operation.
      */
+    @Cacheable(value = "patients", key = "'allPatients'")
     public List<Patient> findAllPatients() {
         return patientRepository.findAll();
     }
 
     /**
      * Deletes a patient by ID.
+     * Clears patient cache to ensure fresh data on next lookups.
      */
+    @CacheEvict(value = "patients", allEntries = true)
     public void deletePatientById(PatientId patientId) {
         validatePatientCanBeDeleted(patientId);
         patientRepository.deleteById(patientId);
@@ -78,7 +96,9 @@ public class PatientDomainService {
 
     /**
      * Deletes a patient by cedula.
+     * Clears patient cache to ensure fresh data on next lookups.
      */
+    @CacheEvict(value = "patients", allEntries = true)
     public void deletePatientByCedula(PatientCedula cedula) {
         validatePatientCanBeDeletedByCedula(cedula);
         patientRepository.deleteByCedula(cedula);

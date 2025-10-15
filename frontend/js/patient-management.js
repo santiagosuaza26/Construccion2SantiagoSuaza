@@ -545,75 +545,268 @@ class PatientManagementService {
     }
 
     /**
-     * Valida el formulario de paciente
-     */
-    validatePatientForm() {
-        const cedula = document.getElementById('patient-cedula').value.trim();
-        const username = document.getElementById('patient-username').value.trim();
-        const fullName = document.getElementById('patient-fullname').value.trim();
-        const email = document.getElementById('patient-email').value.trim();
-        const phone = document.getElementById('patient-phone').value.trim();
-        const address = document.getElementById('patient-address').value.trim();
-        const gender = document.getElementById('patient-gender').value;
-        const password = document.getElementById('patient-password').value;
-        const confirmPassword = document.getElementById('patient-confirm-password').value;
+      * Valida el formulario de paciente
+      */
+     validatePatientForm() {
+         const cedula = document.getElementById('patient-cedula').value.trim();
+         const username = document.getElementById('patient-username').value.trim();
+         const fullName = document.getElementById('patient-fullname').value.trim();
+         const email = document.getElementById('patient-email').value.trim();
+         const phone = document.getElementById('patient-phone').value.trim();
+         const address = document.getElementById('patient-address').value.trim();
+         const gender = document.getElementById('patient-gender').value;
+         const password = document.getElementById('patient-password').value;
+         const confirmPassword = document.getElementById('patient-confirm-password').value;
 
-        // Validaciones básicas
-        if (!cedula || !window.isValidCedula(cedula)) {
-            window.showError('Cédula inválida');
-            return false;
-        }
+         // Validaciones básicas
+         if (!cedula || !this.isValidCedula(cedula)) {
+             this.showFieldError('patient-cedula', 'Cédula inválida');
+             document.getElementById('patient-cedula')?.focus();
+             return false;
+         }
 
-        if (!username || !/^[a-zA-Z0-9]+$/.test(username)) {
-            window.showError('Nombre de usuario debe contener solo letras y números');
-            return false;
-        }
+         if (!username || !/^[a-zA-Z0-9]+$/.test(username)) {
+             this.showFieldError('patient-username', 'Nombre de usuario debe contener solo letras y números');
+             document.getElementById('patient-username')?.focus();
+             return false;
+         }
 
-        if (!fullName) {
-            window.showError('Nombre completo es requerido');
-            return false;
-        }
+         if (!fullName || fullName.length < 2) {
+             this.showFieldError('patient-fullname', 'Nombre completo debe tener al menos 2 caracteres');
+             document.getElementById('patient-fullname')?.focus();
+             return false;
+         }
 
-        if (!window.isValidEmail(email)) {
-            window.showError('Correo electrónico inválido');
-            return false;
-        }
+         if (!this.isValidEmail(email)) {
+             this.showFieldError('patient-email', 'Correo electrónico inválido');
+             document.getElementById('patient-email')?.focus();
+             return false;
+         }
 
-        if (!window.isValidPhone(phone)) {
-            window.showError('Teléfono debe tener 10 dígitos');
-            return false;
-        }
+         if (!this.isValidPhone(phone)) {
+             this.showFieldError('patient-phone', 'Teléfono debe tener 10 dígitos');
+             document.getElementById('patient-phone')?.focus();
+             return false;
+         }
 
-        if (!address) {
-            window.showError('Dirección es requerida');
-            return false;
-        }
+         if (!address || address.length < 5) {
+             this.showFieldError('patient-address', 'Dirección debe tener al menos 5 caracteres');
+             document.getElementById('patient-address')?.focus();
+             return false;
+         }
 
-        if (!gender) {
-            window.showError('Género es requerido');
-            return false;
-        }
+         if (!gender) {
+             this.showFieldError('patient-gender', 'Género es requerido');
+             document.getElementById('patient-gender')?.focus();
+             return false;
+         }
 
-        // Validar contraseña solo si es creación o si se proporciona
-        if (!this.currentPatient || password) {
-            if (password.length < 8) {
-                window.showError('Contraseña debe tener al menos 8 caracteres');
-                return false;
-            }
+         // Validar contraseña solo si es creación o si se proporciona
+         if (!this.currentPatient || password) {
+             if (password.length < 8) {
+                 this.showFieldError('patient-password', 'Contraseña debe tener al menos 8 caracteres');
+                 document.getElementById('patient-password')?.focus();
+                 return false;
+             }
 
-            if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
-                window.showError('Contraseña debe incluir mayúscula, minúscula, número y carácter especial');
-                return false;
-            }
+             if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
+                 this.showFieldError('patient-password', 'Contraseña debe incluir mayúscula, minúscula, número y carácter especial');
+                 document.getElementById('patient-password')?.focus();
+                 return false;
+             }
 
-            if (password !== confirmPassword) {
-                window.showError('Las contraseñas no coinciden');
-                return false;
-            }
-        }
+             if (password !== confirmPassword) {
+                 this.showFieldError('patient-confirm-password', 'Las contraseñas no coinciden');
+                 document.getElementById('patient-confirm-password')?.focus();
+                 return false;
+             }
+         }
 
-        return true;
-    }
+         // Validar contacto de emergencia
+         if (!this.validateEmergencyContact()) {
+             return false;
+         }
+
+         // Validar información de seguro médico
+         if (!this.validateInsuranceInfo()) {
+             return false;
+         }
+
+         return true;
+     }
+
+     /**
+      * Valida el contacto de emergencia
+      */
+     validateEmergencyContact() {
+         const emergencyName = document.getElementById('emergency-name').value.trim();
+         const emergencyRelationship = document.getElementById('emergency-relationship').value;
+         const emergencyPhone = document.getElementById('emergency-phone').value.trim();
+
+         // Si no hay ningún campo lleno, el contacto es opcional
+         if (!emergencyName && !emergencyRelationship && !emergencyPhone) {
+             return true;
+         }
+
+         // Si hay algún campo lleno, validar que estén todos los campos requeridos
+         if (!emergencyName) {
+             this.showFieldError('emergency-name', 'Nombre del contacto de emergencia es requerido');
+             document.getElementById('emergency-name')?.focus();
+             return false;
+         }
+
+         if (!emergencyRelationship) {
+             this.showFieldError('emergency-relationship', 'Relación del contacto es requerida');
+             document.getElementById('emergency-relationship')?.focus();
+             return false;
+         }
+
+         if (!emergencyPhone) {
+             this.showFieldError('emergency-phone', 'Teléfono del contacto de emergencia es requerido');
+             document.getElementById('emergency-phone')?.focus();
+             return false;
+         }
+
+         if (!this.isValidPhone(emergencyPhone)) {
+             this.showFieldError('emergency-phone', 'Teléfono de emergencia debe tener 10 dígitos');
+             document.getElementById('emergency-phone')?.focus();
+             return false;
+         }
+
+         // Validar que el teléfono de emergencia no sea igual al del paciente
+         const patientPhone = document.getElementById('patient-phone').value.trim();
+         if (emergencyPhone === patientPhone) {
+             this.showFieldError('emergency-phone', 'Teléfono de emergencia no puede ser igual al del paciente');
+             document.getElementById('emergency-phone')?.focus();
+             return false;
+         }
+
+         return true;
+     }
+
+     /**
+      * Muestra error en un campo específico
+      */
+     showFieldError(fieldId, message) {
+         const field = document.getElementById(fieldId);
+         if (field) {
+             field.classList.add('field-error');
+
+             // Crear o actualizar mensaje de error
+             let errorElement = field.parentNode.querySelector('.field-error-message');
+             if (!errorElement) {
+                 errorElement = document.createElement('div');
+                 errorElement.className = 'field-error-message';
+                 field.parentNode.appendChild(errorElement);
+             }
+
+             errorElement.textContent = message;
+         }
+     }
+
+     /**
+      * Limpia error de un campo específico
+      */
+     clearFieldError(fieldId) {
+         const field = document.getElementById(fieldId);
+         if (field) {
+             field.classList.remove('field-error');
+
+             const errorElement = field.parentNode.querySelector('.field-error-message');
+             if (errorElement) {
+                 errorElement.remove();
+             }
+         }
+     }
+
+     /**
+      * Valida cédula colombiana
+      */
+     isValidCedula(cedula) {
+         if (!cedula || !/^\d+$/.test(cedula)) {
+             return false;
+         }
+
+         // Algoritmo básico de validación de cédula colombiana
+         if (cedula.length < 5 || cedula.length > 10) {
+             return false;
+         }
+
+         return true;
+     }
+
+     /**
+      * Valida email
+      */
+     isValidEmail(email) {
+         if (!email) return true; // Email es opcional
+
+         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+         return emailRegex.test(email);
+     }
+
+     /**
+      * Valida teléfono colombiano
+      */
+     isValidPhone(phone) {
+         if (!phone) return false;
+
+         // Remover espacios, guiones y paréntesis
+         const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+
+         // Validar que tenga exactamente 10 dígitos y comience con 3
+         return /^3\d{9}$/.test(cleanPhone);
+     }
+
+     /**
+      * Valida la información del seguro médico
+      */
+     validateInsuranceInfo() {
+         const insuranceCompany = document.getElementById('insurance-company').value.trim();
+         const policyNumber = document.getElementById('policy-number').value.trim();
+         const expirationDate = document.getElementById('policy-expiration').value;
+
+         // Si no hay compañía seleccionada, el seguro es opcional
+         if (!insuranceCompany) {
+             return true;
+         }
+
+         // Si hay compañía pero faltan otros campos requeridos
+         if (!policyNumber) {
+             this.showFieldError('policy-number', 'Número de póliza es requerido cuando hay compañía de seguros');
+             document.getElementById('policy-number')?.focus();
+             return false;
+         }
+
+         if (!expirationDate) {
+             this.showFieldError('policy-expiration', 'Fecha de vencimiento es requerida');
+             document.getElementById('policy-expiration')?.focus();
+             return false;
+         }
+
+         // Validar fecha de vencimiento futura
+         const expiryDate = new Date(expirationDate);
+         const today = new Date();
+         today.setHours(0, 0, 0, 0);
+
+         if (expiryDate <= today) {
+             this.showFieldError('policy-expiration', 'Fecha de vencimiento debe ser futura');
+             document.getElementById('policy-expiration')?.focus();
+             return false;
+         }
+
+         // Validar que la fecha no sea más de 5 años en el futuro
+         const fiveYearsFromNow = new Date();
+         fiveYearsFromNow.setFullYear(fiveYearsFromNow.getFullYear() + 5);
+
+         if (expiryDate > fiveYearsFromNow) {
+             this.showFieldError('policy-expiration', 'Fecha de vencimiento no puede ser mayor a 5 años');
+             document.getElementById('policy-expiration')?.focus();
+             return false;
+         }
+
+         return true;
+     }
 
     /**
      * Obtiene los datos del formulario

@@ -4,12 +4,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.model.PatientVisit;
 import app.clinic.domain.model.PatientVisitId;
 import app.clinic.domain.port.PatientVisitRepository;
+
+import org.springframework.stereotype.Service;
 
 /**
  * Domain service for patient visit operations.

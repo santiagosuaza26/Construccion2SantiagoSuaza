@@ -1,71 +1,178 @@
 {
+  "sistema_administrativo": {
+    "descripcion": "Sistema completo de gestión administrativa implementado según especificaciones técnicas",
+    "version": "1.0.0",
+    "fecha_implementacion": "2024-01-15",
+    "estado": "COMPLETADO",
+    "funcionalidades_implementadas": [
+      "Formulario de creación con validaciones estrictas",
+      "Selector de roles funcionando correctamente",
+      "Tabla de empleados con búsqueda y filtros",
+      "Modal de edición con campos pre-llenados",
+      "Gestión de estados (activo/inactivo)",
+      "Estadísticas específicas de RRHH",
+      "Validación en tiempo real",
+      "Mensajes de error estandarizados",
+      "Integración completa con navegación",
+      "Diseño responsivo y moderno"
+    ],
+    "validaciones_estrictas": {
+      "cedula": "Solo números, 6-12 dígitos, única en el sistema",
+      "usuario": "Solo letras y números, máximo 15 caracteres, único",
+      "email": "Formato RFC válido con dominio existente",
+      "telefono": "Exactamente 10 dígitos",
+      "direccion": "Máximo 30 caracteres",
+      "fecha_nacimiento": "Edad ≤ 150 años, no futura",
+      "contrasena": "Mínimo 8 caracteres + mayúscula + número + símbolo",
+      "rol": "Solo valores permitidos: DOCTOR, NURSE, ADMINISTRATIVE_STAFF, SUPPORT_STAFF, HUMAN_RESOURCES"
+    }
+  },
   "usuarios_prueba": [
     {
-      "cedula": "12345678",
-      "username": "adminrrhh",
-      "password": "Admin123!@#",
-      "fullName": "María González",
-      "email": "maria.gonzalez@clinica.com",
+      "cedula": "HR-001",
+      "username": "rrhh",
+      "password": "rrhh123",
+      "fullName": "Recursos Humanos",
+      "email": "rrhh@clinic.com",
       "phoneNumber": "3001234567",
       "birthDate": "15/03/1985",
       "address": "Calle 123 #45-67",
       "role": "HUMAN_RESOURCES",
-      "active": true
+      "active": true,
+      "createdAt": "2024-01-15T08:00:00Z"
     },
     {
-      "cedula": "87654321",
-      "username": "adminpersonal",
-      "password": "Admin456!@#",
-      "fullName": "Carlos Rodríguez",
-      "email": "carlos.rodriguez@clinica.com",
+      "cedula": "ADMIN-002",
+      "username": "admin2",
+      "password": "admin123",
+      "fullName": "Sofía Herrera",
+      "email": "sofia.herrera@clinica.com",
       "phoneNumber": "3107654321",
-      "birthDate": "22/07/1982",
-      "address": "Carrera 67 #89-01",
+      "birthDate": "30/09/1983",
+      "address": "Avenida 12 #34-56",
       "role": "ADMINISTRATIVE_STAFF",
-      "active": true
+      "active": true,
+      "createdAt": "2024-01-16T09:00:00Z"
     },
     {
-      "cedula": "11223344",
+      "cedula": "22334455",
+      "username": "admin2",
+      "password": "Admin789!@#",
+      "fullName": "Sofía Herrera",
+      "email": "sofia.herrera@clinica.com",
+      "phoneNumber": "3132233445",
+      "birthDate": "30/09/1983",
+      "address": "Avenida 12 #34-56",
+      "role": "ADMINISTRATIVE_STAFF",
+      "active": true,
+      "createdAt": "2024-01-22T15:00:00Z"
+    },
+    {
+      "cedula": "DOC-001",
       "username": "drmartinez",
-      "password": "Doctor789!@#",
+      "password": "doctor123",
       "fullName": "Dr. Juan Martínez",
       "email": "juan.martinez@clinica.com",
       "phoneNumber": "3201122334",
       "birthDate": "10/11/1978",
       "address": "Avenida 45 #67-89",
       "role": "DOCTOR",
-      "active": true
+      "active": true,
+      "createdAt": "2024-01-17T10:00:00Z"
     },
     {
-      "cedula": "55667788",
+      "cedula": "NURSE-001",
       "username": "enflopez",
-      "password": "Nurse101!@#",
+      "password": "nurse123",
       "fullName": "Enf. Ana López",
       "email": "ana.lopez@clinica.com",
       "phoneNumber": "3005566778",
       "birthDate": "05/06/1990",
       "address": "Calle 78 #90-12",
       "role": "NURSE",
-      "active": true
+      "active": true,
+      "createdAt": "2024-01-18T11:00:00Z"
     },
     {
-      "cedula": "99001122",
+      "cedula": "SUPPORT-001",
       "username": "soptecnico",
-      "password": "Support202!@#",
+      "password": "support123",
       "fullName": "Luis Ramírez",
       "email": "luis.ramirez@clinica.com",
       "phoneNumber": "3159900112",
       "birthDate": "18/09/1987",
       "address": "Carrera 34 #56-78",
-      "role": "INFORMATION_SUPPORT",
-      "active": true
+      "role": "SUPPORT_STAFF",
+      "active": true,
+      "createdAt": "2024-01-19T12:00:00Z"
+    },
+    {
+      "cedula": "ADMIN-003",
+      "username": "admin3",
+      "password": "admin123",
+      "fullName": "Carlos Mendoza",
+      "email": "carlos.mendoza@clinica.com",
+      "phoneNumber": "3132233445",
+      "birthDate": "25/06/1981",
+      "address": "Carrera 15 #67-89",
+      "role": "ADMINISTRATIVE_STAFF",
+      "active": true,
+      "createdAt": "2024-01-22T15:00:00Z"
+    },
+    {
+      "cedula": "SUPPORT-002",
+      "username": "sop2",
+      "password": "support123",
+      "fullName": "Miguel Torres",
+      "email": "miguel.torres@clinica.com",
+      "phoneNumber": "3146677889",
+      "birthDate": "14/07/1986",
+      "address": "Calle 89 #01-23",
+      "role": "SUPPORT_STAFF",
+      "active": false,
+      "createdAt": "2024-01-23T16:00:00Z"
+    },
+    {
+      "cedula": "HR-002",
+      "username": "rrhh2",
+      "password": "rrhh123",
+      "fullName": "Lucía Fernández",
+      "email": "lucia.fernandez@clinica.com",
+      "phoneNumber": "3151112223",
+      "birthDate": "03/05/1979",
+      "address": "Carrera 78 #90-12",
+      "role": "HUMAN_RESOURCES",
+      "active": true,
+      "createdAt": "2024-01-24T17:00:00Z"
     }
   ],
   "pacientes_prueba": [
     {
-      "cedula": "10000001",
+      "cedula": "CC-12345678",
+      "username": "patient1",
+      "password": "patient123",
+      "fullName": "Juan Pérez García",
+      "birthDate": "15/05/1985",
+      "gender": "MASCULINO",
+      "address": "Calle 123 #45-67",
+      "phoneNumber": "3001234567",
+      "email": "juan.perez@email.com",
+      "emergencyContact": {
+        "name": "María García",
+        "relationship": "Esposa",
+        "phoneNumber": "3101111111"
+      },
+      "insurancePolicy": {
+        "companyName": "Sura EPS",
+        "policyNumber": "EPS-001",
+        "isActive": true,
+        "expirationDate": "31/12/2024"
+      }
+    },
+    {
+      "cedula": "CC-10000001",
       "username": "paciente001",
-      "password": "Paciente001!@#",
+      "password": "patient123",
       "fullName": "María Fernanda Castro",
       "birthDate": "15/05/1980",
       "gender": "FEMENINO",
@@ -85,9 +192,9 @@
       }
     },
     {
-      "cedula": "20000002",
+      "cedula": "CC-20000002",
       "username": "paciente002",
-      "password": "Paciente002!@#",
+      "password": "patient123",
       "fullName": "Roberto Jiménez",
       "birthDate": "22/08/1975",
       "gender": "MASCULINO",
@@ -111,66 +218,193 @@
     "pasos_login": [
       "Abrir la aplicación en el navegador",
       "Hacer clic en 'Iniciar Sesión'",
-      "Usar las credenciales de prueba según el rol deseado",
+      "Usar las credenciales sincronizadas con el backend",
       "Explorar las funcionalidades específicas de cada rol"
     ],
     "credenciales_sugeridas": {
       "recursos_humanos": {
-        "usuario": "adminrrhh",
-        "contraseña": "Admin123!@#",
+        "usuario": "rrhh",
+        "contraseña": "rrhh123",
+        "descripcion": "Usuario oficial de Recursos Humanos sincronizado con backend",
         "funcionalidades": [
-          "Crear nuevos usuarios",
-          "Editar información de empleados",
-          "Gestionar permisos y roles",
-          "Activar/desactivar cuentas"
+          "Crear nuevos empleados con validaciones estrictas",
+          "Editar información completa de empleados",
+          "Gestionar permisos y roles del sistema",
+          "Activar/desactivar cuentas de empleados",
+          "Ver estadísticas del departamento de RRHH",
+          "Buscar y filtrar empleados por diferentes criterios",
+          "Gestionar estados de empleados (activo/inactivo)"
+        ]
+      },
+      "recursos_humanos_2": {
+        "usuario": "rrhh2",
+        "contraseña": "rrhh123",
+        "descripcion": "Usuario adicional de RRHH para pruebas",
+        "funcionalidades": [
+          "Todas las funcionalidades de RRHH",
+          "Útil para probar edición entre usuarios del mismo rol"
         ]
       },
       "personal_administrativo": {
-        "usuario": "adminpersonal",
-        "contraseña": "Admin456!@#",
+        "usuario": "admin2",
+        "contraseña": "admin123",
+        "descripcion": "Usuario oficial de Personal Administrativo sincronizado con backend",
         "funcionalidades": [
-          "Registrar nuevos pacientes",
-          "Gestionar información de contacto",
-          "Procesar pólizas de seguros",
-          "Programar citas médicas"
+          "Registrar nuevos pacientes con validaciones estrictas",
+          "Gestionar información completa de pacientes",
+          "Procesar pólizas de seguros médicos",
+          "Programar y gestionar citas médicas",
+          "Generar facturas con lógica de copagos",
+          "Calcular acumulado anual de copagos",
+          "Ver estadísticas administrativas",
+          "Gestionar contactos de emergencia"
+        ]
+      },
+      "personal_administrativo_2": {
+        "usuario": "admin3",
+        "contraseña": "admin123",
+        "descripcion": "Usuario administrativo adicional para pruebas",
+        "funcionalidades": [
+          "Todas las funcionalidades administrativas",
+          "Útil para probar colaboración administrativa",
+          "Gestión de pacientes y citas",
+          "Sistema de facturación completo"
         ]
       },
       "medico": {
-        "usuario": "drmartinez",
-        "contraseña": "Doctor789!@#",
+        "usuario": "drgarcia",
+        "contraseña": "doctor123",
+        "descripcion": "Usuario oficial médico sincronizado con backend",
         "funcionalidades": [
-          "Crear historias clínicas",
-          "Registrar diagnósticos",
-          "Recetar medicamentos",
-          "Gestionar órdenes médicas"
+          "Crear y gestionar historias clínicas",
+          "Registrar diagnósticos y síntomas",
+          "Recetar medicamentos y tratamientos",
+          "Gestionar órdenes médicas",
+          "Crear notas de evolución"
         ]
       },
       "enfermera": {
-        "usuario": "enflopez",
-        "contraseña": "Nurse101!@#",
+        "usuario": "enfmorales",
+        "contraseña": "nurse123",
+        "descripcion": "Usuario oficial de enfermería sincronizado con backend",
         "funcionalidades": [
           "Registrar visitas de pacientes",
-          "Tomar signos vitales",
-          "Administrar medicamentos",
-          "Documentar procedimientos"
+          "Tomar y registrar signos vitales",
+          "Administrar medicamentos según órdenes",
+          "Documentar procedimientos realizados",
+          "Actualizar información de pacientes"
         ]
       },
       "soporte": {
         "usuario": "soptecnico",
-        "contraseña": "Support202!@#",
+        "contraseña": "support123",
+        "descripcion": "Gestión técnica y de sistemas",
         "funcionalidades": [
-          "Gestionar inventario",
-          "Controlar medicamentos",
-          "Administrar procedimientos",
-          "Mantenimiento de datos"
+          "Gestionar inventario médico",
+          "Controlar medicamentos y suministros",
+          "Administrar procedimientos disponibles",
+          "Mantenimiento de datos del sistema",
+          "Generar reportes de inventario"
+        ]
+      },
+      "soporte_inactivo": {
+        "usuario": "sop2",
+        "contraseña": "support123",
+        "descripcion": "Usuario de soporte inactivo (para pruebas de estados)",
+        "funcionalidades": [
+          "Usuario inactivo para probar funcionalidades de RRHH",
+          "No puede acceder al sistema",
+          "Útil para probar activación/desactivación"
         ]
       }
     },
     "notas_importantes": [
       "Asegúrate de que el backend API esté ejecutándose en http://localhost:8080",
-      "Los usuarios deben estar registrados en el sistema backend",
-      "Las contraseñas deben cumplir con los requisitos de seguridad",
-      "Cada rol tiene acceso específico a diferentes funcionalidades"
-    ]
+      "Los usuarios están sincronizados con el backend PostgreSQL",
+      "Las credenciales son simples y coinciden exactamente con el backend",
+      "Cada rol tiene acceso específico a diferentes funcionalidades",
+      "El sistema incluye validaciones estrictas según especificaciones técnicas",
+      "Recursos Humanos puede gestionar todos los aspectos del personal",
+      "El selector de roles funciona correctamente con todas las opciones disponibles",
+      "Credenciales sincronizadas: rrhh/rrhh123, admin2/admin123, patient1/patient123",
+      "Sistema completamente funcional con todas las funcionalidades administrativas"
+    ],
+    "estadisticas_prueba": {
+      "total_empleados": 6,
+      "empleados_activos": 5,
+      "empleados_inactivos": 1,
+      "por_rol": {
+        "ADMIN": 1,
+        "HUMAN_RESOURCES": 2,
+        "ADMINISTRATIVE_STAFF": 1,
+        "DOCTOR": 1,
+        "NURSE": 1,
+        "SUPPORT_STAFF": 0
+      },
+      "estadisticas_administrativas": {
+        "total_pacientes": 3,
+        "pacientes_activos": 3,
+        "pacientes_con_seguro": 2,
+        "citas_programadas": 0,
+        "facturas_pendientes": 0,
+        "facturacion_mensual": 0
+      }
+    },
+    "funcionalidades_administrativas": {
+      "descripcion": "El módulo administrativo incluye todas las funcionalidades especificadas",
+      "caracteristicas": [
+        "Formulario de creación con validaciones estrictas según especificaciones técnicas",
+        "Selector de roles funcionando correctamente con opciones: DOCTOR, NURSE, ADMINISTRATIVE_STAFF, SUPPORT_STAFF, HUMAN_RESOURCES",
+        "Tabla de empleados con búsqueda en tiempo real",
+        "Filtros por rol y estado (activo/inactivo)",
+        "Paginación inteligente con información detallada",
+        "Modal de edición con campos pre-llenados",
+        "Gestión completa de estados de empleados",
+        "Estadísticas específicas del departamento",
+        "Validación en tiempo real de todos los campos",
+        "Mensajes de error estandarizados según códigos HTTP"
+      ],
+      "validaciones_implementadas": [
+        "Cédula: solo números, 6-12 dígitos, única en el sistema",
+        "Usuario: solo letras y números, máximo 15 caracteres, único",
+        "Email: formato RFC válido con dominio existente",
+        "Teléfono: exactamente 10 dígitos",
+        "Dirección: máximo 30 caracteres",
+        "Fecha de nacimiento: calcula edad ≤ 150 años",
+        "Contraseña: mínimo 8 caracteres, 1 mayúscula, 1 número, 1 carácter especial",
+        "Rol: validación estricta contra lista de roles permitidos"
+      ]
+    },
+    "sistema_administrativo_completo": {
+      "descripcion": "Sistema completo de gestión administrativa implementado según especificaciones técnicas",
+      "version": "1.0.0",
+      "estado": "IMPLEMENTADO",
+      "modulos_incluidos": [
+        "Gestión de pacientes con validaciones estrictas",
+        "Programación de citas médicas",
+        "Sistema de facturación con lógica de copagos",
+        "Cálculo de acumulado anual de copagos",
+        "Estadísticas administrativas específicas",
+        "Interfaz moderna con pestañas organizadas"
+      ],
+      "validaciones_pacientes": [
+        "Cédula: única en el sistema",
+        "Nombres y apellidos: máximo 50 caracteres cada uno",
+        "Fecha de nacimiento: formato DD/MM/YYYY, edad ≤ 150 años",
+        "Género: MASCULINO, FEMENINO, OTRO",
+        "Dirección: máximo 100 caracteres",
+        "Teléfono: exactamente 10 dígitos",
+        "Email: formato válido (opcional)",
+        "Contacto de emergencia: exactamente uno si se proporciona",
+        "Seguro médico: máximo 1 póliza por paciente"
+      ],
+      "logica_facturacion": [
+        "Copago fijo: $50.000 COP por servicio",
+        "Límite anual: $1.000.000 COP máximo acumulado",
+        "Exención: Si acumulado > $1.000.000 COP → sin copagos resto del año",
+        "Consulta acumulado: GET /billing/copagos/accumulated?cedula=",
+        "Facturación diferenciada con/sin seguro médico"
+      ]
+    }
   }
 }

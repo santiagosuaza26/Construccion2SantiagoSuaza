@@ -527,6 +527,30 @@ const billingApi = {
     async generateInvoice(invoiceData) {
         const api = new ApiService();
         return api.post('/billing/generate', invoiceData);
+    },
+
+    /**
+     * Obtiene el acumulado anual de copagos de un paciente
+     */
+    async getAnnualAccumulated(patientCedula) {
+        const api = new ApiService();
+        return api.get(`/billing/copagos/accumulated`, { cedula: patientCedula });
+    },
+
+    /**
+     * Obtiene el historial de acumulado anual de un paciente
+     */
+    async getAccumulatedHistory(patientCedula) {
+        const api = new ApiService();
+        return api.get(`/billing/copagos/history/${patientCedula}`);
+    },
+
+    /**
+     * Genera reporte de acumulado anual
+     */
+    async generateAccumulatedReport(patientCedula) {
+        const api = new ApiService();
+        return api.get(`/billing/copagos/report/${patientCedula}`);
     }
 };
 

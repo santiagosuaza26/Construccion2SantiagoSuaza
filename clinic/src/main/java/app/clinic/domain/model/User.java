@@ -104,7 +104,7 @@ public class User {
     }
 
     public boolean canManageInventory() {
-        return role == UserRole.INFORMATION_SUPPORT;
+        return role == UserRole.SUPPORT_STAFF;
     }
 
     public boolean canRecordVitalSigns() {

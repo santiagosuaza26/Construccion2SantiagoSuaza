@@ -83,6 +83,40 @@ window.APP_CONFIG = {
         MOCK_DATA: false,
         DEBUG_MODE: true,
         AUTO_LOGIN: false // Para desarrollo rápido
+    },
+
+    // Credenciales de prueba sincronizadas con el backend
+    TEST_CREDENTIALS: {
+        ADMIN: {
+            username: 'admin',
+            password: 'admin123',
+            role: 'ADMIN'
+        },
+        HR: {
+            username: 'rrhh',
+            password: 'rrhh123',
+            role: 'HUMAN_RESOURCES'
+        },
+        ADMIN_STAFF: {
+            username: 'admin2',
+            password: 'admin123',
+            role: 'ADMINISTRATIVE_STAFF'
+        },
+        DOCTOR: {
+            username: 'drgarcia',
+            password: 'doctor123',
+            role: 'DOCTOR'
+        },
+        NURSE: {
+            username: 'enfmorales',
+            password: 'nurse123',
+            role: 'NURSE'
+        },
+        PATIENT: {
+            username: 'patient1',
+            password: 'patient123',
+            role: 'PATIENT'
+        }
     }
 };
 
