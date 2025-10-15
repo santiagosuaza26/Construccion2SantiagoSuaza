@@ -1,148 +1,518 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>app</groupId>
-	<artifactId>clinic</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>Cs2Application</name>
-	<description>trabajo final de construcción de software</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project Information -->
+    <groupId>app</groupId>
+    <artifactId>clinic</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Clinic Management System</name>
+    <description>Comprehensive clinic management application for healthcare facilities</description>
+
+    <!-- Parent Configuration -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.6</version>
+        <relativePath/>
+    </parent>
+
+    <!-- Properties Management -->
     <properties>
+        <!-- Java Configuration -->
         <java.version>17</java.version>
         <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+        <!-- Project Configuration -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- Version Management -->
+        <springdoc-openapi.version>2.2.0</springdoc-openapi.version>
+        <testcontainers.version>1.19.8</testcontainers.version>
+        <mockito.version>5.5.0</mockito.version>
+        <assertj.version>3.24.2</assertj.version>
+
+        <!-- Plugin Configuration -->
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+
+        <!-- Build Configuration -->
+        <skipTests>false</skipTests>
+        <skipITs>false</skipITs>
     </properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.2.0</version>
-		</dependency>
 
-		<!-- PostgreSQL Connector -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+    <!-- License Information -->
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-		<!-- MongoDB Connector -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
+    <!-- Developer Information -->
+    <developers>
+        <developer>
+            <name>Santiago Suaza</name>
+            <email>santiago.suaza@example.com</email>
+            <organization>Clinic Management Team</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
 
-		<!-- Test Dependencies -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<scope>test</scope>
-		</dependency>
+    <!-- SCM Information -->
+    <scm>
+        <connection>scm:git:git://github.com/username/clinic-management.git</connection>
+        <developerConnection>scm:git:ssh://github.com:username/clinic-management.git</developerConnection>
+        <url>https://github.com/username/clinic-management</url>
+        <tag>HEAD</tag>
+    </scm>
 
-		<!-- Testcontainers for Integration Testing -->
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>mongodb</artifactId>
-			<scope>test</scope>
-		</dependency>
+    <!-- Dependency Management -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Testcontainers BOM for version management -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-		<!-- H2 Database for Development and Testing -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+    <!-- Project Dependencies -->
+    <dependencies>
+        <!-- Core Spring Boot Starters -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 
-		<!-- Lombok for reducing boilerplate code -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
 
-		<!-- Redis for caching -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-cache</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+        <!-- Database Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Caching Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!-- Development Tools -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi.version}</version>
+        </dependency>
+
+        <!-- Utility Libraries -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Test Dependencies -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Testing Frameworks -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Integration Testing -->
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Performance Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+    </dependencies>
+
+	   <!-- Build Configuration -->
+	   <build>
+	       <defaultGoal>spring-boot:run</defaultGoal>
+
+	       <!-- Plugin Management -->
+	       <pluginManagement>
+	           <plugins>
+	               <plugin>
+	                   <groupId>org.apache.maven.plugins</groupId>
+	                   <artifactId>maven-compiler-plugin</artifactId>
+	                   <version>${maven-compiler-plugin.version}</version>
+	                   <configuration>
+	                       <source>${java.version}</source>
+	                       <target>${java.version}</target>
+	                       <encoding>${project.build.sourceEncoding}</encoding>
+	                       <showWarnings>true</showWarnings>
+	                       <showDeprecation>true</showDeprecation>
+	                   </configuration>
+	               </plugin>
+
+	               <plugin>
+	                   <groupId>org.apache.maven.plugins</groupId>
+	                   <artifactId>maven-surefire-plugin</artifactId>
+	                   <version>${maven-surefire-plugin.version}</version>
+	                   <configuration>
+	                       <includes>
+	                           <include>**/*Test.java</include>
+	                           <include>**/*Tests.java</include>
+	                       </includes>
+	                       <excludes>
+	                           <exclude>**/*IntegrationTest.java</exclude>
+	                           <exclude>**/*PerformanceTest.java</exclude>
+	                       </excludes>
+	                       <systemPropertyVariables>
+	                           <java.util.logging.config.file>src/test/resources/logging.properties</java.util.logging.config.file>
+	                       </systemPropertyVariables>
+	                   </configuration>
+	               </plugin>
+
+	               <plugin>
+	                   <groupId>org.apache.maven.plugins</groupId>
+	                   <artifactId>maven-failsafe-plugin</artifactId>
+	                   <version>${maven-failsafe-plugin.version}</version>
+	                   <configuration>
+	                       <includes>
+	                           <include>**/*IntegrationTest.java</include>
+	                           <include>**/*PerformanceTest.java</include>
+	                       </includes>
+	                   </configuration>
+	                   <executions>
+	                       <execution>
+	                           <goals>
+	                               <goal>integration-test</goal>
+	                               <goal>verify</goal>
+	                           </goals>
+	                       </execution>
+	                   </executions>
+	               </plugin>
+
+	               <plugin>
+	                   <groupId>org.springframework.boot</groupId>
+	                   <artifactId>spring-boot-maven-plugin</artifactId>
+	                   <configuration>
+	                       <excludes>
+	                           <exclude>
+	                               <groupId>org.springframework.boot</groupId>
+	                               <artifactId>spring-boot-devtools</artifactId>
+	                           </exclude>
+	                       </excludes>
+	                       <addResources>true</addResources>
+	                   </configuration>
+	                   <executions>
+	                       <execution>
+	                           <goals>
+	                               <goal>repackage</goal>
+	                           </goals>
+	                       </execution>
+	                   </executions>
+	               </plugin>
+
+	               <plugin>
+	                   <groupId>pl.project13.maven</groupId>
+	                   <artifactId>git-commit-id-plugin</artifactId>
+	                   <version>${git-commit-id-plugin.version}</version>
+	                   <executions>
+	                       <execution>
+	                           <goals>
+	                               <goal>revision</goal>
+	                           </goals>
+	                       </execution>
+	                   </executions>
+	                   <configuration>
+	                       <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+	                       <prefix>git</prefix>
+	                       <verbose>false</verbose>
+	                       <generateGitPropertiesFile>true</generateGitPropertiesFile>
+	                       <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+	                       <format>json</format>
+	                   </configuration>
+	               </plugin>
+	           </plugins>
+	       </pluginManagement>
+
+	       <!-- Project Plugins -->
+	       <plugins>
+	           <!-- Compiler Plugin -->
+	           <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-compiler-plugin</artifactId>
+	           </plugin>
+
+	           <!-- Resource Plugin -->
+	           <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-resources-plugin</artifactId>
+	               <version>3.3.1</version>
+	               <configuration>
+	                   <encoding>${project.build.sourceEncoding}</encoding>
+	                   <includeEmptyDirs>true</includeEmptyDirs>
+	               </configuration>
+	           </plugin>
+
+	           <!-- Test Plugins -->
+	           <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-surefire-plugin</artifactId>
+	           </plugin>
+
+	           <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-failsafe-plugin</artifactId>
+	           </plugin>
+
+	           <!-- Spring Boot Plugin -->
+	           <plugin>
+	               <groupId>org.springframework.boot</groupId>
+	               <artifactId>spring-boot-maven-plugin</artifactId>
+	           </plugin>
+
+	           <!-- Git Commit ID Plugin -->
+	           <plugin>
+	               <groupId>pl.project13.maven</groupId>
+	               <artifactId>git-commit-id-plugin</artifactId>
+	           </plugin>
+
+	           <!-- Additional Quality Plugins -->
+	           <plugin>
+	               <groupId>org.jacoco</groupId>
+	               <artifactId>jacoco-maven-plugin</artifactId>
+	               <version>0.8.10</version>
+	               <executions>
+	                   <execution>
+	                       <goals>
+	                           <goal>prepare-agent</goal>
+	                       </goals>
+	                   </execution>
+	                   <execution>
+	                       <id>report</id>
+	                       <phase>test</phase>
+	                       <goals>
+	                           <goal>report</goal>
+	                       </goals>
+	                   </execution>
+	               </executions>
+	           </plugin>
+
+	           <!-- Enforcer Plugin for Dependency Management -->
+	           <plugin>
+	               <groupId>org.apache.maven.plugins</groupId>
+	               <artifactId>maven-enforcer-plugin</artifactId>
+	               <version>3.4.1</version>
+	               <executions>
+	                   <execution>
+	                       <id>enforce-maven</id>
+	                       <goals>
+	                           <goal>enforce</goal>
+	                       </goals>
+	                       <configuration>
+	                           <rules>
+	                               <requireMavenVersion>
+	                                   <version>[3.8.0,)</version>
+	                               </requireMavenVersion>
+	                               <requireJavaVersion>
+	                                   <version>[17,)</version>
+	                               </requireJavaVersion>
+	                           </rules>
+	                       </configuration>
+	                   </execution>
+	               </executions>
+	           </plugin>
+	       </plugins>
+
+	       <!-- Resources -->
+	       <resources>
+	           <resource>
+	               <directory>src/main/resources</directory>
+	               <filtering>true</filtering>
+	               <includes>
+	                   <include>application*.properties</include>
+	                   <include>application*.yml</include>
+	               </includes>
+	           </resource>
+	           <resource>
+	               <directory>src/main/resources</directory>
+	               <filtering>false</filtering>
+	               <excludes>
+	                   <exclude>application*.properties</exclude>
+	                   <exclude>application*.yml</exclude>
+	               </excludes>
+	           </resource>
+	       </resources>
+
+	       <testResources>
+	           <testResource>
+	               <directory>src/test/resources</directory>
+	               <filtering>true</filtering>
+	           </testResource>
+	       </testResources>
+	   </build>
+
+	   <!-- Profiles for Different Environments -->
+	   <profiles>
+	       <!-- Development Profile -->
+	       <profile>
+	           <id>dev</id>
+	           <activation>
+	               <activeByDefault>true</activeByDefault>
+	           </activation>
+	           <properties>
+	               <spring.profiles.active>dev</spring.profiles.active>
+	               <logging.level.app>DEBUG</logging.level.app>
+	           </properties>
+	       </profile>
+
+	       <!-- Production Profile -->
+	       <profile>
+	           <id>prod</id>
+	           <properties>
+	               <spring.profiles.active>prod</spring.profiles.active>
+	               <logging.level.app>WARN</logging.level.app>
+	           </properties>
+	           <build>
+	               <plugins>
+	                   <plugin>
+	                       <groupId>org.springframework.boot</groupId>
+	                       <artifactId>spring-boot-maven-plugin</artifactId>
+	                       <configuration>
+	                           <classifier>exec</classifier>
+	                       </configuration>
+	                   </plugin>
+	               </plugins>
+	           </build>
+	       </profile>
+
+	       <!-- Test Profile -->
+	       <profile>
+	           <id>test</id>
+	           <properties>
+	               <spring.profiles.active>test</spring.profiles.active>
+	           </properties>
+	       </profile>
+
+	       <!-- Performance Testing Profile -->
+	       <profile>
+	           <id>performance</id>
+	           <properties>
+	               <skipTests>true</skipTests>
+	               <skipITs>false</skipITs>
+	           </properties>
+	       </profile>
+
+	       <!-- Coverage Profile -->
+	       <profile>
+	           <id>coverage</id>
+	           <properties>
+	               <skipTests>false</skipTests>
+	               <jacoco.skip>false</jacoco.skip>
+	           </properties>
+	       </profile>
+	   </profiles>
 
 </project>

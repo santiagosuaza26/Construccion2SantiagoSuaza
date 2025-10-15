@@ -30,8 +30,8 @@ public class UpdateUserDTO {
     @Email(message = "Email must be valid")
     private String email;
 
-    @Pattern(regexp = "^(HUMAN_RESOURCES|ADMINISTRATIVE_STAFF|INFORMATION_SUPPORT|NURSE|DOCTOR)$",
-             message = "Role must be one of: HUMAN_RESOURCES, ADMINISTRATIVE_STAFF, INFORMATION_SUPPORT, NURSE, DOCTOR")
+    @Pattern(regexp = "^(HUMAN_RESOURCES|ADMINISTRATIVE_STAFF|SUPPORT_STAFF|NURSE|DOCTOR)$",
+             message = "Role must be one of: HUMAN_RESOURCES, ADMINISTRATIVE_STAFF, SUPPORT_STAFF, NURSE, DOCTOR")
     private String role;
 
     // Default constructor

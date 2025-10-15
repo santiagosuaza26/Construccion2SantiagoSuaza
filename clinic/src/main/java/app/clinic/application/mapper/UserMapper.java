@@ -67,14 +67,26 @@ public class UserMapper {
 
     /**
      * Updates an existing User entity with data from UpdateUserDTO.
-     * Note: This is a simplified version. In a real application, you would need
-     * to handle each field update properly with the correct domain model constructors.
+     * Creates a new User instance with updated data while preserving the original cedula and username.
      */
     public static User updateEntity(User existingUser, UpdateUserDTO dto) {
-        // For now, return the existing user as the domain model structure is complex
-        // In a real application, you would need to implement proper update logic
-        // based on the specific domain model requirements
-        return existingUser;
+        // Split full name into first names and last names if provided
+        String[] nameParts = dto.getFullName() != null ? dto.getFullName().trim().split("\\s+", 2) : null;
+        String firstNames = nameParts != null ? nameParts[0] : existingUser.getFullName().getFirstNames();
+        String lastNames = nameParts != null && nameParts.length > 1 ? nameParts[1] : existingUser.getFullName().getLastNames();
+
+        return User.of(
+            existingUser.getCedula(), // Preserve original cedula
+            existingUser.getUsername(), // Preserve original username
+            existingUser.getPassword(), // Password should be updated separately if needed
+            dto.getFullName() != null ? UserFullName.of(firstNames, lastNames) : existingUser.getFullName(),
+            dto.getBirthDate() != null ? UserBirthDate.of(parseDate(dto.getBirthDate())) : existingUser.getBirthDate(),
+            dto.getAddress() != null ? UserAddress.of(dto.getAddress()) : existingUser.getAddress(),
+            dto.getPhoneNumber() != null ? UserPhoneNumber.of(dto.getPhoneNumber()) : existingUser.getPhoneNumber(),
+            dto.getEmail() != null ? UserEmail.of(dto.getEmail()) : existingUser.getEmail(),
+            dto.getRole() != null ? UserRole.valueOf(dto.getRole().toUpperCase()) : existingUser.getRole(),
+            existingUser.isActive() // Preserve active status
+        );
     }
 
     /**

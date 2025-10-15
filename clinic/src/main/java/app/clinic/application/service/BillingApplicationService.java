@@ -27,9 +27,7 @@ import app.clinic.infrastructure.repository.InvoiceJpaRepository;
 @Service
 public class BillingApplicationService {
 
-    private final BillingDomainService billingDomainService;
     private final PatientApplicationService patientApplicationService;
-    private final BillingRepositoryAdapter billingRepositoryAdapter;
     private final BillingMapper billingMapper;
     private final InvoiceJpaRepository invoiceJpaRepository;
 
@@ -37,14 +35,10 @@ public class BillingApplicationService {
     private static final BigDecimal COPAYMENT_AMOUNT = new BigDecimal("50000"); // $50,000
     private static final BigDecimal ANNUAL_COPAYMENT_LIMIT = new BigDecimal("1000000"); // $1,000,000
 
-    public BillingApplicationService(BillingDomainService billingDomainService,
-                                    PatientApplicationService patientApplicationService,
-                                    BillingRepositoryAdapter billingRepositoryAdapter,
+    public BillingApplicationService(PatientApplicationService patientApplicationService,
                                     BillingMapper billingMapper,
                                     InvoiceJpaRepository invoiceJpaRepository) {
-        this.billingDomainService = billingDomainService;
         this.patientApplicationService = patientApplicationService;
-        this.billingRepositoryAdapter = billingRepositoryAdapter;
         this.billingMapper = billingMapper;
         this.invoiceJpaRepository = invoiceJpaRepository;
     }

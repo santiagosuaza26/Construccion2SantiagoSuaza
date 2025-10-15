@@ -1,258 +1,592 @@
-# Sistema de Gestión Clínica - Frontend
+# 🌐 Sistema de Gestión Clínica - Frontend
 
-Una aplicación web moderna y profesional desarrollada con HTML, CSS y JavaScript para la gestión integral de información de una clínica médica.
+[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-4.0-yellow.svg)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC.svg)](https://tailwindcss.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 🚀 Características Principales
+## 📋 Tabla de Contenidos
 
-- **Interfaz moderna y responsiva** con diseño profesional
-- **Autenticación basada en roles** con diferentes niveles de acceso
-- **Gestión de usuarios** para Recursos Humanos
-- **Registro y gestión de pacientes** para Personal Administrativo
-- **Historias clínicas digitales** para Médicos
-- **Control de visitas y signos vitales** para Enfermeras
-- **Sistema de inventario** para Soporte de Información
-- **Integración completa con API REST** de Spring Boot
+- [🌐 Sistema de Gestión Clínica - Frontend](#-sistema-de-gestión-clínica---frontend)
+  - [📋 Tabla de Contenidos](#-tabla-de-contenidos)
+  - [🎯 Visión General](#-visión-general)
+  - [✨ Características Principales](#-características-principales)
+  - [🏗️ Arquitectura](#️-arquitectura)
+  - [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
+  - [🚀 Inicio Rápido](#-inicio-rápido)
+  - [📁 Estructura del Proyecto](#-estructura-del-proyecto)
+  - [🔧 Configuración](#-configuración)
+  - [🎨 Estilos y UI/UX](#-estilos-y-uiux)
+  - [🔗 Integración con Backend](#-integración-con-backend)
+  - [🧪 Pruebas](#-pruebas)
+  - [🚢 Despliegue](#-despliegue)
+  - [📱 Características Responsive](#-características-responsive)
+  - [🔒 Seguridad en Frontend](#-seguridad-en-frontend)
+  - [📊 Estado de la Aplicación](#-estado-de-la-aplicación)
+  - [🔄 Gestión de Estado](#-gestión-de-estado)
+  - [🌐 Internacionalización](#-internacionalización)
+  - [♿ Accesibilidad](#-accesibilidad)
+  - [👥 Equipo de Desarrollo](#-equipo-de-desarrollo)
+  - [🤝 Contribución](#-contribución)
+  - [📄 Licencia](#-licencia)
 
-## 📋 Roles y Funcionalidades
+## 🎯 Visión General
 
-### 👥 Recursos Humanos
-- Crear, editar y eliminar usuarios
-- Gestionar permisos y roles
-- Activar/desactivar cuentas de usuario
-- Ver estadísticas de personal
+El frontend del Sistema de Gestión Clínica es una aplicación web moderna desarrollada con **React 18** y **TypeScript** que proporciona una interfaz de usuario intuitiva y responsiva para la gestión integral de clínicas y centros médicos. Implementa las mejores prácticas de desarrollo frontend con un enfoque en la experiencia del usuario y la accesibilidad.
 
-### 🏢 Personal Administrativo
-- Registrar nuevos pacientes
-- Programar citas médicas
-- Gestionar información de contacto de emergencia
-- Procesar pólizas de seguros médicos
-- Generar facturación
+## ✨ Características Principales
 
-### 👨‍⚕️ Médicos
-- Crear y actualizar historias clínicas
-- Registrar diagnósticos y tratamientos
-- Recetar medicamentos y procedimientos
-- Solicitar ayudas diagnósticas
-- Gestionar órdenes médicas
+### 🔐 **Autenticación y Autorización**
+- ✅ Inicio de sesión seguro con JWT
+- ✅ Gestión automática de sesiones
+- ✅ Protección de rutas basada en roles
+- ✅ Refresh automático de tokens
+- ✅ Logout seguro con limpieza de datos
 
-### 👩‍⚕️ Enfermeras
-- Registrar visitas de pacientes
-- Tomar signos vitales
-- Administrar medicamentos
-- Registrar procedimientos realizados
-- Documentar observaciones
+### 👥 **Gestión de Usuarios**
+- ✅ Dashboard administrativo completo
+- ✅ Gestión de usuarios (CRUD)
+- ✅ Asignación de roles y permisos
+- ✅ Perfiles de usuario detallados
+- ✅ Búsqueda y filtrado avanzado
 
-### 🔧 Soporte de Información
-- Gestionar inventario de medicamentos
-- Controlar procedimientos disponibles
-- Administrar ayudas diagnósticas
-- Mantenimiento de datos maestros
+### 🏥 **Gestión de Pacientes**
+- ✅ Registro de nuevos pacientes
+- ✅ Información médica completa
+- ✅ Contactos de emergencia
+- ✅ Historial médico integrado
+- ✅ Búsqueda por múltiples criterios
+
+### 📅 **Sistema de Citas**
+- ✅ Programación de citas médicas
+- ✅ Calendario interactivo
+- ✅ Gestión de disponibilidad
+- ✅ Recordatorios y notificaciones
+- ✅ Estados de citas en tiempo real
+
+### 💊 **Inventario Médico**
+- ✅ Control de medicamentos
+- ✅ Gestión de suministros médicos
+- ✅ Alertas de vencimiento
+- ✅ Órdenes de compra automáticas
+- ✅ Reportes de inventario
+
+### 💰 **Facturación**
+- ✅ Cálculo automático de copagos
+- ✅ Gestión de seguros médicos
+- ✅ Facturación electrónica
+- ✅ Estados de pago
+- ✅ Reportes financieros
+
+### 📋 **Historia Clínica**
+- ✅ Registros médicos digitales
+- ✅ Signos vitales
+- ✅ Diagnósticos y tratamientos
+- ✅ Evolución del paciente
+- ✅ Archivos médicos adjuntos
+
+## 🏗️ Arquitectura
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    Frontend - React Application                 │
+├─────────────────────────────────────────────────────────────────┤
+│  🎨 Presentation Layer (Components & Pages)                     │
+│  🔄 Application Layer (Services & Hooks)                       │
+│  💾 State Layer (Context & State Management)                   │
+│  🌐 HTTP Layer (API Client & Interceptors)                     │
+├─────────────────────────────────────────────────────────────────┤
+│  🔗 REST API (Backend Communication)                           │
+│  📡 WebSocket (Real-time Updates)                              │
+│  💾 Local Storage (Client-side Persistence)                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### **Patrón Arquitectónico**
+- **Component-Based Architecture** con React
+- **Custom Hooks** para lógica reutilizable
+- **Context API** para gestión de estado global
+- **Service Layer** para comunicación con APIs
+- **TypeScript** para type safety
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **HTML5** - Estructura semántica y accesible
-- **CSS3** - Estilos modernos con variables CSS y diseño responsivo
-- **JavaScript ES6+** - Lógica de aplicación con módulos y clases
-- **Font Awesome** - Iconografía profesional
-- **Google Fonts (Inter)** - Tipografía moderna y legible
+### **Frontend Core**
+- **React 18.2** - Librería principal de UI
+- **TypeScript 5.0** - Tipado estático
+- **Vite 4.0** - Build tool y dev server
+- **React Router 6** - Navegación SPA
+
+### **Estilos y UI**
+- **Tailwind CSS 3.0** - Framework CSS utilitario
+- **Headless UI** - Componentes accesibles
+- **Heroicons** - Iconografía moderna
+- **React Hook Form** - Manejo de formularios
+
+### **Estado y Datos**
+- **React Query** - Fetching y caché de datos
+- **Zustand** - Gestión de estado ligera
+- **React Context** - Estado global
+- **Local Storage** - Persistencia local
+
+### **Desarrollo y Calidad**
+- **ESLint** - Linting de código
+- **Prettier** - Formateo automático
+- **Husky** - Git hooks
+- **Vitest** - Testing framework
+- **Playwright** - E2E testing
+
+## 🚀 Inicio Rápido
+
+### **Prerrequisitos**
+- Node.js 18+
+- npm o yarn
+- Git
+
+### **Instalación**
+
+```bash
+# 1. Clonar el repositorio
+git clone <repository-url>
+cd clinica/frontend
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Configurar variables de entorno
+cp .env.example .env.local
+
+# 4. Iniciar servidor de desarrollo
+npm run dev
+
+# 5. Abrir navegador
+# Frontend: http://localhost:3000
+# Storybook: http://localhost:6006
+```
+
+### **Scripts Disponibles**
+
+```bash
+# Desarrollo
+npm run dev              # Servidor de desarrollo
+npm run build           # Build para producción
+npm run preview         # Preview del build
+
+# Calidad de código
+npm run lint            # Ejecutar ESLint
+npm run lint:fix        # Corregir problemas automáticamente
+npm run format          # Formatear código con Prettier
+
+# Pruebas
+npm run test            # Ejecutar pruebas unitarias
+npm run test:ui         # Ejecutar pruebas con interfaz
+npm run test:e2e        # Pruebas end-to-end
+npm run test:coverage   # Cobertura de pruebas
+
+# Documentación
+npm run storybook       # Storybook para componentes
+npm run build:storybook # Build de Storybook
+
+# Análisis
+npm run analyze         # Análisis de bundle
+npm run lighthouse      # Auditoría de performance
+```
 
 ## 📁 Estructura del Proyecto
 
 ```
 frontend/
-├── index.html              # Página principal
-├── css/
-│   ├── styles.css          # Estilos principales
-│   ├── components.css      # Estilos de componentes
-│   └── responsive.css      # Media queries responsivas
-├── js/
-│   ├── api-service.js      # Servicio de comunicación con API
-│   ├── auth-service.js     # Gestión de autenticación
-│   ├── notification-service.js # Sistema de notificaciones
-│   ├── main.js             # Inicialización de la aplicación
-│   ├── user-management.js  # Gestión de usuarios (RR.HH.)
-│   ├── patient-management.js # Gestión de pacientes
-│   ├── medical-records.js  # Historias clínicas
-│   └── inventory-management.js # Gestión de inventario
-├── components/             # Componentes reutilizables
-├── assets/
-│   └── images/            # Imágenes y recursos gráficos
-└── README.md              # Esta documentación
+├── public/                    # Archivos estáticos
+├── src/
+│   ├── assets/               # Imágenes, fuentes, etc.
+│   ├── components/           # Componentes reutilizables
+│   │   ├── ui/              # Componentes básicos (Button, Input, etc.)
+│   │   ├── forms/           # Componentes de formularios
+│   │   ├── layout/          # Componentes de layout (Header, Sidebar)
+│   │   └── features/        # Componentes específicos de funcionalidades
+│   ├── hooks/               # Custom hooks personalizados
+│   ├── pages/               # Páginas de la aplicación
+│   ├── services/            # Servicios para APIs
+│   ├── stores/              # Gestión de estado (Zustand)
+│   ├── types/               # Definiciones de tipos TypeScript
+│   ├── utils/               # Utilidades y helpers
+│   ├── styles/              # Estilos globales
+│   └── main.tsx            # Punto de entrada
+├── index.html              # Template HTML
+├── vite.config.ts          # Configuración Vite
+├── tailwind.config.js      # Configuración Tailwind
+└── package.json           # Dependencias y scripts
 ```
-
-## 🚀 Instalación y Uso
-
-### Prerrequisitos
-
-- Navegador web moderno (Chrome, Firefox, Safari, Edge)
-- Servidor backend API REST ejecutándose en `http://localhost:8080`
-
-### Instalación
-
-1. **Clonar o descargar** el proyecto en tu directorio de trabajo
-2. **Abrir el archivo `index.html`** en un navegador web
-3. **Opcional**: Servir los archivos usando un servidor local para desarrollo
-
-### Usando un servidor local
-
-```bash
-# Usando Python 3
-python -m http.server 8000
-
-# Usando Node.js (con http-server instalado)
-npx http-server
-
-# Usando PHP
-php -S localhost:8000
-```
-
-Luego abrir `http://localhost:8000` en el navegador.
 
 ## 🔧 Configuración
 
-### Configuración de la API
+### **Variables de Entorno**
 
-El archivo `js/api-service.js` contiene la configuración de conexión con el backend:
+```bash
+# API Configuration
+VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_TIMEOUT=10000
 
-```javascript
-// Configuración de la URL base de la API
-this.baseURL = 'http://localhost:8080/api';
+# Authentication
+VITE_JWT_STORAGE_KEY=clinic_auth_token
+VITE_TOKEN_REFRESH_THRESHOLD=300000
+
+# Application
+VITE_APP_NAME=Sistema de Gestión Clínica
+VITE_APP_VERSION=1.0.0
+
+# Features
+VITE_ENABLE_PWA=true
+VITE_ENABLE_ANALYTICS=false
+VITE_ENABLE_SENTRY=true
 ```
 
-Para cambiar el servidor backend, modificar esta línea según sea necesario.
+### **Configuración de Tailwind**
 
-### Variables CSS Personalizables
-
-El archivo `css/styles.css` incluye variables CSS que pueden personalizarse:
-
-```css
-:root {
-    --primary-color: #2563eb;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --error-color: #ef4444;
-    /* ... más variables */
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#eff6ff',
+          500: '#3b82f6',
+          900: '#1e3a8a',
+        },
+        medical: {
+          50: '#f0fdf4',
+          500: '#22c55e',
+          900: '#14532d',
+        }
+      }
+    },
+  },
+  plugins: [],
 }
 ```
 
-## 📱 Características Responsivas
+## 🎨 Estilos y UI/UX
 
-La aplicación está diseñada para funcionar perfectamente en:
+### **Sistema de Diseño**
+- **Colores médicos** profesionales (azul médico, verde sanitario)
+- **Tipografía** legible y accesible
+- **Espaciado** consistente basado en 4px grid
+- **Border radius** suave para elementos modernos
+- **Sombras** sutiles para profundidad
 
-- **Escritorio** (1200px+)
-- **Tabletas** (768px - 1199px)
-- **Móviles grandes** (481px - 767px)
-- **Móviles pequeños** (320px - 480px)
+### **Componentes UI**
+- **Diseño responsivo** para todos los dispositivos
+- **Modo oscuro/claro** automático
+- **Animaciones suaves** con Framer Motion
+- **Estados de carga** elegantes
+- **Feedback visual** inmediato
 
-## 🎨 Características de UI/UX
+### **Paleta de Colores**
 
-### Diseño Moderno
-- Interfaz limpia y profesional
-- Colores consistentes y accesibles
-- Tipografía legible (Inter font family)
-- Iconografía clara con Font Awesome
+```css
+/* Colores principales */
+--primary-50: #eff6ff;
+--primary-500: #3b82f6;
+--primary-900: #1e3a8a;
 
-### Experiencia de Usuario
-- Navegación intuitiva basada en roles
-- Feedback visual inmediato
-- Notificaciones contextuales
-- Formularios validados
+/* Colores médicos */
+--medical-50: #f0fdf4;
+--medical-500: #22c55e;
+--medical-900: #14532d;
 
-### Accesibilidad
-- Soporte para lectores de pantalla
-- Contraste adecuado según estándares WCAG
-- Navegación por teclado
-- Estados focus visibles
+/* Estados */
+--success: #22c55e;
+--warning: #f59e0b;
+--error: #ef4444;
+--info: #3b82f6;
+```
 
-## 🔐 Seguridad
+## 🔗 Integración con Backend
 
-- **Autenticación basada en sesiones** con manejo seguro de tokens
-- **Autorización por roles** con control granular de permisos
-- **Validación de formularios** tanto en cliente como servidor
-- **Manejo seguro de errores** sin exposición de información sensible
+### **Cliente API**
+```typescript
+// src/services/api.ts
+import axios from 'axios';
 
-## 🔄 Integración con API
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 10000,
+});
 
-La aplicación se integra completamente con la API REST de Spring Boot:
+// Interceptors para autenticación
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('clinic_auth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-### Endpoints Principales
-- `GET /api/public/health` - Verificación de estado
-- `GET /api/users/**` - Gestión de usuarios
-- `GET /api/patients/**` - Gestión de pacientes
-- `POST /api/medical-records` - Historias clínicas
-- `POST /api/orders` - Órdenes médicas
-- `POST /api/patient-visits` - Visitas de pacientes
+export default apiClient;
+```
 
-## 📊 Funcionalidades Implementadas
+### **Servicios por Módulo**
 
-### ✅ Completadas
-- [x] Estructura de proyecto profesional
-- [x] Diseño responsivo moderno
-- [x] Sistema de autenticación completo
-- [x] Navegación basada en roles
-- [x] Gestión de usuarios (Recursos Humanos)
-- [x] Sistema de notificaciones
-- [x] Integración con API REST
-- [x] Manejo de errores robusto
+```typescript
+// src/services/authService.ts
+export const authService = {
+  async login(credentials: LoginCredentials) {
+    const response = await apiClient.post('/auth/login', credentials);
+    return response.data;
+  },
 
-### 🚧 En Desarrollo
-- [ ] Gestión de pacientes (Personal Administrativo)
-- [ ] Historias clínicas (Médicos)
-- [ ] Visitas de pacientes (Enfermeras)
-- [ ] Sistema de inventario (Soporte)
-- [ ] Módulo de facturación
-- [ ] Sistema de citas médicas
+  async logout() {
+    await apiClient.post('/auth/logout');
+    localStorage.removeItem('clinic_auth_token');
+  },
 
-## 🐛 Manejo de Errores
+  async refreshToken() {
+    const response = await apiClient.post('/auth/refresh');
+    return response.data;
+  }
+};
+```
 
-La aplicación incluye manejo robusto de errores:
+## 🧪 Pruebas
 
-- **Errores de red**: Reintentos automáticos y mensajes informativos
-- **Errores de validación**: Feedback inmediato en formularios
-- **Errores de autenticación**: Redirección automática al login
-- **Errores inesperados**: Logging y notificaciones al usuario
+### **Estrategia de Testing**
+- ✅ **Pruebas Unitarias** - Componentes individuales
+- ✅ **Pruebas de Integración** - Servicios y hooks
+- ✅ **Pruebas E2E** - Flujos completos de usuario
+- ✅ **Pruebas de Accesibilidad** - WCAG 2.1 AA
 
-## 📈 Mejores Prácticas Implementadas
+### **Ejemplos de Pruebas**
 
-### Código
-- **Modularidad**: Código organizado en módulos y servicios
-- **Reutilización**: Componentes y funciones reutilizables
-- **Mantenibilidad**: Código limpio y bien documentado
-- **Performance**: Carga diferida y optimizaciones
+```typescript
+// Component test
+describe('LoginForm', () => {
+  it('should render form fields', () => {
+    render(<LoginForm />);
+    expect(screen.getByLabelText('Usuario')).toBeInTheDocument();
+    expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
+  });
+});
 
-### Seguridad
-- **Validación estricta**: Tanto en cliente como servidor
-- **Sanitización**: Limpieza de datos de entrada
-- **Autenticación segura**: Uso de tokens y sesiones
-- **Autorización**: Control de acceso basado en roles
+// Service test
+describe('authService', () => {
+  it('should login successfully with valid credentials', async () => {
+    const mockResponse = { token: 'jwt-token', user: mockUser };
+    mocked(apiClient.post).mockResolvedValue({ data: mockResponse });
 
-### UX/UI
-- **Consistencia**: Diseño uniforme en toda la aplicación
-- **Accesibilidad**: Cumplimiento de estándares WCAG
-- **Responsividad**: Adaptación perfecta a todos los dispositivos
-- **Feedback**: Información clara sobre acciones realizadas
+    const result = await authService.login(validCredentials);
+    expect(result.token).toBe('jwt-token');
+  });
+});
+```
+
+## 🚢 Despliegue
+
+### **Build para Producción**
+```bash
+# Build optimizado
+npm run build
+
+# Preview del build
+npm run preview
+
+# Análisis del bundle
+npm run analyze
+```
+
+### **Plataformas de Despliegue**
+- ✅ **Vercel** - Despliegue automático desde Git
+- ✅ **Netlify** - Static site hosting
+- ✅ **AWS S3 + CloudFront** - CDN global
+- ✅ **Docker** - Containerización
+
+### **Configuración de Producción**
+```bash
+# Variables de entorno para producción
+VITE_API_BASE_URL=https://api.clinica.com
+VITE_ENABLE_ANALYTICS=true
+VITE_ENABLE_SENTRY=true
+VITE_SENTRY_DSN=https://your-sentry-dsn
+```
+
+## 📱 Características Responsive
+
+### **Breakpoints**
+```typescript
+// tailwind.config.js
+screens: {
+  'xs': '475px',
+  'sm': '640px',
+  'md': '768px',
+  'lg': '1024px',
+  'xl': '1280px',
+  '2xl': '1536px',
+}
+```
+
+### **Diseño Mobile-First**
+- ✅ **Navegación táctil** optimizada
+- ✅ **Formularios adaptativos** para móviles
+- ✅ **Tablas responsivas** con scroll horizontal
+- ✅ **Menús colapsables** para espacio limitado
+
+## 🔒 Seguridad en Frontend
+
+### **Medidas de Seguridad**
+- ✅ **Content Security Policy** (CSP)
+- ✅ **HTTPS obligatorio** en producción
+- ✅ **Validación de formularios** en cliente y servidor
+- ✅ **Sanitización de datos** de entrada
+- ✅ **Prevención de XSS** con React escaping
+
+### **Autenticación**
+```typescript
+// src/hooks/useAuth.ts
+export const useAuth = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Verificar token en localStorage
+    const token = localStorage.getItem('clinic_auth_token');
+    if (token) {
+      // Validar token con backend
+      validateToken(token).then(setUser);
+    }
+    setLoading(false);
+  }, []);
+
+  return { user, loading, login, logout };
+};
+```
+
+## 📊 Estado de la Aplicación
+
+### **Gestión de Estado Global**
+```typescript
+// src/stores/authStore.ts
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      login: async (credentials) => {
+        // Lógica de login
+      },
+      logout: () => {
+        set({ user: null, token: null, isAuthenticated: false });
+      }
+    }),
+    {
+      name: 'auth-storage',
+    }
+  )
+);
+```
+
+## 🔄 Gestión de Estado
+
+### **Estrategias Implementadas**
+- **Zustand** para estado global complejo
+- **React Query** para estado de servidor
+- **Context API** para estado de aplicación
+- **Local Storage** para persistencia
+
+## 🌐 Internacionalización
+
+### **Configuración i18n**
+```typescript
+// src/i18n/config.ts
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+i18n.use(initReactI18next).init({
+  resources: {
+    es: {
+      translation: {
+        "welcome": "Bienvenido",
+        "login": "Iniciar Sesión",
+        "patients": "Pacientes"
+      }
+    },
+    en: {
+      translation: {
+        "welcome": "Welcome",
+        "login": "Login",
+        "patients": "Patients"
+      }
+    }
+  },
+  lng: 'es',
+  fallbackLng: 'es',
+  interpolation: {
+    escapeValue: false
+  }
+});
+```
+
+## ♿ Accesibilidad
+
+### **Características de Accesibilidad**
+- ✅ **WCAG 2.1 AA** compliance
+- ✅ **Navegación por teclado** completa
+- ✅ **Screen reader** optimización
+- ✅ **Contraste de colores** adecuado
+- ✅ **Etiquetas ARIA** apropiadas
+- ✅ **Focus management** automático
+
+## 👥 Equipo de Desarrollo
+
+| Rol | Nombre | Contacto |
+|-----|--------|----------|
+| **Tech Lead Frontend** | Equipo Frontend | frontend@clinica.com |
+| **UI/UX Designer** | Equipo Diseño | diseño@clinica.com |
+| **QA Frontend** | Equipo QA | qa.frontend@clinica.com |
 
 ## 🤝 Contribución
 
-Para contribuir al proyecto:
+### **Flujo de Trabajo**
+1. Crear rama desde `develop`
+2. Desarrollar funcionalidad
+3. Ejecutar pruebas y linting
+4. Crear Pull Request a `develop`
+5. Code review por al menos 2 desarrolladores
+6. Merge después de aprobación
 
-1. **Fork** el proyecto
-2. **Crear** una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** la rama (`git push origin feature/AmazingFeature`)
-5. **Abrir** un Pull Request
+### **Convenciones de Código**
+- **Commits**: Conventional Commits
+- **Ramas**: `feature/`, `bugfix/`, `hotfix/`
+- **PRs**: Template estructurado con descripción, pruebas y capturas
 
-## 📝 Licencia
+## 📄 Licencia
 
-Este proyecto es desarrollado para fines educativos y de demostración.
-
-## 👨‍💻 Desarrollador
-
-**Santiago Suaza**
-- Ingeniería de Software Senior
-- Especialista en aplicaciones web modernas
-- Más de 5 años de experiencia en desarrollo frontend
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ---
 
-🏥 **Sistema de Gestión Clínica** - Solución profesional para clínicas modernas
+<div align="center">
+
+**🌐 Sistema de Gestión Clínica - Frontend**
+
+*Interfaz moderna y accesible para la gestión médica*
+
+[📧 Contacto](mailto:frontend@clinica.com) • [🐛 Reportar Bug](https://github.com/clinica/frontend/issues) • [📖 Storybook](https://storybook.clinica.com)
+
+</div>

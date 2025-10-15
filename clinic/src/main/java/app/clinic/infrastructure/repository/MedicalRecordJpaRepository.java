@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import app.clinic.infrastructure.entity.MedicalRecordEntity;
@@ -38,5 +39,6 @@ public interface MedicalRecordJpaRepository extends JpaRepository<MedicalRecordE
     /**
      * Finds all medical records.
      */
+    @NonNull
     List<MedicalRecordEntity> findAll();
 }

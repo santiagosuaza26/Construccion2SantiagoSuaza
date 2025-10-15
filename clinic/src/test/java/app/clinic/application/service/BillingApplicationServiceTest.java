@@ -30,13 +30,7 @@ import app.clinic.infrastructure.repository.InvoiceJpaRepository;
 class BillingApplicationServiceTest {
 
     @Mock
-    private BillingDomainService billingDomainService;
-
-    @Mock
     private PatientApplicationService patientApplicationService;
-
-    @Mock
-    private BillingRepositoryAdapter billingRepositoryAdapter;
 
     @Mock
     private BillingMapper billingMapper;
@@ -50,9 +44,7 @@ class BillingApplicationServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         billingApplicationService = new BillingApplicationService(
-            billingDomainService,
             patientApplicationService,
-            billingRepositoryAdapter,
             billingMapper,
             invoiceJpaRepository
         );

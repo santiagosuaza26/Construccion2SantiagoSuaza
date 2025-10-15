@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import app.clinic.infrastructure.entity.PatientVisitEntity;
@@ -19,7 +20,7 @@ public interface PatientVisitJpaRepository extends JpaRepository<PatientVisitEnt
     /**
      * Finds a patient visit by its ID.
      */
-    Optional<PatientVisitEntity> findById(Long id);
+    Optional<PatientVisitEntity> findById(@NonNull Long id);
 
     /**
      * Finds all patient visits for a specific patient.
@@ -29,12 +30,13 @@ public interface PatientVisitJpaRepository extends JpaRepository<PatientVisitEnt
     /**
      * Finds all patient visits.
      */
+    @NonNull
     List<PatientVisitEntity> findAll();
 
     /**
      * Checks if a patient visit exists with the given ID.
      */
-    boolean existsById(Long id);
+    boolean existsById(@NonNull Long id);
 
     /**
      * Counts total number of patient visits.

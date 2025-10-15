@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import app.clinic.infrastructure.entity.AppointmentEntity;
@@ -38,7 +39,7 @@ public interface AppointmentJpaRepository extends JpaRepository<AppointmentEntit
     /**
      * Checks if an appointment exists with the given ID.
      */
-    boolean existsById(Long id);
+    boolean existsById(@NonNull Long id);
 
     /**
      * Counts appointments by status.

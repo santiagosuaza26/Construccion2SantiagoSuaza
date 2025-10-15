@@ -1,7 +1,6 @@
 package app.clinic.application.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -13,9 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.clinic.application.dto.medical.CreateMedicalRecordDTO;
 import app.clinic.application.dto.medical.MedicalRecordDTO;
-import app.clinic.application.dto.medical.MedicalRecordEntryDTO;
 import app.clinic.domain.model.*;
 import app.clinic.domain.service.MedicalRecordDomainService;
 

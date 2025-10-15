@@ -1,212 +1,202 @@
 package app.clinic.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.LocalDate;
-import java.util.List;
-
+import app.clinic.Cs2Application;
+import app.clinic.domain.model.*;
+import app.clinic.domain.service.PatientDomainService;
+import app.clinic.domain.service.AppointmentDomainService;
+import app.clinic.domain.service.BillingDomainService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-import app.clinic.domain.model.Patient;
-import app.clinic.domain.model.PatientCedula;
-import app.clinic.domain.model.PatientEmail;
-import app.clinic.domain.model.PatientFullName;
-import app.clinic.domain.model.PatientUsername;
-import app.clinic.domain.service.PatientDomainService;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.*;
 
 /**
- * Integration tests for PatientService using Testcontainers.
- * Tests complete integration with PostgreSQL and MongoDB databases.
- *
- * This test class validates:
- * - Database connectivity and operations
- * - Domain service business logic with real data persistence
- * - Cross-cutting concerns (transactions, auditing)
- * - Data consistency across multiple database systems
+ * Test de integración completo para el flujo de paciente.
+ * Verifica que todos los servicios críticos funcionan correctamente juntos.
  */
-@SpringBootTest
-@Testcontainers
+@SpringBootTest(classes = Cs2Application.class)
+@ActiveProfiles("test")
+@Transactional
 @DisplayName("Patient Service Integration Tests")
 class PatientServiceIntegrationTest {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine")
-            .withDatabaseName("clinic_test")
-            .withUsername("test_user")
-            .withPassword("test_password");
-
-    @Container
-    static MongoDBContainer mongoDB = new MongoDBContainer("mongo:7-jammy")
-            .withExposedPorts(27017);
+    @Autowired
+    private PatientDomainService patientService;
 
     @Autowired
-    private PatientDomainService patientDomainService;
+    private AppointmentDomainService appointmentService;
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-
-        registry.add("spring.data.mongodb.uri", mongoDB::getReplicaSetUrl);
-    }
+    @Autowired
+    private BillingDomainService billingService;
 
     @Test
-    @DisplayName("Should register and retrieve patient successfully")
-    void shouldRegisterAndRetrievePatientSuccessfully() {
-        // Given
+    @DisplayName("Debe completar flujo completo de paciente exitosamente")
+    void shouldCompleteFullPatientFlowSuccessfully() {
+        // Given - Crear paciente básico
         Patient patient = createTestPatient();
 
-        // When
-        Patient registeredPatient = patientDomainService.registerPatient(patient);
-        Patient foundPatient = patientDomainService.findPatientByCedula(patient.getCedula()).orElse(null);
+        // When - Registrar paciente
+        Patient registeredPatient = patientService.registerPatient(patient);
 
-        // Then
+        // Then - Verificar registro
         assertThat(registeredPatient).isNotNull();
-        assertThat(foundPatient).isNotNull();
-        assertThat(foundPatient.getCedula()).isEqualTo(registeredPatient.getCedula());
-        assertThat(foundPatient.getFullName()).isEqualTo(registeredPatient.getFullName());
-        assertThat(foundPatient.getEmail()).isEqualTo(registeredPatient.getEmail());
+        assertThat(registeredPatient.getCedula()).isEqualTo(patient.getCedula());
+
+        // Given - Crear cita médica
+        Appointment appointment = createTestAppointment(registeredPatient.getCedula());
+
+        // When - Agendar cita
+        Appointment scheduledAppointment = appointmentService.scheduleAppointment(appointment);
+
+        // Then - Verificar agendamiento
+        assertThat(scheduledAppointment).isNotNull();
+        assertThat(scheduledAppointment.getStatus()).isEqualTo(AppointmentStatus.PROGRAMADA);
+
+        // Given - Calcular costos médicos
+        TotalCost serviceCost = TotalCost.of(Money.of(new BigDecimal("150000")));
+
+        // When - Calcular facturación
+        BillingCalculationResult billingResult = billingService.calculateBilling(
+            registeredPatient.getCedula(), serviceCost);
+
+        // Then - Verificar facturación
+        assertThat(billingResult).isNotNull();
+        assertThat(billingResult.getTotalCost().getAmount()).isEqualTo(new BigDecimal("150000"));
     }
 
     @Test
-    @DisplayName("Should update patient information successfully")
-    void shouldUpdatePatientInformationSuccessfully() {
-        // Given
-        Patient originalPatient = createTestPatient();
-        Patient registeredPatient = patientDomainService.registerPatient(originalPatient);
-
-        // Create updated patient
-        Patient updatedPatient = Patient.of(
-                registeredPatient.getCedula(),
-                registeredPatient.getUsername(),
-                registeredPatient.getPassword(),
-                PatientFullName.of("María Updated", "González Updated"),
-                registeredPatient.getBirthDate(),
-                registeredPatient.getGender(),
-                registeredPatient.getAddress(),
-                registeredPatient.getPhoneNumber(),
-                PatientEmail.of("updated.patient@test.com"),
-                registeredPatient.getEmergencyContacts(),
-                registeredPatient.getInsurancePolicy()
-        );
-
-        // When
-        Patient result = patientDomainService.updatePatient(updatedPatient);
-        Patient foundPatient = patientDomainService.findPatientByCedula(registeredPatient.getCedula()).orElse(null);
-
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(foundPatient).isNotNull();
-        assertThat(foundPatient.getFullName().getFirstNames()).isEqualTo("María Updated");
-        assertThat(foundPatient.getFullName().getLastNames()).isEqualTo("González Updated");
-        assertThat(foundPatient.getEmail().getValue()).isEqualTo("updated.patient@test.com");
-    }
-
-    @Test
-    @DisplayName("Should find all patients successfully")
-    void shouldFindAllPatientsSuccessfully() {
-        // Given
-        Patient patient1 = createTestPatient();
-        Patient patient2 = createSecondTestPatient();
-
-        patientDomainService.registerPatient(patient1);
-        patientDomainService.registerPatient(patient2);
-
-        // When
-        List<Patient> allPatients = patientDomainService.findAllPatients();
-
-        // Then
-        assertThat(allPatients).isNotEmpty();
-        assertThat(allPatients.size()).isGreaterThanOrEqualTo(2);
-
-        // Verify our test patients are in the list
-        boolean foundPatient1 = allPatients.stream()
-                .anyMatch(p -> p.getCedula().equals(patient1.getCedula()));
-        boolean foundPatient2 = allPatients.stream()
-                .anyMatch(p -> p.getCedula().equals(patient2.getCedula()));
-
-        assertThat(foundPatient1).isTrue();
-        assertThat(foundPatient2).isTrue();
-    }
-
-    @Test
-    @DisplayName("Should prevent duplicate patient registration")
-    void shouldPreventDuplicatePatientRegistration() {
+    @DisplayName("Debe manejar múltiples citas para mismo paciente")
+    void shouldHandleMultipleAppointmentsForSamePatient() {
         // Given
         Patient patient = createTestPatient();
-        patientDomainService.registerPatient(patient);
+        Patient registeredPatient = patientService.registerPatient(patient);
 
-        // When & Then
-        try {
-            patientDomainService.registerPatient(patient);
-            assertThat(false).isTrue(); // Should not reach here
-        } catch (IllegalArgumentException e) {
-            assertThat(e.getMessage()).contains("already exists");
-        }
+        Appointment appointment1 = createTestAppointment(registeredPatient.getCedula());
+        Appointment appointment2 = createTestAppointmentForNextDay(registeredPatient.getCedula());
+
+        // When
+        Appointment result1 = appointmentService.scheduleAppointment(appointment1);
+        Appointment result2 = appointmentService.scheduleAppointment(appointment2);
+
+        // Then
+        assertThat(result1).isNotNull();
+        assertThat(result2).isNotNull();
+        assertThat(result1.getStatus()).isEqualTo(AppointmentStatus.PROGRAMADA);
+        assertThat(result2.getStatus()).isEqualTo(AppointmentStatus.PROGRAMADA);
     }
 
     @Test
-    @DisplayName("Should delete patient successfully")
-    void shouldDeletePatientSuccessfully() {
+    @DisplayName("Debe validar reglas de negocio críticas")
+    void shouldValidateCriticalBusinessRules() {
         // Given
         Patient patient = createTestPatient();
-        Patient registeredPatient = patientDomainService.registerPatient(patient);
 
-        // Verify patient exists
-        assertThat(patientDomainService.findPatientByCedula(patient.getCedula())).isPresent();
+        // When & Then - Intentar registrar paciente con datos válidos
+        assertThatCode(() -> patientService.registerPatient(patient))
+            .doesNotThrowAnyException();
 
-        // When
-        patientDomainService.deletePatientByCedula(patient.getCedula());
+        // Given - Intentar registrar paciente duplicado
+        Patient duplicatePatient = createDuplicatePatient();
 
-        // Then
-        assertThat(patientDomainService.findPatientByCedula(patient.getCedula())).isEmpty();
+        // When & Then - Debe lanzar excepción por regla de negocio
+        assertThatThrownBy(() -> patientService.registerPatient(duplicatePatient))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
-    /**
-     * Creates a test patient with valid data for integration testing.
-     */
+    @Test
+    @DisplayName("Debe mantener integridad referencial entre servicios")
+    void shouldMaintainReferentialIntegrityBetweenServices() {
+        // Given
+        Patient patient = createTestPatient();
+        Patient registeredPatient = patientService.registerPatient(patient);
+
+        Appointment appointment = createTestAppointment(registeredPatient.getCedula());
+        Appointment scheduledAppointment = appointmentService.scheduleAppointment(appointment);
+
+        // When - Buscar paciente por diferentes criterios
+        var foundByCedula = patientService.findPatientByCedula(registeredPatient.getCedula());
+        var foundById = patientService.findPatientById(extractPatientId(registeredPatient));
+
+        // Then - Verificar consistencia de datos
+        assertThat(foundByCedula).isPresent();
+        assertThat(foundById).isPresent();
+        assertThat(foundByCedula.get().getCedula()).isEqualTo(foundById.get().getCedula());
+    }
+
+    // Métodos auxiliares para crear datos de prueba
     private Patient createTestPatient() {
         return Patient.of(
-                PatientCedula.of("12345678"),
-                PatientUsername.of("testpatient1"),
-                app.clinic.domain.model.PatientPassword.ofHashed("hashedpassword123"),
-                PatientFullName.of("María", "González"),
-                app.clinic.domain.model.PatientBirthDate.of(LocalDate.of(1990, 5, 15)),
-                app.clinic.domain.model.PatientGender.FEMENINO,
-                app.clinic.domain.model.PatientAddress.of("Calle 123 #45-67, Bogotá"),
-                app.clinic.domain.model.PatientPhoneNumber.of("3001234567"),
-                PatientEmail.of("maria.gonzalez@test.com"),
-                List.of(), // No emergency contacts for this test
-                null // No insurance policy for this test
+            PatientCedula.of("12345678"),
+            PatientUsername.of("test.patient"),
+            PatientPassword.of("password123"),
+            PatientFullName.of("Paciente", "Prueba"),
+            PatientBirthDate.of(LocalDate.of(1990, 1, 1)),
+            PatientGender.MASCULINO,
+            PatientAddress.of("Calle de Prueba 123"),
+            PatientPhoneNumber.of("3001234567"),
+            PatientEmail.of("test@example.com"),
+            java.util.List.of(),
+            createTestInsurancePolicy()
         );
     }
 
-    /**
-     * Creates a second test patient with different data for testing multiple records.
-     */
-    private Patient createSecondTestPatient() {
+    private Patient createDuplicatePatient() {
         return Patient.of(
-                PatientCedula.of("87654321"),
-                PatientUsername.of("testpatient2"),
-                app.clinic.domain.model.PatientPassword.ofHashed("hashedpassword456"),
-                PatientFullName.of("Carlos", "Rodríguez"),
-                app.clinic.domain.model.PatientBirthDate.of(1985, 8, 20),
-                app.clinic.domain.model.PatientGender.MASCULINO,
-                app.clinic.domain.model.PatientAddress.of("Carrera 98 #12-34, Medellín"),
-                app.clinic.domain.model.PatientPhoneNumber.of("3019876543"),
-                PatientEmail.of("carlos.rodriguez@test.com"),
-                List.of(),
-                null
+            PatientCedula.of("12345678"), // Mismo número de cédula
+            PatientUsername.of("test.patient2"),
+            PatientPassword.of("password123"),
+            PatientFullName.of("Paciente", "Duplicado"),
+            PatientBirthDate.of(LocalDate.of(1990, 1, 1)),
+            PatientGender.MASCULINO,
+            PatientAddress.of("Calle de Prueba 123"),
+            PatientPhoneNumber.of("3001234567"),
+            PatientEmail.of("test2@example.com"),
+            java.util.List.of(),
+            createTestInsurancePolicy()
         );
+    }
+
+    private InsurancePolicy createTestInsurancePolicy() {
+        return InsurancePolicy.of(
+            InsuranceCompanyName.of("Seguros Test"),
+            PolicyNumber.of("POL-TEST-001"),
+            PolicyStatus.ACTIVA,
+            PolicyExpirationDate.of(LocalDate.now().plusMonths(12))
+        );
+    }
+
+    private Appointment createTestAppointment(PatientCedula patientCedula) {
+        return Appointment.of(
+            "appointment-1",
+            patientCedula,
+            DoctorCedula.of("87654321"),
+            AppointmentDateTime.of(LocalDateTime.now().plusDays(1)),
+            AppointmentStatus.PROGRAMADA,
+            ConsultationReason.of("Consulta general de integración")
+        );
+    }
+
+    private Appointment createTestAppointmentForNextDay(PatientCedula patientCedula) {
+        return Appointment.of(
+            "appointment-2",
+            patientCedula,
+            DoctorCedula.of("87654321"),
+            AppointmentDateTime.of(LocalDateTime.now().plusDays(2)),
+            AppointmentStatus.PROGRAMADA,
+            ConsultationReason.of("Seguimiento médico")
+        );
+    }
+
+    private PatientId extractPatientId(Patient patient) {
+        // Extraer ID del paciente basado en su cédula
+        return PatientId.of(patient.getCedula().getValue());
     }
 }

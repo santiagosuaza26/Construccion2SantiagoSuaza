@@ -92,7 +92,8 @@ public class User {
     }
 
     public boolean canViewPatientInfo() {
-        return role != UserRole.HUMAN_RESOURCES;
+        return role == UserRole.DOCTOR || role == UserRole.NURSE ||
+               role == UserRole.ADMINISTRATIVE_STAFF || role == UserRole.HUMAN_RESOURCES;
     }
 
     public boolean canManageUsers() {
@@ -100,7 +101,7 @@ public class User {
     }
 
     public boolean canRegisterPatients() {
-        return role == UserRole.ADMINISTRATIVE_STAFF;
+        return role == UserRole.ADMINISTRATIVE_STAFF || role == UserRole.DOCTOR || role == UserRole.NURSE;
     }
 
     public boolean canManageInventory() {
