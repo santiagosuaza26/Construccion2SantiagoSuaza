@@ -53,7 +53,7 @@ public class PatientApplicationService {
 
         if (existingPatient.isPresent()) {
             // Update the existing patient with new data
-            Patient updatedPatient = PatientMapper.updateEntity(existingPatient.get(), updatePatientDTO);
+            Patient updatedPatient = PatientMapper.toDomainEntityForUpdate(existingPatient.get(), updatePatientDTO);
             Patient savedPatient = patientDomainService.updatePatient(updatedPatient);
             return PatientMapper.toDTO(savedPatient);
         } else {

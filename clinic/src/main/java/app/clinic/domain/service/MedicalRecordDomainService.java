@@ -9,8 +9,6 @@ import app.clinic.domain.model.PatientRecordKey;
 import app.clinic.domain.model.PatientRecordMap;
 import app.clinic.domain.port.MedicalRecordRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for medical record operations in the clinic management system.
  *
@@ -35,10 +33,11 @@ import org.springframework.stereotype.Service;
  * - Empty records are not allowed (must contain at least one entry)
  * - Date-based ordering maintained for chronological medical history
  *
+ * Pure domain service without external framework dependencies.
+ *
  * @author Clinic Development Team
  * @version 2.0.0
  */
-@Service
 public class MedicalRecordDomainService {
 
     private final MedicalRecordRepository medicalRecordRepository;

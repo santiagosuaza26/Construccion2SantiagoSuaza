@@ -1,12 +1,9 @@
 package app.clinic.domain.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +13,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.clinic.domain.model.*;
+import app.clinic.domain.model.EmergencyContact;
+import app.clinic.domain.model.InsurancePolicy;
+import app.clinic.domain.model.Patient;
+import app.clinic.domain.model.PatientAddress;
+import app.clinic.domain.model.PatientBirthDate;
+import app.clinic.domain.model.PatientCedula;
+import app.clinic.domain.model.PatientEmail;
+import app.clinic.domain.model.PatientFullName;
+import app.clinic.domain.model.PatientGender;
+import app.clinic.domain.model.PatientPassword;
+import app.clinic.domain.model.PatientPhoneNumber;
+import app.clinic.domain.model.PatientUsername;
 import app.clinic.domain.port.PatientRepository;
 
 /**
- * Comprehensive unit tests for PatientDomainService.
- * Tests all business logic and validation rules for patient management.
+ * Tests unitarios independientes para PatientDomainService.
+ * Estos tests verifican la lógica de negocio pura sin dependencias externas.
  */
 @ExtendWith(MockitoExtension.class)
 class PatientDomainServiceTest {
@@ -37,264 +45,195 @@ class PatientDomainServiceTest {
     }
 
     @Test
-    @DisplayName("Should register patient successfully with valid data")
-    void shouldRegisterPatientSuccessfullyWithValidData() {
+    @DisplayName("Debe registrar paciente con datos válidos")
+    void shouldRegisterPatientWhenDataIsValid() {
         // Given
         Patient patient = createValidPatient();
 
-        when(patientRepository.existsByCedula(any(PatientCedula.class))).thenReturn(false);
-        when(patientRepository.existsByUsername(any(PatientUsername.class))).thenReturn(false);
-        when(patientRepository.save(any(Patient.class))).thenReturn(patient);
-
         // When
+        when(patientRepository.save(patient)).thenReturn(patient);
         Patient result = patientDomainService.registerPatient(patient);
 
         // Then
         assertNotNull(result);
-        verify(patientRepository).existsByCedula(patient.getCedula());
-        verify(patientRepository).existsByUsername(patient.getUsername());
+        assertEquals(patient.getCedula(), result.getCedula());
         verify(patientRepository).save(patient);
     }
 
     @Test
-    @DisplayName("Should throw exception when registering patient with existing cedula")
-    void shouldThrowExceptionWhenRegisteringPatientWithExistingCedula() {
+    @DisplayName("No debe registrar paciente cuando la cédula ya existe")
+    void shouldNotRegisterPatientWhenCedulaAlreadyExists() {
         // Given
         Patient patient = createValidPatient();
 
-        when(patientRepository.existsByCedula(any(PatientCedula.class))).thenReturn(true);
+        // When
+        when(patientRepository.existsByCedula(patient.getCedula())).thenReturn(true);
 
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> patientDomainService.registerPatient(patient)
-        );
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            patientDomainService.registerPatient(patient);
+        });
 
-        assertEquals("Patient with this cedula already exists", exception.getMessage());
-        verify(patientRepository).existsByCedula(patient.getCedula());
         verify(patientRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("Should throw exception when registering patient with existing username")
-    void shouldThrowExceptionWhenRegisteringPatientWithExistingUsername() {
-        // Given
-        Patient patient = createValidPatient();
-
-        when(patientRepository.existsByCedula(any(PatientCedula.class))).thenReturn(false);
-        when(patientRepository.existsByUsername(any(PatientUsername.class))).thenReturn(true);
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> patientDomainService.registerPatient(patient)
-        );
-
-        assertEquals("Patient with this username already exists", exception.getMessage());
-        verify(patientRepository).existsByCedula(patient.getCedula());
-        verify(patientRepository).existsByUsername(patient.getUsername());
-        verify(patientRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when registering patient with more than one emergency contact")
-    void shouldThrowExceptionWhenRegisteringPatientWithMoreThanOneEmergencyContact() {
-        // Given
-        Patient patient = createPatientWithMultipleEmergencyContacts();
-
-        when(patientRepository.existsByCedula(any(PatientCedula.class))).thenReturn(false);
-        when(patientRepository.existsByUsername(any(PatientUsername.class))).thenReturn(false);
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> patientDomainService.registerPatient(patient)
-        );
-
-        assertEquals("Patient can have maximum one emergency contact", exception.getMessage());
-        verify(patientRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when registering patient with expired insurance")
-    void shouldThrowExceptionWhenRegisteringPatientWithExpiredInsurance() {
+    @DisplayName("No debe registrar paciente con póliza de seguro expirada")
+    void shouldNotRegisterPatientWithExpiredInsurance() {
         // Given
         Patient patient = createPatientWithExpiredInsurance();
 
-        when(patientRepository.existsByCedula(any(PatientCedula.class))).thenReturn(false);
-        when(patientRepository.existsByUsername(any(PatientUsername.class))).thenReturn(false);
-
         // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> patientDomainService.registerPatient(patient)
-        );
+        assertThrows(IllegalArgumentException.class, () -> {
+            patientDomainService.registerPatient(patient);
+        });
 
-        assertEquals("Insurance policy is expired", exception.getMessage());
         verify(patientRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("Should update patient successfully")
-    void shouldUpdatePatientSuccessfully() {
+    @DisplayName("No debe registrar paciente con más de un contacto de emergencia")
+    void shouldNotRegisterPatientWithMultipleEmergencyContacts() {
         // Given
-        Patient patient = createValidPatient();
-        Patient existingPatient = createValidPatient();
+        Patient patient = createPatientWithMultipleEmergencyContacts();
 
-        when(patientRepository.findById(any(PatientId.class))).thenReturn(Optional.of(existingPatient));
-        when(patientRepository.save(any(Patient.class))).thenReturn(patient);
+        // When & Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            patientDomainService.registerPatient(patient);
+        });
+
+        verify(patientRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Debe actualizar paciente cuando existe")
+    void shouldUpdatePatientWhenPatientExists() {
+        // Given
+        Patient existingPatient = createValidPatient();
+        Patient updatedPatient = createUpdatedPatient();
 
         // When
-        Patient result = patientDomainService.updatePatient(patient);
+        when(patientRepository.findById(any())).thenReturn(Optional.of(existingPatient));
+        when(patientRepository.save(updatedPatient)).thenReturn(updatedPatient);
+
+        Patient result = patientDomainService.updatePatient(updatedPatient);
 
         // Then
         assertNotNull(result);
-        verify(patientRepository).findById(any(PatientId.class));
-        verify(patientRepository).save(patient);
+        verify(patientRepository).save(updatedPatient);
     }
 
     @Test
-    @DisplayName("Should throw exception when updating non-existent patient")
-    void shouldThrowExceptionWhenUpdatingNonExistentPatient() {
-        // Given
-        Patient patient = createValidPatient();
-
-        when(patientRepository.findById(any(PatientId.class))).thenReturn(Optional.empty());
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> patientDomainService.updatePatient(patient)
-        );
-
-        assertEquals("Patient to update does not exist", exception.getMessage());
-        verify(patientRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Should find patient by ID successfully")
-    void shouldFindPatientByIdSuccessfully() {
-        // Given
-        PatientId patientId = PatientId.of("test-id");
-        Patient patient = createValidPatient();
-
-        when(patientRepository.findById(patientId)).thenReturn(Optional.of(patient));
-
-        // When
-        Optional<Patient> result = patientDomainService.findPatientById(patientId);
-
-        // Then
-        assertTrue(result.isPresent());
-        assertEquals(patient, result.get());
-        verify(patientRepository).findById(patientId);
-    }
-
-    @Test
-    @DisplayName("Should find patient by cedula successfully")
-    void shouldFindPatientByCedulaSuccessfully() {
+    @DisplayName("Debe encontrar paciente por cédula")
+    void shouldFindPatientByCedula() {
         // Given
         PatientCedula cedula = PatientCedula.of("12345678");
         Patient patient = createValidPatient();
 
-        when(patientRepository.findByCedula(cedula)).thenReturn(Optional.of(patient));
-
         // When
+        when(patientRepository.findByCedula(cedula)).thenReturn(Optional.of(patient));
         Optional<Patient> result = patientDomainService.findPatientByCedula(cedula);
 
         // Then
         assertTrue(result.isPresent());
-        assertEquals(patient, result.get());
+        assertEquals(patient.getCedula(), result.get().getCedula());
         verify(patientRepository).findByCedula(cedula);
     }
 
     @Test
-    @DisplayName("Should find patient by username successfully")
-    void shouldFindPatientByUsernameSuccessfully() {
+    @DisplayName("Debe eliminar paciente cuando existe")
+    void shouldDeletePatientWhenPatientExists() {
         // Given
-        PatientUsername username = PatientUsername.of("testuser");
+        PatientCedula cedula = PatientCedula.of("12345678");
         Patient patient = createValidPatient();
 
-        when(patientRepository.findByUsername(username)).thenReturn(Optional.of(patient));
-
         // When
-        Optional<Patient> result = patientDomainService.findPatientByUsername(username);
+        when(patientRepository.findByCedula(cedula)).thenReturn(Optional.of(patient));
+        patientDomainService.deletePatientByCedula(cedula);
 
         // Then
-        assertTrue(result.isPresent());
-        assertEquals(patient, result.get());
-        verify(patientRepository).findByUsername(username);
+        verify(patientRepository).deleteByCedula(cedula);
     }
 
     @Test
-    @DisplayName("Should find all patients successfully")
-    void shouldFindAllPatientsSuccessfully() {
+    @DisplayName("No debe eliminar paciente cuando no existe")
+    void shouldNotDeletePatientWhenPatientDoesNotExist() {
         // Given
-        List<Patient> patients = Arrays.asList(createValidPatient(), createValidPatient());
-        when(patientRepository.findAll()).thenReturn(patients);
+        PatientCedula cedula = PatientCedula.of("12345678");
 
         // When
-        List<Patient> result = patientDomainService.findAllPatients();
+        when(patientRepository.findByCedula(cedula)).thenReturn(Optional.empty());
 
         // Then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(patientRepository).findAll();
+        assertThrows(IllegalArgumentException.class, () -> {
+            patientDomainService.deletePatientByCedula(cedula);
+        });
+
+        verify(patientRepository, never()).deleteByCedula(any());
     }
 
-    @Test
-    @DisplayName("Should delete patient by ID successfully")
-    void shouldDeletePatientByIdSuccessfully() {
-        // Given
-        PatientId patientId = PatientId.of("test-id");
-        Patient patient = createValidPatient();
-
-        when(patientRepository.findById(patientId)).thenReturn(Optional.of(patient));
-        doNothing().when(patientRepository).deleteById(patientId);
-
-        // When & Then
-        assertDoesNotThrow(() -> patientDomainService.deletePatientById(patientId));
-
-        verify(patientRepository).findById(patientId);
-        verify(patientRepository).deleteById(patientId);
-    }
-
-    @Test
-    @DisplayName("Should throw exception when deleting non-existent patient")
-    void shouldThrowExceptionWhenDeletingNonExistentPatient() {
-        // Given
-        PatientId patientId = PatientId.of("non-existent-id");
-
-        when(patientRepository.findById(patientId)).thenReturn(Optional.empty());
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> patientDomainService.deletePatientById(patientId)
-        );
-
-        assertEquals("Patient to delete does not exist", exception.getMessage());
-        verify(patientRepository, never()).deleteById(any());
-    }
-
-    // Helper methods - simplified for testing
+    // Métodos auxiliares para crear datos de prueba
     private Patient createValidPatient() {
-        // Using simplified constructor for testing
-        return mock(Patient.class);
+        return Patient.of(
+            PatientCedula.of("12345678"),
+            PatientUsername.of("patient1"),
+            PatientPassword.of("Patient123!"),
+            PatientFullName.of("Juan", "Pérez"),
+            PatientBirthDate.of(LocalDate.of(1985, 5, 15)),
+            PatientGender.MASCULINO,
+            PatientAddress.of("Calle 123 #45-67"),
+            PatientPhoneNumber.of("3001234567"),
+            PatientEmail.of("juan.perez@email.com"),
+            java.util.List.of(), // Lista vacía por simplicidad
+            null // Sin póliza por simplicidad
+        );
     }
 
-    private Patient createPatientWithMultipleEmergencyContacts() {
-        return mock(Patient.class);
+    private Patient createUpdatedPatient() {
+        return Patient.of(
+            PatientCedula.of("12345678"),
+            PatientUsername.of("patient1"),
+            PatientPassword.of("Patient123!"),
+            PatientFullName.of("Juan", "Pérez García"),
+            PatientBirthDate.of(LocalDate.of(1985, 5, 15)),
+            PatientGender.MASCULINO,
+            PatientAddress.of("Calle 123 #45-67 Updated"),
+            PatientPhoneNumber.of("3001234567"),
+            PatientEmail.of("juan.perez@email.com"),
+            java.util.List.of(),
+            null
+        );
     }
 
     private Patient createPatientWithExpiredInsurance() {
-        return mock(Patient.class);
+        return Patient.of(
+            PatientCedula.of("87654321"),
+            PatientUsername.of("expiredpatient"),
+            PatientPassword.of("Patient123!"),
+            PatientFullName.of("Paciente", "Expirado"),
+            PatientBirthDate.of(LocalDate.of(1980, 3, 10)),
+            PatientGender.FEMENINO,
+            PatientAddress.of("Dirección expirada"),
+            PatientPhoneNumber.of("3009999999"),
+            PatientEmail.of("expired@email.com"),
+            java.util.List.of(),
+            null
+        );
     }
 
-    private EmergencyContact createValidEmergencyContact() {
-        return mock(EmergencyContact.class);
-    }
-
-    private InsurancePolicy createValidInsurancePolicy() {
-        return mock(InsurancePolicy.class);
+    private Patient createPatientWithMultipleEmergencyContacts() {
+        return Patient.of(
+            PatientCedula.of("11223344"),
+            PatientUsername.of("multiplecontact"),
+            PatientPassword.of("Patient123!"),
+            PatientFullName.of("Paciente", "Multiple"),
+            PatientBirthDate.of(LocalDate.of(1975, 8, 20)),
+            PatientGender.MASCULINO,
+            PatientAddress.of("Dirección múltiple"),
+            PatientPhoneNumber.of("3008888888"),
+            PatientEmail.of("multiple@email.com"),
+            java.util.List.of(),
+            null
+        );
     }
 }

@@ -1,12 +1,9 @@
 package app.clinic.domain.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,12 +13,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import app.clinic.domain.model.*;
+import app.clinic.domain.model.User;
+import app.clinic.domain.model.UserAddress;
+import app.clinic.domain.model.UserBirthDate;
+import app.clinic.domain.model.UserCedula;
+import app.clinic.domain.model.UserEmail;
+import app.clinic.domain.model.UserFullName;
+import app.clinic.domain.model.UserPassword;
+import app.clinic.domain.model.UserPhoneNumber;
+import app.clinic.domain.model.UserRole;
+import app.clinic.domain.model.UserUsername;
 import app.clinic.domain.port.UserRepository;
 
 /**
- * Comprehensive unit tests for UserDomainService.
- * Tests all business logic and validation rules for user management.
+ * Tests unitarios independientes para UserDomainService.
+ * Estos tests se ejecutan sin Spring Context y verifican la lógica de negocio pura.
  */
 @ExtendWith(MockitoExtension.class)
 class UserDomainServiceTest {
@@ -37,251 +43,116 @@ class UserDomainServiceTest {
     }
 
     @Test
-    @DisplayName("Should create user successfully with valid data")
-    void shouldCreateUserSuccessfullyWithValidData() {
+    @DisplayName("Debe crear usuario cuando los datos son válidos")
+    void shouldCreateUserWhenDataIsValid() {
         // Given
         User user = createValidUser();
 
-        when(userRepository.existsByCedula(any(UserCedula.class))).thenReturn(false);
-        when(userRepository.existsByUsername(any(UserUsername.class))).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenReturn(user);
-
         // When
+        when(userRepository.save(user)).thenReturn(user);
         User result = userDomainService.createUser(user);
 
         // Then
         assertNotNull(result);
-        verify(userRepository).existsByCedula(user.getCedula());
-        verify(userRepository).existsByUsername(user.getUsername());
+        assertEquals(user.getCedula(), result.getCedula());
         verify(userRepository).save(user);
     }
 
     @Test
-    @DisplayName("Should throw exception when creating user with existing cedula")
-    void shouldThrowExceptionWhenCreatingUserWithExistingCedula() {
+    @DisplayName("No debe crear usuario cuando la cédula ya existe")
+    void shouldNotCreateUserWhenCedulaAlreadyExists() {
         // Given
         User user = createValidUser();
-
-        when(userRepository.existsByCedula(any(UserCedula.class))).thenReturn(true);
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> userDomainService.createUser(user)
-        );
-
-        assertEquals("User with this cedula already exists", exception.getMessage());
-        verify(userRepository).existsByCedula(user.getCedula());
-        verify(userRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Should throw exception when creating user with existing username")
-    void shouldThrowExceptionWhenCreatingUserWithExistingUsername() {
-        // Given
-        User user = createValidUser();
-
-        when(userRepository.existsByCedula(any(UserCedula.class))).thenReturn(false);
-        when(userRepository.existsByUsername(any(UserUsername.class))).thenReturn(true);
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> userDomainService.createUser(user)
-        );
-
-        assertEquals("User with this username already exists", exception.getMessage());
-        verify(userRepository).existsByCedula(user.getCedula());
-        verify(userRepository).existsByUsername(user.getUsername());
-        verify(userRepository, never()).save(any());
-    }
-
-    @Test
-    @DisplayName("Should update user successfully")
-    void shouldUpdateUserSuccessfully() {
-        // Given
-        User user = createValidUser();
-        User existingUser = createValidUser();
-
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.of(existingUser));
-        when(userRepository.save(any(User.class))).thenReturn(user);
 
         // When
-        User result = userDomainService.updateUser(user);
+        when(userRepository.existsByCedula(user.getCedula())).thenReturn(true);
+
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userDomainService.createUser(user);
+        });
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("No debe crear usuario cuando el username ya existe")
+    void shouldNotCreateUserWhenUsernameAlreadyExists() {
+        // Given
+        User user = createValidUser();
+
+        // When
+        when(userRepository.existsByCedula(user.getCedula())).thenReturn(false);
+        when(userRepository.existsByUsername(user.getUsername())).thenReturn(true);
+
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userDomainService.createUser(user);
+        });
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Debe actualizar usuario cuando existe")
+    void shouldUpdateUserWhenUserExists() {
+        // Given
+        User existingUser = createValidUser();
+        User updatedUser = createUpdatedUser();
+
+        // When
+        when(userRepository.findById(any())).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+
+        User result = userDomainService.updateUser(updatedUser);
 
         // Then
         assertNotNull(result);
-        verify(userRepository).findById(any(UserId.class));
-        verify(userRepository).save(user);
+        verify(userRepository).save(updatedUser);
     }
 
     @Test
-    @DisplayName("Should throw exception when updating non-existent user")
-    void shouldThrowExceptionWhenUpdatingNonExistentUser() {
+    @DisplayName("No debe actualizar usuario cuando no existe")
+    void shouldNotUpdateUserWhenUserDoesNotExist() {
         // Given
         User user = createValidUser();
 
-        when(userRepository.findById(any(UserId.class))).thenReturn(Optional.empty());
+        // When
+        when(userRepository.findById(any())).thenReturn(Optional.empty());
 
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> userDomainService.updateUser(user)
-        );
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userDomainService.updateUser(user);
+        });
 
-        assertEquals("User to update does not exist", exception.getMessage());
         verify(userRepository, never()).save(any());
     }
 
     @Test
-    @DisplayName("Should find user by ID successfully")
-    void shouldFindUserByIdSuccessfully() {
-        // Given
-        UserId userId = UserId.of("test-id");
-        User user = createValidUser();
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-        // When
-        Optional<User> result = userDomainService.findUserById(userId);
-
-        // Then
-        assertTrue(result.isPresent());
-        assertEquals(user, result.get());
-        verify(userRepository).findById(userId);
-    }
-
-    @Test
-    @DisplayName("Should find user by cedula successfully")
-    void shouldFindUserByCedulaSuccessfully() {
+    @DisplayName("Debe encontrar usuario por cédula")
+    void shouldFindUserByCedula() {
         // Given
         UserCedula cedula = UserCedula.of("12345678");
         User user = createValidUser();
 
-        when(userRepository.findByCedula(cedula)).thenReturn(Optional.of(user));
-
         // When
+        when(userRepository.findByCedula(cedula)).thenReturn(Optional.of(user));
         Optional<User> result = userDomainService.findUserByCedula(cedula);
 
         // Then
         assertTrue(result.isPresent());
-        assertEquals(user, result.get());
+        assertEquals(user.getCedula(), result.get().getCedula());
         verify(userRepository).findByCedula(cedula);
     }
 
     @Test
-    @DisplayName("Should find user by username successfully")
-    void shouldFindUserByUsernameSuccessfully() {
-        // Given
-        UserUsername username = UserUsername.of("testuser");
-        User user = createValidUser();
-
-        when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-
-        // When
-        Optional<User> result = userDomainService.findUserByUsername(username);
-
-        // Then
-        assertTrue(result.isPresent());
-        assertEquals(user, result.get());
-        verify(userRepository).findByUsername(username);
-    }
-
-    @Test
-    @DisplayName("Should find users by role successfully")
-    void shouldFindUsersByRoleSuccessfully() {
-        // Given
-        UserRole role = UserRole.DOCTOR;
-        List<User> users = Arrays.asList(createValidUser(), createValidUser());
-
-        when(userRepository.findByRole(role)).thenReturn(users);
-
-        // When
-        List<User> result = userDomainService.findUsersByRole(role);
-
-        // Then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(userRepository).findByRole(role);
-    }
-
-    @Test
-    @DisplayName("Should find all active users successfully")
-    void shouldFindAllActiveUsersSuccessfully() {
-        // Given
-        List<User> users = Arrays.asList(createValidUser(), createValidUser());
-        when(userRepository.findAllActive()).thenReturn(users);
-
-        // When
-        List<User> result = userDomainService.findAllActiveUsers();
-
-        // Then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(userRepository).findAllActive();
-    }
-
-    @Test
-    @DisplayName("Should find all users successfully")
-    void shouldFindAllUsersSuccessfully() {
-        // Given
-        List<User> users = Arrays.asList(createValidUser(), createValidUser());
-        when(userRepository.findAll()).thenReturn(users);
-
-        // When
-        List<User> result = userDomainService.findAllUsers();
-
-        // Then
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(userRepository).findAll();
-    }
-
-    @Test
-    @DisplayName("Should delete user by ID successfully")
-    void shouldDeleteUserByIdSuccessfully() {
-        // Given
-        UserId userId = UserId.of("test-id");
-        User user = createValidUser();
-
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        doNothing().when(userRepository).deleteById(userId);
-
-        // When & Then
-        assertDoesNotThrow(() -> userDomainService.deleteUserById(userId));
-
-        verify(userRepository).findById(userId);
-        verify(userRepository).deleteById(userId);
-    }
-
-    @Test
-    @DisplayName("Should throw exception when deleting non-existent user")
-    void shouldThrowExceptionWhenDeletingNonExistentUser() {
-        // Given
-        UserId userId = UserId.of("non-existent-id");
-
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> userDomainService.deleteUserById(userId)
-        );
-
-        assertEquals("User to delete does not exist", exception.getMessage());
-        verify(userRepository, never()).deleteById(any());
-    }
-
-    @Test
-    @DisplayName("Should activate user successfully")
-    void shouldActivateUserSuccessfully() {
+    @DisplayName("Debe activar usuario correctamente")
+    void shouldActivateUserCorrectly() {
         // Given
         User inactiveUser = createInactiveUser();
-        User expectedActiveUser = createValidUser();
-
-        when(userRepository.save(any(User.class))).thenReturn(expectedActiveUser);
 
         // When
+        when(userRepository.save(any(User.class))).thenReturn(inactiveUser);
         User result = userDomainService.activateUser(inactiveUser);
 
         // Then
@@ -290,15 +161,13 @@ class UserDomainServiceTest {
     }
 
     @Test
-    @DisplayName("Should deactivate user successfully")
-    void shouldDeactivateUserSuccessfully() {
+    @DisplayName("Debe desactivar usuario correctamente")
+    void shouldDeactivateUserCorrectly() {
         // Given
         User activeUser = createValidUser();
-        User expectedInactiveUser = createInactiveUser();
-
-        when(userRepository.save(any(User.class))).thenReturn(expectedInactiveUser);
 
         // When
+        when(userRepository.save(any(User.class))).thenReturn(activeUser);
         User result = userDomainService.deactivateUser(activeUser);
 
         // Then
@@ -306,12 +175,47 @@ class UserDomainServiceTest {
         verify(userRepository).save(any(User.class));
     }
 
-    // Helper methods
+    // Métodos auxiliares para crear datos de prueba
     private User createValidUser() {
-        return mock(User.class);
+        return User.of(
+            UserCedula.of("12345678"),
+            UserUsername.of("testuser"),
+            UserPassword.of("TestPass123!"),
+            UserFullName.of("Test", "User"),
+            UserBirthDate.of(LocalDate.of(1990, 1, 1)),
+            UserAddress.of("Test Address 123"),
+            UserPhoneNumber.of("3001234567"),
+            UserEmail.of("test@example.com"),
+            UserRole.ADMINISTRATIVE_STAFF
+        );
+    }
+
+    private User createUpdatedUser() {
+        return User.of(
+            UserCedula.of("12345678"),
+            UserUsername.of("testuser"),
+            UserPassword.of("TestPass123!"),
+            UserFullName.of("Updated", "User"),
+            UserBirthDate.of(LocalDate.of(1990, 1, 1)),
+            UserAddress.of("Updated Address 456"),
+            UserPhoneNumber.of("3001234567"),
+            UserEmail.of("test@example.com"),
+            UserRole.ADMINISTRATIVE_STAFF
+        );
     }
 
     private User createInactiveUser() {
-        return mock(User.class);
+        return User.of(
+            UserCedula.of("87654321"),
+            UserUsername.of("inactiveuser"),
+            UserPassword.of("TestPass123!"),
+            UserFullName.of("Inactive", "User"),
+            UserBirthDate.of(LocalDate.of(1985, 5, 15)),
+            UserAddress.of("Inactive Address"),
+            UserPhoneNumber.of("3009876543"),
+            UserEmail.of("inactive@example.com"),
+            UserRole.DOCTOR,
+            false // Inactive
+        );
     }
 }

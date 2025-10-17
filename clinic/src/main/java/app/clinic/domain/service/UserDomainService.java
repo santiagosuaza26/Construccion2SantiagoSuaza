@@ -11,13 +11,11 @@ import app.clinic.domain.model.UserRole;
 import app.clinic.domain.model.UserUsername;
 import app.clinic.domain.port.UserRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for user management operations.
  * Contains business logic for user operations following domain-driven design principles.
+ * Pure domain service without external framework dependencies.
  */
-@Service
 public class UserDomainService {
 
     private final UserRepository userRepository;

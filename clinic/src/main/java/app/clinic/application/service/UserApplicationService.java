@@ -48,7 +48,7 @@ public class UserApplicationService {
         Optional<User> existingUser = userDomainService.findUserByCedula(UserCedula.of(updateUserDTO.getCedula()));
 
         if (existingUser.isPresent()) {
-            User updatedUser = UserMapper.updateEntity(existingUser.get(), updateUserDTO);
+            User updatedUser = UserMapper.toDomainEntityForUpdate(existingUser.get(), updateUserDTO);
             User savedUser = userDomainService.updateUser(updatedUser);
             return UserMapper.toDTO(savedUser);
         } else {

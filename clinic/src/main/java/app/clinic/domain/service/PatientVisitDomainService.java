@@ -10,13 +10,11 @@ import app.clinic.domain.model.PatientVisit;
 import app.clinic.domain.model.PatientVisitId;
 import app.clinic.domain.port.PatientVisitRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for patient visit operations.
  * Contains business logic for patient visit management following domain-driven design principles.
+ * Pure domain service without external framework dependencies.
  */
-@Service
 public class PatientVisitDomainService {
 
     private final PatientVisitRepository patientVisitRepository;

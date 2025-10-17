@@ -10,13 +10,11 @@ import app.clinic.domain.model.InventoryItemName;
 import app.clinic.domain.model.InventoryItemType;
 import app.clinic.domain.port.InventoryRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for inventory operations.
  * Contains business logic for inventory management following domain-driven design principles.
+ * Pure domain service without external framework dependencies.
  */
-@Service
 public class InventoryDomainService {
 
     private final InventoryRepository inventoryRepository;

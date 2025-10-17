@@ -4,8 +4,13 @@
  */
 class ApiService {
     constructor() {
-        this.baseURL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : 'http://localhost:5500/api';
+        this.baseURL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : 'http://localhost:8080/api';
         this.token = localStorage.getItem(window.APP_CONFIG.AUTH.TOKEN_KEY);
+        this.cache = new Map();
+        this.pendingRequests = new Map();
+        this.maxRetries = 3;
+        this.retryDelay = 1000;
+        this.cacheTimeout = 5 * 60 * 1000; // 5 minutos
     }
 
     /**
@@ -41,26 +46,39 @@ class ApiService {
 
             if (response.status === 401) {
                 errorMessage = 'No autorizado. Su sesión ha expirado.';
+                // Limpiar sesión automáticamente en errores 401
+                if (window.authService) {
+                    window.authService.clearSession();
+                    window.authService.showLoginPage();
+                }
             } else if (response.status === 403) {
                 errorMessage = 'Acceso denegado. No tiene permisos para esta acción.';
             } else if (response.status === 404) {
                 errorMessage = 'Recurso no encontrado.';
             } else if (response.status === 422) {
                 errorMessage = 'Datos inválidos. Verifique la información ingresada.';
+            } else if (response.status === 429) {
+                errorMessage = 'Demasiadas solicitudes. Espere un momento e intente nuevamente.';
             } else if (response.status >= 500) {
                 errorMessage = 'Error interno del servidor. Intente nuevamente más tarde.';
             }
 
-            throw new Error(errorMessage);
+            // Crear error con información adicional para debugging
+            const error = new Error(errorMessage);
+            error.status = response.status;
+            error.endpoint = response.url;
+            error.timestamp = new Date().toISOString();
+
+            throw error;
         }
 
         return response.json();
     }
 
     /**
-     * Realiza una petición GET
+     * Realiza una petición GET con caché y reintentos
      */
-    async get(endpoint, params = {}, includeAuth = true) {
+    async get(endpoint, params = {}, includeAuth = true, useCache = true) {
         const url = new URL(`${this.baseURL}${endpoint}`);
         Object.keys(params).forEach(key => {
             if (params[key] !== null && params[key] !== undefined) {
@@ -68,12 +86,50 @@ class ApiService {
             }
         });
 
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: this.getHeaders(includeAuth)
+        const cacheKey = `${endpoint}:${url.searchParams.toString()}`;
+
+        // Verificar caché si está habilitado
+        if (useCache && this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            if (Date.now() - cached.timestamp < this.cacheTimeout) {
+                console.log(`📋 Cache hit para ${endpoint}`);
+                return cached.data;
+            } else {
+                this.cache.delete(cacheKey);
+            }
+        }
+
+        // Evitar múltiples peticiones simultáneas al mismo endpoint
+        if (this.pendingRequests.has(cacheKey)) {
+            console.log(`⏳ Esperando petición pendiente para ${endpoint}`);
+            return this.pendingRequests.get(cacheKey);
+        }
+
+        const requestPromise = this.executeWithRetry(async () => {
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: this.getHeaders(includeAuth)
+            });
+            return this.handleResponse(response);
         });
 
-        return this.handleResponse(response);
+        this.pendingRequests.set(cacheKey, requestPromise);
+
+        try {
+            const result = await requestPromise;
+
+            // Guardar en caché si está habilitado
+            if (useCache) {
+                this.cache.set(cacheKey, {
+                    data: result,
+                    timestamp: Date.now()
+                });
+            }
+
+            return result;
+        } finally {
+            this.pendingRequests.delete(cacheKey);
+        }
     }
 
     /**
@@ -138,6 +194,76 @@ class ApiService {
      */
     isAuthenticated() {
         return !!this.token;
+    }
+
+    /**
+     * Ejecuta una petición con reintentos automáticos
+     */
+    async executeWithRetry(operation, attempt = 1) {
+        try {
+            return await operation();
+        } catch (error) {
+            // No reintentar errores de autenticación o validación
+            if (error.status === 401 || error.status === 403 || error.status === 422) {
+                throw error;
+            }
+
+            // Reintentar en errores de red o servidor (máximo 3 intentos)
+            if (attempt < this.maxRetries && (error.message.includes('fetch') || error.status >= 500)) {
+                console.log(`🔄 Reintentando petición (intento ${attempt + 1}/${this.maxRetries})...`);
+                await this.delay(this.retryDelay * attempt);
+                return this.executeWithRetry(operation, attempt + 1);
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Retraso para reintentos
+     */
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Limpia la caché
+     */
+    clearCache() {
+        this.cache.clear();
+        console.log('🗑️ Caché limpiado');
+    }
+
+    /**
+     * Obtiene estadísticas de caché
+     */
+    getCacheStats() {
+        return {
+            size: this.cache.size,
+            pendingRequests: this.pendingRequests.size,
+            hitRate: this.cache.size > 0 ? 'N/A' : 0
+        };
+    }
+
+    /**
+     * Pre-carga datos comunes en caché
+     */
+    async preloadCommonData() {
+        try {
+            console.log('🚀 Pre-cargando datos comunes...');
+
+            // Pre-cargar datos que se usan frecuentemente
+            const promises = [
+                this.get('/users', {}, true, true), // Usuarios activos
+                this.get('/patients', {}, true, true), // Lista de pacientes
+            ];
+
+            await Promise.allSettled(promises);
+            console.log('✅ Datos comunes pre-cargados');
+
+        } catch (error) {
+            console.warn('⚠️ Error en pre-carga de datos:', error);
+        }
     }
 }
 

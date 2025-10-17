@@ -17,8 +17,6 @@ import app.clinic.domain.model.Year;
 import app.clinic.domain.port.BillingRepository;
 import app.clinic.domain.port.PatientRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for billing operations in the clinic management system.
  *
@@ -35,10 +33,11 @@ import org.springframework.stereotype.Service;
  * 4. Uninsured patients must pay full service cost
  * 5. Insurance coverage = Total Cost - Patient Copayment (when applicable)
  *
+ * Pure domain service without external framework dependencies.
+ *
  * @author Clinic Development Team
  * @version 2.0.0
  */
-@Service
 public class BillingDomainService {
 
     private final BillingRepository billingRepository;

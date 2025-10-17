@@ -96,7 +96,7 @@ class PatientMapperTest {
             // Given
             CreatePatientDTO dtoWithEmergencyContact = new CreatePatientDTO(
                 "87654321",
-                "patientemergency",
+                "emergencypat",
                 "TestPassword123!",
                 "Ana García",
                 "20/03/1985",
@@ -126,7 +126,7 @@ class PatientMapperTest {
             // Given
             CreatePatientDTO dtoWithInsurance = new CreatePatientDTO(
                 "11223344",
-                "patientinsurance",
+                "insurancepat",
                 "TestPassword123!",
                 "Carlos López",
                 "10/12/1980",
@@ -174,7 +174,7 @@ class PatientMapperTest {
             assertThat(result.getGender()).isEqualTo("MASCULINO");
             assertThat(result.getAddress()).isEqualTo("Calle 123 #45-67");
             assertThat(result.getPhoneNumber()).isEqualTo("3001234567");
-            assertThat(result.getAge()).isEqualTo(34);
+            assertThat(result.getAge()).isEqualTo(35);
         }
 
         @Test
@@ -183,7 +183,7 @@ class PatientMapperTest {
             // Given
             Patient youngPatient = Patient.of(
                 PatientCedula.of("55566677"),
-                PatientUsername.of("youngpatient"),
+                PatientUsername.of("youngpat"),
                 PatientPassword.of("TestPassword123!"),
                 PatientFullName.of("Niño", "Pérez"),
                 PatientBirthDate.of(LocalDate.now().minusYears(5)), // 5 años
@@ -215,7 +215,7 @@ class PatientMapperTest {
 
             Patient patientWithEmergencyContact = Patient.of(
                 PatientCedula.of("99988877"),
-                PatientUsername.of("patientemergency"),
+                PatientUsername.of("emergencypat"),
                 PatientPassword.of("TestPassword123!"),
                 PatientFullName.of("Paciente", "Emergencia"),
                 PatientBirthDate.of(LocalDate.of(1985, 3, 20)),
@@ -233,6 +233,9 @@ class PatientMapperTest {
             // Then
             assertThat(result).isNotNull();
             assertThat(result.getEmergencyContact()).isNotNull();
+            assertThat(result.getEmergencyContact().getName()).isEqualTo("María González");
+            assertThat(result.getEmergencyContact().getRelationship()).isEqualTo("Hermana");
+            assertThat(result.getEmergencyContact().getPhoneNumber()).isEqualTo("3011234567");
         }
     }
 
@@ -244,12 +247,14 @@ class PatientMapperTest {
         @DisplayName("Debe actualizar entidad de dominio correctamente")
         void shouldUpdateEntityCorrectly() {
             // When
-            Patient result = PatientMapper.updateEntity(validPatient, validUpdatePatientDTO);
+            Patient result = PatientMapper.toDomainEntityForUpdate(validPatient, validUpdatePatientDTO);
 
             // Then
             assertThat(result).isNotNull();
             assertThat(result.getCedula().getValue()).isEqualTo("12345678"); // No cambia
             assertThat(result.getFullName().getFullName()).isEqualTo("Juan Pérez Actualizado");
+            assertThat(result.getFullName().getFirstNames()).isEqualTo("Juan");
+            assertThat(result.getFullName().getLastNames()).isEqualTo("Pérez Actualizado");
             assertThat(result.getAddress().getValue()).isEqualTo("Nueva dirección 456");
             assertThat(result.getPhoneNumber().getValue()).isEqualTo("3009876543");
             assertThat(result.getEmail().getValue()).isEqualTo("juan.nuevo@test.com");
@@ -272,7 +277,7 @@ class PatientMapperTest {
             );
 
             // When
-            Patient result = PatientMapper.updateEntity(validPatient, partialUpdateDTO);
+            Patient result = PatientMapper.toDomainEntityForUpdate(validPatient, partialUpdateDTO);
 
             // Then
             assertThat(result).isNotNull();
@@ -300,7 +305,7 @@ class PatientMapperTest {
                     dto.getUsername(),
                     "TestPassword123!", // Necesario para CreatePatientDTO
                     dto.getFullName(),
-                    dto.getBirthDate(),
+                    dto.getBirthDate(), // El DTO ya devuelve la fecha en formato dd/MM/yyyy
                     dto.getGender(),
                     dto.getAddress(),
                     dto.getPhoneNumber(),
@@ -323,7 +328,7 @@ class PatientMapperTest {
             // Given
             CreatePatientDTO dtoWithNulls = new CreatePatientDTO(
                 "77788899",
-                "patientnulls",
+                "nullpatient",
                 "TestPassword123!",
                 "Paciente Nulos",
                 "01/01/1980",

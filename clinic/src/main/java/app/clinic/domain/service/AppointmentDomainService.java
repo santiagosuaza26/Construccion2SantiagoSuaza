@@ -12,13 +12,11 @@ import app.clinic.domain.model.DoctorCedula;
 import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.port.AppointmentRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for appointment operations.
  * Contains business logic for appointment management following domain-driven design principles.
+ * Pure domain service without external framework dependencies.
  */
-@Service
 public class AppointmentDomainService {
 
     private final AppointmentRepository appointmentRepository;

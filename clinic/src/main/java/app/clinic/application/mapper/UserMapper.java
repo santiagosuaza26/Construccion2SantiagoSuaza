@@ -1,7 +1,6 @@
 package app.clinic.application.mapper;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import app.clinic.application.dto.user.CreateUserDTO;
 import app.clinic.application.dto.user.UpdateUserDTO;
@@ -18,28 +17,26 @@ import app.clinic.domain.model.UserRole;
 import app.clinic.domain.model.UserUsername;
 
 /**
- * Mapper class for converting between User domain entities and DTOs.
- * Handles bidirectional conversion between domain objects and data transfer objects.
+ * Mapper para convertir entre DTOs de aplicación y entidades del dominio para usuarios.
+ * Mantiene la separación entre capas de presentación y dominio.
  */
 public class UserMapper {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
     /**
-     * Converts a CreateUserDTO to a User domain entity.
+     * Convierte un DTO de creación a entidad del dominio.
      */
     public static User toDomainEntity(CreateUserDTO dto) {
-        // Split full name into first names and last names
-        String[] nameParts = dto.getFullName().trim().split("\\s+", 2);
-        String firstNames = nameParts[0];
-        String lastNames = nameParts.length > 1 ? nameParts[1] : "";
+        // Parsear nombre completo (formato "Nombre Apellido")
+        String[] nameParts = dto.getFullName().split(" ", 2);
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : "";
 
         return User.of(
             UserCedula.of(dto.getCedula()),
             UserUsername.of(dto.getUsername()),
             UserPassword.of(dto.getPassword()),
-            UserFullName.of(firstNames, lastNames),
-            UserBirthDate.of(parseDate(dto.getBirthDate())),
+            UserFullName.of(firstName, lastName),
+            UserBirthDate.of(LocalDate.parse(dto.getBirthDate())),
             UserAddress.of(dto.getAddress()),
             UserPhoneNumber.of(dto.getPhoneNumber()),
             UserEmail.of(dto.getEmail()),
@@ -48,14 +45,14 @@ public class UserMapper {
     }
 
     /**
-     * Converts a User domain entity to a UserDTO.
+     * Convierte una entidad del dominio a DTO de respuesta.
      */
     public static UserDTO toDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setCedula(user.getCedula().getValue());
         dto.setUsername(user.getUsername().getValue());
         dto.setFullName(user.getFullName().getFullName());
-        dto.setBirthDate(user.getBirthDate().getValue().format(DATE_FORMAT));
+        dto.setBirthDate(user.getBirthDate().getValue().toString());
         dto.setAddress(user.getAddress().getValue());
         dto.setPhoneNumber(user.getPhoneNumber().getValue());
         dto.setEmail(user.getEmail().getValue());
@@ -66,33 +63,22 @@ public class UserMapper {
     }
 
     /**
-     * Updates an existing User entity with data from UpdateUserDTO.
-     * Creates a new User instance with updated data while preserving the original cedula and username.
+     * Convierte un DTO de actualización a entidad del dominio.
      */
-    public static User updateEntity(User existingUser, UpdateUserDTO dto) {
-        // Split full name into first names and last names if provided
-        String[] nameParts = dto.getFullName() != null ? dto.getFullName().trim().split("\\s+", 2) : null;
-        String firstNames = nameParts != null ? nameParts[0] : existingUser.getFullName().getFirstNames();
-        String lastNames = nameParts != null && nameParts.length > 1 ? nameParts[1] : existingUser.getFullName().getLastNames();
-
+    public static User toDomainEntityForUpdate(User existingUser, UpdateUserDTO updateDTO) {
+        // Crear nuevo usuario con datos actualizados
         return User.of(
-            existingUser.getCedula(), // Preserve original cedula
-            existingUser.getUsername(), // Preserve original username
-            existingUser.getPassword(), // Password should be updated separately if needed
-            dto.getFullName() != null ? UserFullName.of(firstNames, lastNames) : existingUser.getFullName(),
-            dto.getBirthDate() != null ? UserBirthDate.of(parseDate(dto.getBirthDate())) : existingUser.getBirthDate(),
-            dto.getAddress() != null ? UserAddress.of(dto.getAddress()) : existingUser.getAddress(),
-            dto.getPhoneNumber() != null ? UserPhoneNumber.of(dto.getPhoneNumber()) : existingUser.getPhoneNumber(),
-            dto.getEmail() != null ? UserEmail.of(dto.getEmail()) : existingUser.getEmail(),
-            dto.getRole() != null ? UserRole.valueOf(dto.getRole().toUpperCase()) : existingUser.getRole(),
-            existingUser.isActive() // Preserve active status
+            existingUser.getCedula(), // Mantener cédula original
+            existingUser.getUsername(), // Mantener username existente
+            existingUser.getPassword(), // Mantener contraseña existente
+            updateDTO.getFullName() != null ?
+                UserFullName.of(updateDTO.getFullName().split(" ", 2)[0], updateDTO.getFullName().split(" ", 2)[1]) :
+                existingUser.getFullName(),
+            existingUser.getBirthDate(), // Mantener fecha de nacimiento
+            UserAddress.of(updateDTO.getAddress() != null ? updateDTO.getAddress() : existingUser.getAddress().getValue()),
+            UserPhoneNumber.of(updateDTO.getPhoneNumber() != null ? updateDTO.getPhoneNumber() : existingUser.getPhoneNumber().getValue()),
+            UserEmail.of(updateDTO.getEmail() != null ? updateDTO.getEmail() : existingUser.getEmail().getValue()),
+            updateDTO.getRole() != null ? UserRole.valueOf(updateDTO.getRole().toUpperCase()) : existingUser.getRole()
         );
-    }
-
-    /**
-     * Helper method to parse date string in DD/MM/YYYY format to LocalDate.
-     */
-    private static LocalDate parseDate(String dateString) {
-        return LocalDate.parse(dateString, DATE_FORMAT);
     }
 }

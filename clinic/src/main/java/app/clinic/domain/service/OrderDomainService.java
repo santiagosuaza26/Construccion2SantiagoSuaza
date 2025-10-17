@@ -15,13 +15,11 @@ import app.clinic.domain.model.PatientCedula;
 import app.clinic.domain.model.ProcedureOrder;
 import app.clinic.domain.port.OrderRepository;
 
-import org.springframework.stereotype.Service;
-
 /**
  * Domain service for medical order operations.
  * Contains business logic for order management following domain-driven design principles.
+ * Pure domain service without external framework dependencies.
  */
-@Service
 public class OrderDomainService {
 
     private final OrderRepository orderRepository;
