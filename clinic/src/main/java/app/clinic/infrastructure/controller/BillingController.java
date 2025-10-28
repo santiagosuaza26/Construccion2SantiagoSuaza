@@ -32,7 +32,7 @@ public class BillingController {
         );
 
         var dto = new BillingDTO(
-            "billing-id", // TODO: Generate proper ID
+            java.util.UUID.randomUUID().toString(), // Generate proper ID
             billing.getIdentificationNumber(), // Using identification number as patient ID
             billing.getPatientName(),
             billing.getDoctorName(),
@@ -44,8 +44,8 @@ public class BillingController {
             billing.getAppliedMedications(),
             billing.getAppliedProcedures(),
             billing.getAppliedDiagnosticAids(),
-            java.time.LocalDateTime.now(), // TODO: Add generatedAt to domain
-            "admin-id" // TODO: Add generatedBy to domain
+            billing.getGeneratedAt(),
+            billing.getGeneratedBy()
         );
 
         return ResponseEntity.ok(dto);
@@ -57,7 +57,7 @@ public class BillingController {
         var billing = generateBillingFromOrderUseCase.execute(orderNumber, adminId);
 
         var dto = new BillingDTO(
-            "billing-id", // TODO: Generate proper ID
+            java.util.UUID.randomUUID().toString(), // Generate proper ID
             billing.getIdentificationNumber(), // Using identification number as patient ID
             billing.getPatientName(),
             billing.getDoctorName(),
@@ -69,8 +69,8 @@ public class BillingController {
             billing.getAppliedMedications(),
             billing.getAppliedProcedures(),
             billing.getAppliedDiagnosticAids(),
-            java.time.LocalDateTime.now(), // TODO: Add generatedAt to domain
-            "admin-id" // TODO: Add generatedBy to domain
+            billing.getGeneratedAt(),
+            billing.getGeneratedBy()
         );
 
         return ResponseEntity.ok(dto);

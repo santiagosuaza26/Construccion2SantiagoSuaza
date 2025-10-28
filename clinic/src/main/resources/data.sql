@@ -1,12 +1,11 @@
 -- Sample data for development and testing
 
 -- Insert sample users
-INSERT INTO users (id, username, password_hash, full_name, email, phone, date_of_birth, address, role, created_at, updated_at) VALUES
-('1234567890', 'admin_hr', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin Recursos Humanos', 'admin@clinic.com', '3001234567', '1980-01-01', 'Calle 123 #45-67', 'RECURSOS_HUMANOS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('1234567891', 'admin_staff', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin Personal', 'admin_staff@clinic.com', '3001234568', '1982-02-02', 'Carrera 45 #12-34', 'PERSONAL_ADMINISTRATIVO', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('1234567892', 'soporte_it', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Soporte IT', 'soporte@clinic.com', '3001234569', '1985-03-03', 'Avenida 67 #89-01', 'SOPORTE_DE_INFORMACION', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('1234567893', 'nurse_ana', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Ana López', 'ana.nurse@clinic.com', '3001234570', '1990-04-04', 'Transversal 23 #56-78', 'ENFERMERA', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('1234567894', 'dr_perez', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Dr. Carlos Pérez', 'carlos.doctor@clinic.com', '3001234571', 'Diagonal 34 #67-89', 'MEDICO', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT INTO users (id, username, password_hash, full_name, email, phone, date_of_birth, address, role) VALUES ('1234567890', 'admin_hr', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin Recursos Humanos', 'admin@clinic.com', '3001234567', '1980-01-01', 'Calle 123 #45-67', 'RECURSOS_HUMANOS');
+INSERT INTO users (id, username, password_hash, full_name, email, phone, date_of_birth, address, role) VALUES ('1234567891', 'admin_staff', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin Personal', 'admin_staff@clinic.com', '3001234568', '1982-02-02', 'Carrera 45 #12-34', 'PERSONAL_ADMINISTRATIVO');
+INSERT INTO users (id, username, password_hash, full_name, email, phone, date_of_birth, address, role) VALUES ('1234567892', 'soporte_it', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Soporte IT', 'soporte@clinic.com', '3001234569', '1985-03-03', 'Avenida 67 #89-01', 'SOPORTE_DE_INFORMACION');
+INSERT INTO users (id, username, password_hash, full_name, email, phone, date_of_birth, address, role) VALUES ('1234567893', 'nurse_ana', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Ana López', 'ana.nurse@clinic.com', '3001234570', '1990-04-04', 'Transversal 23 #56-78', 'ENFERMERA');
+INSERT INTO users (id, username, password_hash, full_name, email, phone, date_of_birth, address, role) VALUES ('1234567894', 'dr_perez', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Dr. Carlos Pérez', 'carlos.doctor@clinic.com', '3001234571', '1975-06-15', 'Diagonal 34 #67-89', 'MEDICO');
 
 -- Insert sample patients
 INSERT INTO patients (id, full_name, date_of_birth, gender, address, phone, email, emergency_name, emergency_relation, emergency_phone, insurance_company, insurance_policy, insurance_active, insurance_validity_date) VALUES
@@ -24,9 +23,9 @@ INSERT INTO medications (id, name, cost, requires_specialist, specialist_type, s
 -- Insert sample procedures
 INSERT INTO procedures (id, name, cost, requires_specialist, specialist_type) VALUES
 ('PROC001', 'Consulta General', 35000.00, false, NULL),
-('PROC002', 'Ecografía Abdominal', 85000.00, true, 'Radiólogo', 30),
-('PROC003', 'Electrocardiograma', 45000.00, true, 'Cardiólogo', 20),
-('PROC004', 'Hospitalización 24h', 150000.00, true, 'Médico General', 10);
+('PROC002', 'Ecografía Abdominal', 85000.00, true, 'Radiólogo'),
+('PROC003', 'Electrocardiograma', 45000.00, true, 'Cardiólogo'),
+('PROC004', 'Hospitalización 24h', 150000.00, true, 'Médico General');
 
 -- Insert sample diagnostic aids
 INSERT INTO diagnostic_aids (id, name, cost, requires_specialist, specialist_type) VALUES

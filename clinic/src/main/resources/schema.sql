@@ -1,7 +1,7 @@
 -- Schema initialization for Clinic Management System (H2 Compatible)
 
 -- Users table
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE users (
     id VARCHAR(20) PRIMARY KEY,
     username VARCHAR(15) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Patients table
-CREATE TABLE IF NOT EXISTS patients (
+CREATE TABLE patients (
     id VARCHAR(20) PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
     date_of_birth DATE NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS patients (
 );
 
 -- Appointments table
-CREATE TABLE IF NOT EXISTS appointments (
+CREATE TABLE appointments (
     id VARCHAR(20) PRIMARY KEY,
     patient_id VARCHAR(20) NOT NULL,
     admin_id VARCHAR(20) NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS appointments (
 );
 
 -- Medications table
-CREATE TABLE IF NOT EXISTS medications (
+CREATE TABLE medications (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     cost DECIMAL(10,2) NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS medications (
 );
 
 -- Procedures table
-CREATE TABLE IF NOT EXISTS procedures (
+CREATE TABLE procedures (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     cost DECIMAL(10,2) NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS procedures (
 );
 
 -- Diagnostic aids table
-CREATE TABLE IF NOT EXISTS diagnostic_aids (
+CREATE TABLE diagnostic_aids (
     id VARCHAR(20) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     cost DECIMAL(10,2) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS diagnostic_aids (
 );
 
 -- Orders table
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE orders (
     order_number VARCHAR(6) PRIMARY KEY,
     patient_id VARCHAR(20) NOT NULL,
     doctor_id VARCHAR(20) NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 -- Medication orders
-CREATE TABLE IF NOT EXISTS medication_orders (
+CREATE TABLE medication_orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_number VARCHAR(6) NOT NULL,
     medication_id VARCHAR(20) NOT NULL,
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS medication_orders (
 );
 
 -- Procedure orders
-CREATE TABLE IF NOT EXISTS procedure_orders (
+CREATE TABLE procedure_orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_number VARCHAR(6) NOT NULL,
     procedure_id VARCHAR(20) NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS procedure_orders (
 );
 
 -- Diagnostic aid orders
-CREATE TABLE IF NOT EXISTS diagnostic_aid_orders (
+CREATE TABLE diagnostic_aid_orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     order_number VARCHAR(6) NOT NULL,
     diagnostic_aid_id VARCHAR(20) NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS diagnostic_aid_orders (
 );
 
 -- Medical records table (simplified for H2 - no MongoDB)
-CREATE TABLE IF NOT EXISTS medical_records (
+CREATE TABLE medical_records (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     patient_id VARCHAR(20) NOT NULL,
     doctor_id VARCHAR(20) NOT NULL,
@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS medical_records (
 );
 
 -- Vital signs table
-CREATE TABLE IF NOT EXISTS vital_signs (
+CREATE TABLE vital_signs (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     patient_id VARCHAR(20) NOT NULL,
     nurse_id VARCHAR(20) NOT NULL,
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS vital_signs (
 );
 
 -- Billing table
-CREATE TABLE IF NOT EXISTS billing (
+CREATE TABLE billing (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     patient_id VARCHAR(20) NOT NULL,
     order_number VARCHAR(6),
@@ -189,15 +189,15 @@ CREATE TABLE IF NOT EXISTS billing (
 );
 
 -- Indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_patients_email ON patients(email);
-CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
-CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_appointments_patient_id ON appointments(patient_id);
-CREATE INDEX IF NOT EXISTS idx_appointments_doctor_id ON appointments(doctor_id);
-CREATE INDEX IF NOT EXISTS idx_orders_patient_id ON orders(patient_id);
-CREATE INDEX IF NOT EXISTS idx_orders_doctor_id ON orders(doctor_id);
-CREATE INDEX IF NOT EXISTS idx_vital_signs_patient_id ON vital_signs(patient_id);
-CREATE INDEX IF NOT EXISTS idx_billing_patient_id ON billing(patient_id);
-CREATE INDEX IF NOT EXISTS idx_billing_order_number ON billing(order_number);
-CREATE INDEX IF NOT EXISTS idx_medical_records_patient_id ON medical_records(patient_id);
-CREATE INDEX IF NOT EXISTS idx_medical_records_consultation_date ON medical_records(consultation_date);
+CREATE INDEX idx_patients_email ON patients(email);
+CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_appointments_patient_id ON appointments(patient_id);
+CREATE INDEX idx_appointments_doctor_id ON appointments(doctor_id);
+CREATE INDEX idx_orders_patient_id ON orders(patient_id);
+CREATE INDEX idx_orders_doctor_id ON orders(doctor_id);
+CREATE INDEX idx_vital_signs_patient_id ON vital_signs(patient_id);
+CREATE INDEX idx_billing_patient_id ON billing(patient_id);
+CREATE INDEX idx_billing_order_number ON billing(order_number);
+CREATE INDEX idx_medical_records_patient_id ON medical_records(patient_id);
+CREATE INDEX idx_medical_records_consultation_date ON medical_records(consultation_date);

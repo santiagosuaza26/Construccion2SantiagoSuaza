@@ -52,7 +52,7 @@ public class BillingService {
         int age = Period.between(patient.getDateOfBirth().getValue(), LocalDate.now()).getYears();
         int validityDays = patient.getInsurance() != null ? Period.between(LocalDate.now(), patient.getInsurance().getValidityDate()).getDays() : 0;
 
-        Billing billing = new Billing(new OrderNumber(orderNumber), patient.getFullName(), age, patientId, doctorName, patient.getInsurance() != null ? patient.getInsurance().getCompanyName() : "", patient.getInsurance() != null ? patient.getInsurance().getPolicyNumber() : "", validityDays, patient.getInsurance() != null ? patient.getInsurance().getValidityDate() : null, totalCost, copay, insuranceCoverage, appliedMedications, appliedProcedures, appliedDiagnosticAids);
+        Billing billing = new Billing(new OrderNumber(orderNumber), patient.getFullName(), age, patientId, doctorName, patient.getInsurance() != null ? patient.getInsurance().getCompanyName() : "", patient.getInsurance() != null ? patient.getInsurance().getPolicyNumber() : "", validityDays, patient.getInsurance() != null ? patient.getInsurance().getValidityDate() : null, totalCost, copay, insuranceCoverage, appliedMedications, appliedProcedures, appliedDiagnosticAids, java.time.LocalDateTime.now(), "admin-id");
         billingRepository.save(billing);
         patientRepository.save(patient); // Update annual copay
         return billing;
@@ -61,7 +61,7 @@ public class BillingService {
     public Billing generateBillingFromOrder(String orderNumber, String adminId) {
         validateAdminRole(adminId);
         app.clinic.domain.model.entities.Order order = orderRepository.findByOrderNumber(new OrderNumber(orderNumber)).orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        Patient patient = patientRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(order.getPatientIdentificationNumber())).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+        patientRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(order.getPatientIdentificationNumber())).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
         User doctor = userRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(order.getDoctorIdentificationNumber())).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
         double totalCost = calculateTotalCost(order);

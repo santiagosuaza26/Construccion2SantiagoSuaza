@@ -13,12 +13,10 @@ import app.clinic.domain.repository.PatientRepository;
 public class MedicalRecordService {
     private final MedicalRecordRepository medicalRecordRepository;
     private final PatientRepository patientRepository;
-    private final RoleBasedAccessService roleBasedAccessService;
 
-    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository, PatientRepository patientRepository, RoleBasedAccessService roleBasedAccessService) {
+    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository, PatientRepository patientRepository) {
         this.medicalRecordRepository = medicalRecordRepository;
         this.patientRepository = patientRepository;
-        this.roleBasedAccessService = roleBasedAccessService;
     }
 
     public MedicalRecord getOrCreateMedicalRecord(String patientId) {

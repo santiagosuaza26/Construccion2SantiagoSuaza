@@ -2,6 +2,7 @@ package app.clinic.infrastructure.persistence.jpa;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -11,36 +12,70 @@ import app.clinic.domain.repository.AppointmentRepository;
 
 @Repository
 public class AppointmentRepositoryImpl implements AppointmentRepository {
-    // TODO: Implement with JPA repository
-    // For now, using in-memory storage for demonstration
+    private final AppointmentJpaRepository appointmentJpaRepository;
+
+    public AppointmentRepositoryImpl(AppointmentJpaRepository appointmentJpaRepository) {
+        this.appointmentJpaRepository = appointmentJpaRepository;
+    }
 
     @Override
     public void save(Appointment appointment) {
-        // TODO: Implement JPA save
-        System.out.println("Saving appointment: " + appointment.getPatientId() + " with " + appointment.getDoctorId());
+        // Generate a unique ID for the appointment (you might want to use a UUID or similar)
+        String id = generateAppointmentId();
+        AppointmentJpaEntity entity = new AppointmentJpaEntity(
+            id,
+            appointment.getPatientId().getValue(),
+            null, // adminId - not in domain model, set to null or handle separately
+            appointment.getDoctorId().getValue(),
+            appointment.getDateTime(),
+            appointment.getReason(),
+            "SCHEDULED", // default status
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        );
+        appointmentJpaRepository.save(entity);
     }
 
     @Override
     public List<Appointment> findByPatientId(Id patientId) {
-        // TODO: Implement JPA query
-        return List.of();
+        return appointmentJpaRepository.findByPatientId(patientId.getValue())
+            .stream()
+            .map(this::toDomain)
+            .collect(Collectors.toList());
     }
 
     @Override
     public List<Appointment> findByDoctorId(Id doctorId) {
-        // TODO: Implement JPA query
-        return List.of();
+        return appointmentJpaRepository.findByDoctorId(doctorId.getValue())
+            .stream()
+            .map(this::toDomain)
+            .collect(Collectors.toList());
     }
 
     @Override
     public List<Appointment> findByDateTime(LocalDateTime dateTime) {
-        // TODO: Implement JPA query
-        return List.of();
+        return appointmentJpaRepository.findByAppointmentDate(dateTime)
+            .stream()
+            .map(this::toDomain)
+            .collect(Collectors.toList());
     }
 
     @Override
     public boolean existsByPatientIdAndDateTime(Id patientId, LocalDateTime dateTime) {
-        // TODO: Implement JPA query
-        return false;
+        return appointmentJpaRepository.existsByPatientIdAndAppointmentDate(patientId.getValue(), dateTime);
+    }
+
+    private Appointment toDomain(AppointmentJpaEntity entity) {
+        return new Appointment(
+            new Id(entity.getPatientId()),
+            new Id(entity.getDoctorId()),
+            entity.getAppointmentDate(),
+            entity.getReason()
+        );
+    }
+
+    private String generateAppointmentId() {
+        // Simple ID generation - in production, use a proper ID generation strategy
+        return "APPT-" + System.currentTimeMillis();
     }
 }

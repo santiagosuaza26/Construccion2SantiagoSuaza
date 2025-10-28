@@ -38,7 +38,7 @@ public class PatientService {
 
     public void updatePatient(String identificationNumber, String fullName, String dateOfBirth, String gender, String address, String phone, String email, String emergencyName, String emergencyRelation, String emergencyPhone, String companyName, String policyNumber, boolean insuranceActive, String validityDate) {
         Id id = new Id(identificationNumber);
-        Patient patient = patientRepository.findByIdentificationNumber(id).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+        patientRepository.findByIdentificationNumber(id).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
         EmergencyContact emergencyContact = new EmergencyContact(emergencyName, emergencyRelation, new Phone(emergencyPhone));
         Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate));
         Patient updatedPatient = new Patient(id, fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);

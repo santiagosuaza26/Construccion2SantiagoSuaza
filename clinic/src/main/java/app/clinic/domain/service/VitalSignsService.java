@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import app.clinic.domain.model.entities.User;
 import app.clinic.domain.model.entities.VitalSigns;
 import app.clinic.domain.model.valueobject.Id;
-import app.clinic.domain.repository.OrderRepository;
 import app.clinic.domain.repository.PatientRepository;
 import app.clinic.domain.repository.UserRepository;
 
@@ -15,13 +14,11 @@ import app.clinic.domain.repository.UserRepository;
 public class VitalSignsService {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
     private final RoleBasedAccessService roleBasedAccessService;
 
-    public VitalSignsService(PatientRepository patientRepository, UserRepository userRepository, OrderRepository orderRepository, RoleBasedAccessService roleBasedAccessService) {
+    public VitalSignsService(PatientRepository patientRepository, UserRepository userRepository, RoleBasedAccessService roleBasedAccessService) {
         this.patientRepository = patientRepository;
         this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
         this.roleBasedAccessService = roleBasedAccessService;
     }
 

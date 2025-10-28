@@ -1,0 +1,526 @@
+{
+  "version": "1.0.0",
+  "client": "Thunder Client",
+  "collectionName": "Clinic Management System API",
+  "collectionId": "clinic-api-collection",
+  "dateExported": "2025-10-28T18:48:44.458Z",
+  "items": [
+    {
+      "containerId": "",
+      "sortNum": 10000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Login - Admin Recursos Humanos",
+      "url": "http://localhost:8080/api/auth/login",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "auth-login-admin-hr",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"username\": \"admin_hr\",\n  \"password\": \"password\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        },
+        {
+          "type": "json-query",
+          "custom": "json.token",
+          "action": "not-empty",
+          "value": ""
+        },
+        {
+          "type": "set-env-var",
+          "custom": "json.token",
+          "action": "set",
+          "value": "authToken"
+        },
+        {
+          "type": "set-env-var",
+          "custom": "json.role",
+          "action": "set",
+          "value": "userRole"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 20000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Login - Admin Personal",
+      "url": "http://localhost:8080/api/auth/login",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "auth-login-admin-staff",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"username\": \"admin_staff\",\n  \"password\": \"password\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 30000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Login - Médico",
+      "url": "http://localhost:8080/api/auth/login",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "auth-login-doctor",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"username\": \"dr_perez\",\n  \"password\": \"password\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 40000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Login - Enfermera",
+      "url": "http://localhost:8080/api/auth/login",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "auth-login-nurse",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"username\": \"nurse_ana\",\n  \"password\": \"password\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 50000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Create User - New Doctor (Admin HR)",
+      "url": "http://localhost:8080/api/users",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "create-user-doctor",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"fullName\": \"Dr. Ana García\",\n  \"identificationNumber\": \"1234567895\",\n  \"email\": \"ana.doctor@clinic.com\",\n  \"phone\": \"3001234572\",\n  \"dateOfBirth\": \"1988-06-15\",\n  \"address\": \"Calle 89 #12-34\",\n  \"role\": \"MEDICO\",\n  \"username\": \"dr_garcia\",\n  \"password\": \"password\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 60000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Register Patient (Admin Staff)",
+      "url": "http://localhost:8080/api/patients",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "register-patient",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"identificationNumber\": \"1098765435\",\n  \"fullName\": \"Carlos Rodríguez\",\n  \"dateOfBirth\": \"1995-03-20\",\n  \"gender\": \"MASCULINO\",\n  \"address\": \"Carrera 56 #78-90\",\n  \"phone\": \"3012345684\",\n  \"email\": \"carlos@email.com\",\n  \"password\": \"password\",\n  \"emergencyName\": \"María Rodríguez\",\n  \"emergencyRelation\": \"Madre\",\n  \"emergencyPhone\": \"3012345685\",\n  \"companyName\": \"Coomeva\",\n  \"policyNumber\": \"POL009876\",\n  \"insuranceActive\": true,\n  \"validityDate\": \"2026-12-31\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 70000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Schedule Appointment (Admin Staff)",
+      "url": "http://localhost:8080/api/appointments",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "schedule-appointment",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"patientId\": \"1098765432\",\n  \"adminId\": \"1234567891\",\n  \"doctorId\": \"1234567894\",\n  \"dateTime\": \"2024-12-01T10:00:00\",\n  \"reason\": \"Consulta de seguimiento\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 80000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Add Medication (Admin Staff)",
+      "url": "http://localhost:8080/api/inventory/medications",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "add-medication",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"id\": \"MED005\",\n  \"name\": \"Diclofenaco 50mg\",\n  \"cost\": 2800.00,\n  \"requiresSpecialist\": false,\n  \"specialistType\": null\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 90000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Add Medical Record (Doctor)",
+      "url": "http://localhost:8080/api/medical/records/1098765432",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "add-medical-record",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"doctorId\": \"1234567894\",\n  \"reason\": \"Dolor de cabeza\",\n  \"symptoms\": \"Dolor intenso en la sien derecha\",\n  \"diagnosis\": \"Migraña tensional\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 100000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Get Patient Info (Nurse)",
+      "url": "http://localhost:8080/api/nurse/patients/1098765432",
+      "method": "GET",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "get-patient-nurse",
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 110000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Record Vital Signs (Nurse)",
+      "url": "http://localhost:8080/api/nurse/vital-signs",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "record-vital-signs",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"patientId\": \"1098765432\",\n  \"bloodPressure\": \"118/78\",\n  \"temperature\": 36.8,\n  \"pulse\": 70,\n  \"oxygenLevel\": 97\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 120000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Generate Billing (Admin Staff)",
+      "url": "http://localhost:8080/api/billing",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "generate-billing",
+      "params": [],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"patientId\": \"1098765432\",\n  \"doctorName\": \"Dr. Carlos Pérez\",\n  \"orderNumber\": \"123459\",\n  \"totalCost\": 25000.00,\n  \"appliedMedications\": \"Paracetamol 500mg\",\n  \"appliedProcedures\": \"Consulta General\",\n  \"appliedDiagnosticAids\": \"\"\n}",
+        "form": []
+      },
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    },
+    {
+      "containerId": "",
+      "sortNum": 130000,
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "*/*"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Thunder Client (https://www.thunderclient.com)"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{authToken}}"
+        }
+      ],
+      "colId": "clinic-api-collection",
+      "name": "Logout",
+      "url": "http://localhost:8080/api/auth/logout",
+      "method": "POST",
+      "modified": "2025-10-28T18:48:44.458Z",
+      "created": "2025-10-28T18:48:44.458Z",
+      "_id": "auth-logout",
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ]
+    }
+  ],
+  "ref": "collection:clinic-api-collection",
+  "settings": {
+    "timeout": 5000,
+    "delay": 0,
+    "iterations": 1,
+    "concurrency": 1,
+    "maxRedirects": 10,
+    "followRedirects": true,
+    "clearCookies": false,
+    "globalHeaders": [],
+    "globalEnvVars": [
+      {
+        "name": "baseUrl",
+        "value": "http://localhost:8080",
+        "enabled": true
+      }
+    ]
+  }
+}

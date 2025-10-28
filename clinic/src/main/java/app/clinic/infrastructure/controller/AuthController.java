@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.clinic.application.usecase.AuthenticateUserUseCase;
 import app.clinic.infrastructure.dto.AuthResponseDTO;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,12 +37,12 @@ public class AuthController {
         String sessionId = UUID.randomUUID().toString();
 
         String token = Jwts.builder()
-            .setSubject(user.getCredentials().getUsername().getValue())
+            .subject(user.getCredentials().getUsername().getValue())
             .claim("role", user.getRole().toString())
             .claim("sessionId", sessionId)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS256, SECRET_KEY.getBytes())
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
             .compact();
 
         // Store session in Redis with expiration
@@ -63,11 +63,10 @@ public class AuthController {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
-                var claims = Jwts.parser()
+                var parser = Jwts.parser()
                     .setSigningKey(SECRET_KEY.getBytes())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+                    .build();
+                var claims = parser.ae(token).getBody();
 
                 String sessionId = claims.get("sessionId", String.class);
                 if (sessionId != null) {

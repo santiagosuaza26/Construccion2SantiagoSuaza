@@ -1,6 +1,7 @@
 package app.clinic.infrastructure.controller;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,15 +10,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import app.clinic.application.usecase.ScheduleAppointmentUseCase;
+import app.clinic.domain.model.valueobject.AppointmentStatus;
+import app.clinic.domain.service.PatientService;
+import app.clinic.domain.service.UserService;
 import app.clinic.infrastructure.dto.AppointmentDTO;
 
 @RestController
 @RequestMapping("/api/appointments")
 public class AppointmentController {
     private final ScheduleAppointmentUseCase scheduleAppointmentUseCase;
+    private final PatientService patientService;
+    private final UserService userService;
 
-    public AppointmentController(ScheduleAppointmentUseCase scheduleAppointmentUseCase) {
+    public AppointmentController(ScheduleAppointmentUseCase scheduleAppointmentUseCase,
+                                PatientService patientService,
+                                UserService userService) {
         this.scheduleAppointmentUseCase = scheduleAppointmentUseCase;
+        this.patientService = patientService;
+        this.userService = userService;
     }
 
     @PostMapping
@@ -27,17 +37,22 @@ public class AppointmentController {
             LocalDateTime.parse(request.dateTime), request.reason
         );
 
+        // Get patient and user details
+        var patient = patientService.findPatientById(request.patientId);
+        var admin = userService.findUserById(request.adminId);
+        var doctor = userService.findUserById(request.doctorId);
+
         var dto = new AppointmentDTO(
-            "appointment-id", // TODO: Generate proper ID
+            UUID.randomUUID().toString(), // Generate proper ID
             appointment.getPatientId().getValue(),
-            "Patient Name", // TODO: Get from patient service
-            "admin-id", // TODO: Get from request
-            "Admin Name", // TODO: Get from user service
+            patient.getFullName(), // Get from patient service
+            request.adminId, // Get from request
+            admin.getFullName(), // Get from user service
             appointment.getDoctorId().getValue(),
-            "Doctor Name", // TODO: Get from user service
+            doctor.getFullName(), // Get from user service
             appointment.getDateTime(),
             appointment.getReason(),
-            "SCHEDULED" // TODO: Add status enum
+            AppointmentStatus.SCHEDULED.name() // Use status enum
         );
 
         return ResponseEntity.ok(dto);

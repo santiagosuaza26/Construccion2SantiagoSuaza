@@ -8,6 +8,9 @@ window.APP_CONFIG = {
     // URL base de la API backend
     API_BASE_URL: 'http://localhost:8080/api',
 
+    // URL completa para desarrollo local
+    FULL_API_URL: 'http://localhost:8080/api',
+
     // Configuración de autenticación
     AUTH: {
         TOKEN_KEY: 'authToken',

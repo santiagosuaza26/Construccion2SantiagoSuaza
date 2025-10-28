@@ -48,21 +48,21 @@ public class InventoryService {
 
     public void updateMedication(String id, String name, double cost, boolean requiresSpecialist, String specialistType) {
         Id medId = new Id(id);
-        Medication medication = inventoryRepository.findMedicationById(medId).orElseThrow(() -> new IllegalArgumentException("Medication not found"));
+        inventoryRepository.findMedicationById(medId).orElseThrow(() -> new IllegalArgumentException("Medication not found"));
         Medication updated = new Medication(medId, name, cost, requiresSpecialist, requiresSpecialist ? new Id(specialistType) : null);
         inventoryRepository.saveMedication(updated);
     }
 
     public void updateProcedure(String id, String name, double cost, boolean requiresSpecialist, String specialistType) {
         Id procId = new Id(id);
-        Procedure procedure = inventoryRepository.findProcedureById(procId).orElseThrow(() -> new IllegalArgumentException("Procedure not found"));
+        inventoryRepository.findProcedureById(procId).orElseThrow(() -> new IllegalArgumentException("Procedure not found"));
         Procedure updated = new Procedure(procId, name, cost, requiresSpecialist, requiresSpecialist ? new Id(specialistType) : null);
         inventoryRepository.saveProcedure(updated);
     }
 
     public void updateDiagnosticAid(String id, String name, double cost, boolean requiresSpecialist, String specialistType) {
         Id aidId = new Id(id);
-        DiagnosticAid diagnosticAid = inventoryRepository.findDiagnosticAidById(aidId).orElseThrow(() -> new IllegalArgumentException("Diagnostic aid not found"));
+        inventoryRepository.findDiagnosticAidById(aidId).orElseThrow(() -> new IllegalArgumentException("Diagnostic aid not found"));
         DiagnosticAid updated = new DiagnosticAid(aidId, name, cost, requiresSpecialist, requiresSpecialist ? new Id(specialistType) : null);
         inventoryRepository.saveDiagnosticAid(updated);
     }

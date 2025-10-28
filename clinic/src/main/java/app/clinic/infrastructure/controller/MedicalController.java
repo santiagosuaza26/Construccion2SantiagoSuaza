@@ -17,7 +17,6 @@ import app.clinic.application.usecase.CreateMedicationOrderUseCase;
 import app.clinic.application.usecase.CreateProcedureOrderUseCase;
 import app.clinic.application.usecase.GetMedicalRecordUseCase;
 import app.clinic.application.usecase.UpdateMedicalRecordUseCase;
-import app.clinic.domain.model.entities.MedicalRecord;
 import app.clinic.domain.model.entities.Order;
 import app.clinic.infrastructure.dto.MedicalRecordDTO;
 
@@ -54,7 +53,7 @@ public class MedicalController {
     // Get complete medical record
     @GetMapping("/records/{patientId}")
     public ResponseEntity<MedicalRecordDTO> getMedicalRecord(@PathVariable String patientId) {
-        MedicalRecord record = getMedicalRecordUseCase.execute(patientId);
+        getMedicalRecordUseCase.execute(patientId);
 
         // Convert domain entity to DTO (simplified for demo)
         MedicalRecordDTO dto = new MedicalRecordDTO();

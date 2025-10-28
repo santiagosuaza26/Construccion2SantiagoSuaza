@@ -1,6 +1,7 @@
 package app.clinic.domain.model.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -30,7 +31,9 @@ class BillingTest {
         String appliedDiagnosticAids = "X-Ray";
 
         // When
-        Billing billing = new Billing(orderNumber, patientName, age, identificationNumber, doctorName, company, policyNumber, validityDays, validityDate, totalCost, copay, insuranceCoverage, appliedMedications, appliedProcedures, appliedDiagnosticAids);
+        LocalDateTime generatedAt = LocalDateTime.now();
+        String generatedBy = "admin";
+        Billing billing = new Billing(orderNumber, patientName, age, identificationNumber, doctorName, company, policyNumber, validityDays, validityDate, totalCost, copay, insuranceCoverage, appliedMedications, appliedProcedures, appliedDiagnosticAids, generatedAt, generatedBy);
 
         // Then
         assertEquals(orderNumber, billing.getOrderNumber());
@@ -56,8 +59,10 @@ class BillingTest {
         OrderNumber orderNumber = new OrderNumber("000001");
         LocalDate validityDate = LocalDate.now().plusDays(30);
 
-        Billing billing1 = new Billing(orderNumber, "John Doe", 30, "123456789", "Dr. Smith", "Insurance Co", "POL123", 30, validityDate, 100000.0, 50000.0, 50000.0, "Aspirin", "Checkup", "X-Ray");
-        Billing billing2 = new Billing(orderNumber, "Jane Doe", 25, "987654321", "Dr. Jones", "Other Co", "POL456", 60, validityDate, 150000.0, 75000.0, 75000.0, "Ibuprofen", "Surgery", "MRI");
+        LocalDateTime generatedAt = LocalDateTime.now();
+        String generatedBy = "admin";
+        Billing billing1 = new Billing(orderNumber, "John Doe", 30, "123456789", "Dr. Smith", "Insurance Co", "POL123", 30, validityDate, 100000.0, 50000.0, 50000.0, "Aspirin", "Checkup", "X-Ray", generatedAt, generatedBy);
+        Billing billing2 = new Billing(orderNumber, "Jane Doe", 25, "987654321", "Dr. Jones", "Other Co", "POL456", 60, validityDate, 150000.0, 75000.0, 75000.0, "Ibuprofen", "Surgery", "MRI", generatedAt, generatedBy);
 
         // When & Then
         assertEquals(billing1, billing2);
@@ -71,8 +76,10 @@ class BillingTest {
         OrderNumber orderNumber2 = new OrderNumber("000002");
         LocalDate validityDate = LocalDate.now().plusDays(30);
 
-        Billing billing1 = new Billing(orderNumber1, "John Doe", 30, "123456789", "Dr. Smith", "Insurance Co", "POL123", 30, validityDate, 100000.0, 50000.0, 50000.0, "Aspirin", "Checkup", "X-Ray");
-        Billing billing2 = new Billing(orderNumber2, "John Doe", 30, "123456789", "Dr. Smith", "Insurance Co", "POL123", 30, validityDate, 100000.0, 50000.0, 50000.0, "Aspirin", "Checkup", "X-Ray");
+        LocalDateTime generatedAt = LocalDateTime.now();
+        String generatedBy = "admin";
+        Billing billing1 = new Billing(orderNumber1, "John Doe", 30, "123456789", "Dr. Smith", "Insurance Co", "POL123", 30, validityDate, 100000.0, 50000.0, 50000.0, "Aspirin", "Checkup", "X-Ray", generatedAt, generatedBy);
+        Billing billing2 = new Billing(orderNumber2, "John Doe", 30, "123456789", "Dr. Smith", "Insurance Co", "POL123", 30, validityDate, 100000.0, 50000.0, 50000.0, "Aspirin", "Checkup", "X-Ray", generatedAt, generatedBy);
 
         // When & Then
         assertNotEquals(billing1, billing2);

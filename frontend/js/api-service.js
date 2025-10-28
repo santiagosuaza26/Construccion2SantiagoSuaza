@@ -4,8 +4,8 @@
  */
 class ApiService {
     constructor() {
-        this.baseURL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : 'http://localhost:8080/api';
-        this.token = localStorage.getItem(window.APP_CONFIG.AUTH.TOKEN_KEY);
+        this.baseURL = window.APP_CONFIG ? window.APP_CONFIG.FULL_API_URL : 'http://localhost:8080/api';
+        this.token = localStorage.getItem(window.APP_CONFIG ? window.APP_CONFIG.AUTH.TOKEN_KEY : 'authToken');
         this.cache = new Map();
         this.pendingRequests = new Map();
         this.maxRetries = 3;
@@ -175,10 +175,11 @@ class ApiService {
      */
     setToken(token) {
         this.token = token;
+        const tokenKey = window.APP_CONFIG ? window.APP_CONFIG.AUTH.TOKEN_KEY : 'authToken';
         if (token) {
-            localStorage.setItem('authToken', token);
+            localStorage.setItem(tokenKey, token);
         } else {
-            localStorage.removeItem('authToken');
+            localStorage.removeItem(tokenKey);
         }
     }
 

@@ -67,7 +67,7 @@ class AuthService {
             }
 
             // Usar el endpoint de autenticación real
-            const response = await fetch(`${this.apiService.baseURL}/auth/login`, {
+            const response = await fetch(`http://localhost:8080/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ class AuthService {
      */
     async checkBackendConnection() {
         try {
-            const response = await fetch(`${this.apiService.baseURL}/public/health`, {
+            const response = await fetch(`http://localhost:8080/api/public/health`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'

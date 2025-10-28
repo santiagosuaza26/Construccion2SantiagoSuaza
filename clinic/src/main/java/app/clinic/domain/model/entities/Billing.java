@@ -1,6 +1,7 @@
 package app.clinic.domain.model.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import app.clinic.domain.model.valueobject.OrderNumber;
 
@@ -20,8 +21,10 @@ public class Billing {
     private final String appliedMedications;
     private final String appliedProcedures;
     private final String appliedDiagnosticAids;
+    private final LocalDateTime generatedAt;
+    private final String generatedBy;
 
-    public Billing(OrderNumber orderNumber, String patientName, int age, String identificationNumber, String doctorName, String company, String policyNumber, int validityDays, LocalDate validityDate, double totalCost, double copay, double insuranceCoverage, String appliedMedications, String appliedProcedures, String appliedDiagnosticAids) {
+    public Billing(OrderNumber orderNumber, String patientName, int age, String identificationNumber, String doctorName, String company, String policyNumber, int validityDays, LocalDate validityDate, double totalCost, double copay, double insuranceCoverage, String appliedMedications, String appliedProcedures, String appliedDiagnosticAids, LocalDateTime generatedAt, String generatedBy) {
         this.orderNumber = orderNumber;
         this.patientName = patientName;
         this.age = age;
@@ -37,6 +40,8 @@ public class Billing {
         this.appliedMedications = appliedMedications;
         this.appliedProcedures = appliedProcedures;
         this.appliedDiagnosticAids = appliedDiagnosticAids;
+        this.generatedAt = generatedAt;
+        this.generatedBy = generatedBy;
     }
 
     public OrderNumber getOrderNumber() {
@@ -97,6 +102,14 @@ public class Billing {
 
     public String getAppliedDiagnosticAids() {
         return appliedDiagnosticAids;
+    }
+
+    public LocalDateTime getGeneratedAt() {
+        return generatedAt;
+    }
+
+    public String getGeneratedBy() {
+        return generatedBy;
     }
 
     @Override

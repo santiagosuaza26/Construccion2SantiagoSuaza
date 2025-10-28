@@ -12,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 
 import app.clinic.domain.model.entities.VitalSigns;
 import app.clinic.domain.model.valueobject.Id;
-import app.clinic.domain.repository.OrderRepository;
 import app.clinic.domain.repository.PatientRepository;
 import app.clinic.domain.repository.UserRepository;
 
@@ -25,9 +24,6 @@ class VitalSignsServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private OrderRepository orderRepository;
-
-    @Mock
     private RoleBasedAccessService roleBasedAccessService;
 
     private VitalSignsService vitalSignsService;
@@ -35,7 +31,7 @@ class VitalSignsServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        vitalSignsService = new VitalSignsService(patientRepository, userRepository, orderRepository, roleBasedAccessService);
+        vitalSignsService = new VitalSignsService(patientRepository, userRepository, roleBasedAccessService);
     }
 
     @Test

@@ -137,10 +137,12 @@ class WelcomeButton {
             // Simular delay de red
             setTimeout(async () => {
                 try {
-                    // Intentar hacer ping al servidor
-                    const response = await fetch('/api/health', {
+                    // Intentar hacer ping al servidor usando la URL correcta
+                    const response = await fetch('http://localhost:8080/api/public/health', {
                         method: 'GET',
-                        timeout: 5000
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
                     });
 
                     if (response.ok) {
@@ -149,7 +151,7 @@ class WelcomeButton {
                         throw new Error('Servidor no responde correctamente');
                     }
                 } catch (error) {
-                    reject(new Error('No se puede conectar con el servidor'));
+                    reject(new Error('No se puede conectar con el servidor. Verifique que el backend esté corriendo en el puerto 8080.'));
                 }
             }, 500);
         });
