@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.7</version>
         <relativePath/>
     </parent>
 
@@ -33,16 +33,20 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- Version Management -->
-        <springdoc-openapi.version>2.2.0</springdoc-openapi.version>
+        <springdoc-openapi.version>2.7.0</springdoc-openapi.version>
         <testcontainers.version>1.19.8</testcontainers.version>
         <mockito.version>5.5.0</mockito.version>
         <assertj.version>3.24.2</assertj.version>
+        <jjwt.version>0.12.3</jjwt.version>
 
         <!-- Plugin Configuration -->
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <jacoco.version>0.8.12</jacoco.version>
+        <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
 
         <!-- Build Configuration -->
         <skipTests>false</skipTests>
@@ -88,6 +92,28 @@
                 <version>${testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <!-- SpringDoc OpenAPI -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc-openapi.version}</version>
+            </dependency>
+            <!-- JJWT -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -144,6 +170,11 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+
         <!-- Development Tools -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -162,7 +193,22 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc-openapi.version}</version>
+        </dependency>
+
+        <!-- JWT Dependencies -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Utility Libraries -->
@@ -189,21 +235,18 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -349,7 +392,7 @@
 	           <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-resources-plugin</artifactId>
-	               <version>3.3.1</version>
+	               <version>${maven-resources-plugin.version}</version>
 	               <configuration>
 	                   <encoding>${project.build.sourceEncoding}</encoding>
 	                   <includeEmptyDirs>true</includeEmptyDirs>
@@ -383,7 +426,7 @@
 	           <plugin>
 	               <groupId>org.jacoco</groupId>
 	               <artifactId>jacoco-maven-plugin</artifactId>
-	               <version>0.8.10</version>
+	               <version>${jacoco.version}</version>
 	               <executions>
 	                   <execution>
 	                       <goals>
@@ -404,7 +447,7 @@
 	           <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-enforcer-plugin</artifactId>
-	               <version>3.4.1</version>
+	               <version>${maven-enforcer-plugin.version}</version>
 	               <executions>
 	                   <execution>
 	                       <id>enforce-maven</id>

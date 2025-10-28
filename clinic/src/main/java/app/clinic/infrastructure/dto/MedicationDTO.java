@@ -1,0 +1,16 @@
+package app.clinic.infrastructure.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MedicationDTO {
+    private String id;
+    private String name;
+    private double cost;
+    private boolean requiresSpecialist;
+    private String specialistType;
+}

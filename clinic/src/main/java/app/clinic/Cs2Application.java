@@ -25,8 +25,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
         version = "1.0.0",
         description = "Comprehensive API for clinic management system",
         contact = @Contact(
-            name = "Development Team",
-            email = "dev@clinic.com"
+            name = "Santiago Suaza",
+            email = "santiagosuaza5@gmail.com"
         ),
         license = @License(
             name = "MIT License",
