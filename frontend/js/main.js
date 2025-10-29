@@ -108,15 +108,15 @@ function initializeRoleSpecificFeatures() {
 function initializeHRFeatures() {
     console.log('👥 Inicializando funcionalidades de Recursos Humanos');
 
-    // Crear instancia del servicio de gestión de usuarios si no existe
-    if (!window.userManagementService && window.UserManagementService) {
-        window.userManagementService = new UserManagementService();
+    // Crear instancia del servicio de gestión de RRHH si no existe
+    if (!window.hrManagementService && window.HRManagementService) {
+        window.hrManagementService = new HRManagementService();
     }
 
     // Cargar vista de usuarios por defecto
     setTimeout(() => {
-        if (window.userManagementService) {
-            window.userManagementService.loadUsersList();
+        if (window.hrManagementService) {
+            window.hrManagementService.initialize();
         }
     }, 100);
 }

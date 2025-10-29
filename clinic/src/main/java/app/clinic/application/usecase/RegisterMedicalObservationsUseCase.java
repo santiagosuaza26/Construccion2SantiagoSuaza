@@ -1,7 +1,10 @@
 package app.clinic.application.usecase;
 
+import org.springframework.stereotype.Service;
+
 import app.clinic.domain.service.VitalSignsService;
 
+@Service
 public class RegisterMedicalObservationsUseCase {
     private final VitalSignsService vitalSignsService;
 

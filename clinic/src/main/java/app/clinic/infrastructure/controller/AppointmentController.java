@@ -1,7 +1,6 @@
 package app.clinic.infrastructure.controller;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +42,7 @@ public class AppointmentController {
         var doctor = userService.findUserById(request.doctorId);
 
         var dto = new AppointmentDTO(
-            UUID.randomUUID().toString(), // Generate proper ID
+            appointment.getPatientId().getValue(), // Use patient ID as appointment ID
             appointment.getPatientId().getValue(),
             patient.getFullName(), // Get from patient service
             request.adminId, // Get from request

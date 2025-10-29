@@ -26,7 +26,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String SECRET_KEY = "clinic-secret-key-for-jwt-tokens"; // En producción usar variable de entorno
+    private static final String SECRET_KEY = System.getenv().getOrDefault("JWT_SECRET_KEY", "clinic-secret-key-for-jwt-tokens");
 
     public JwtAuthenticationFilter(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 JwtParser parser = Jwts.parser()
-                    .setSigningKey(SECRET_KEY.getBytes())
+                    .verifyWith(io.jsonwebtoken.security.Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                     .build();
                 Claims claims = parser.parseClaimsJws(token).getBody();
 

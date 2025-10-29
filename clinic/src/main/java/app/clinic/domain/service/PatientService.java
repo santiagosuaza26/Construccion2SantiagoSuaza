@@ -57,4 +57,9 @@ public class PatientService {
         }
         patientRepository.deleteByIdentificationNumber(id);
     }
+
+    public java.util.List<app.clinic.domain.model.entities.VitalSigns> findVitalSignsByPatientId(String patientId) {
+        Id id = new Id(patientId);
+        return patientRepository.findVitalSignsByPatientId(id);
+    }
 }

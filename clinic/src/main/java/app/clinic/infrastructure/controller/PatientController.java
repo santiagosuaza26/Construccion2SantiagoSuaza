@@ -1,6 +1,10 @@
 package app.clinic.infrastructure.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -10,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.clinic.application.usecase.RegisterPatientUseCase;
 import app.clinic.application.usecase.UpdatePatientUseCase;
+import app.clinic.domain.model.valueobject.Id;
+import app.clinic.domain.repository.AppointmentRepository;
+import app.clinic.domain.service.PatientService;
+import app.clinic.domain.service.UserService;
+import app.clinic.infrastructure.dto.AppointmentDTO;
 import app.clinic.infrastructure.dto.PatientDTO;
 
 @RestController
@@ -17,11 +26,20 @@ import app.clinic.infrastructure.dto.PatientDTO;
 public class PatientController {
     private final RegisterPatientUseCase registerPatientUseCase;
     private final UpdatePatientUseCase updatePatientUseCase;
+    private final AppointmentRepository appointmentRepository;
+    private final PatientService patientService;
+    private final UserService userService;
 
     public PatientController(RegisterPatientUseCase registerPatientUseCase,
-                            UpdatePatientUseCase updatePatientUseCase) {
+                            UpdatePatientUseCase updatePatientUseCase,
+                            AppointmentRepository appointmentRepository,
+                            PatientService patientService,
+                            UserService userService) {
         this.registerPatientUseCase = registerPatientUseCase;
         this.updatePatientUseCase = updatePatientUseCase;
+        this.appointmentRepository = appointmentRepository;
+        this.patientService = patientService;
+        this.userService = userService;
     }
 
     @PostMapping
@@ -79,6 +97,30 @@ public class PatientController {
         );
 
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/{patientId}/appointments")
+    public ResponseEntity<List<AppointmentDTO>> getPatientAppointments(@PathVariable String patientId) {
+        var appointments = appointmentRepository.findByPatientId(new Id(patientId));
+        var patient = patientService.findPatientById(patientId);
+
+        var appointmentDTOs = appointments.stream().map(appointment -> {
+            var doctor = userService.findUserById(appointment.getDoctorId().getValue());
+            return new AppointmentDTO(
+                appointment.getPatientId().getValue(), // id
+                appointment.getPatientId().getValue(), // patientId
+                patient.getFullName(), // patientName
+                null, // adminId - not available in domain model
+                null, // adminName - not available
+                appointment.getDoctorId().getValue(), // doctorId
+                doctor.getFullName(), // doctorName
+                appointment.getDateTime(), // dateTime
+                appointment.getReason(), // reason
+                "SCHEDULED" // status - default since not in domain model
+            );
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(appointmentDTOs);
     }
 
     public static class RegisterPatientRequest {

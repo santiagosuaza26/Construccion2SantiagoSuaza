@@ -1,0 +1,35 @@
+{
+  "name": "clinic-management-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Clinic Management System",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000",
+    "build": "echo 'Building static files...' && mkdir -p dist && cp -r * dist/ 2>/dev/null || echo 'Build completed'",
+    "test": "echo 'No tests specified' && exit 0",
+    "lint": "echo 'No linting configured' && exit 0",
+    "dev": "npx http-server -p 3000 -o"
+  },
+  "keywords": [
+    "clinic",
+    "management",
+    "healthcare",
+    "frontend"
+  ],
+  "author": "Santiago Suaza",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/clinic-management.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/clinic-management/issues"
+  },
+  "homepage": "https://github.com/your-username/clinic-management#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

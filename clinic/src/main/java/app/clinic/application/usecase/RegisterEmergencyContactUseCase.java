@@ -1,8 +1,11 @@
 package app.clinic.application.usecase;
 
+import org.springframework.stereotype.Service;
+
 import app.clinic.domain.model.entities.Patient;
 import app.clinic.domain.service.PatientService;
 
+@Service
 public class RegisterEmergencyContactUseCase {
     private final PatientService patientService;
 

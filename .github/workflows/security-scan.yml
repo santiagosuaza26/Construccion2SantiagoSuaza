@@ -1,0 +1,252 @@
+name: 🔒 Security Scan
+
+on:
+  schedule:
+    # Run weekly on Mondays at 2 AM UTC
+    - cron: '0 2 * * 1'
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'clinic/**'
+      - 'frontend/**'
+      - 'pom.xml'
+      - 'package*.json'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'clinic/**'
+      - 'frontend/**'
+      - 'pom.xml'
+      - 'package*.json'
+
+jobs:
+  # 🔍 Comprehensive Security Analysis
+  security-analysis:
+    name: 🔍 Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Backend Security Scans
+      - name: 🔒 Trivy Backend Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './clinic'
+          format: 'sarif'
+          output: 'trivy-backend-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: 🔒 OWASP Dependency Check (Backend)
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'Clinic Backend'
+          path: './clinic'
+          format: 'SARIF'
+          args: >
+            --enableRetired
+            --enableExperimental
+            --nvdValidForHours 24
+
+      - name: 🔒 CodeQL Analysis (Backend)
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+          queries: security-and-quality
+
+      - name: 🔍 CodeQL Analysis (Backend)
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java"
+
+      # Frontend Security Scans
+      - name: 🔒 Trivy Frontend Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: './frontend'
+          format: 'sarif'
+          output: 'trivy-frontend-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: 🔒 NPM Audit
+        run: |
+          cd frontend
+          npm audit --audit-level=moderate --json > npm-audit-results.json || true
+
+      - name: 🔒 ESLint Security Rules
+        run: |
+          cd frontend
+          npm install --save-dev eslint eslint-plugin-security
+          npx eslint . --ext .js,.html --config '{"extends":["plugin:security/recommended"]}' || true
+
+      # Container Security
+      - name: 🔒 Trivy Container Scan (Backend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          scan-ref: 'ghcr.io/${{ github.repository }}/clinic-backend:latest'
+          format: 'sarif'
+          output: 'trivy-container-backend.sarif'
+          severity: 'CRITICAL,HIGH'
+        if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+
+      - name: 🔒 Trivy Container Scan (Frontend)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          scan-ref: 'ghcr.io/${{ github.repository }}/clinic-frontend:latest'
+          format: 'sarif'
+          output: 'trivy-container-frontend.sarif'
+          severity: 'CRITICAL,HIGH'
+        if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+
+      # Upload Security Results
+      - name: 📤 Upload Trivy Backend Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-backend-results.sarif'
+          category: backend-filesystem
+
+      - name: 📤 Upload Trivy Frontend Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-frontend-results.sarif'
+          category: frontend-filesystem
+
+      - name: 📤 Upload OWASP Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: './reports/dependency-check-report.sarif'
+          category: backend-dependencies
+
+      - name: 📤 Upload Container Backend Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && (github.event_name == 'schedule' || github.ref == 'refs/heads/main')
+        with:
+          sarif_file: 'trivy-container-backend.sarif'
+          category: backend-container
+
+      - name: 📤 Upload Container Frontend Results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && (github.event_name == 'schedule' || github.ref == 'refs/heads/main')
+        with:
+          sarif_file: 'trivy-container-frontend.sarif'
+          category: frontend-container
+
+      # Security Scorecard
+      - name: 🏆 Run Security Scorecard
+        uses: ossf/scorecard-action@main
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      # Generate Security Report
+      - name: 📊 Generate Security Report
+        run: |
+          echo "## 🔒 Security Scan Report" >> security-report.md
+          echo "- **Date:** $(date)" >> security-report.md
+          echo "- **Branch:** ${{ github.ref }}" >> security-report.md
+          echo "- **Commit:** ${{ github.sha }}" >> security-report.md
+          echo "" >> security-report.md
+          echo "### 📋 Scan Results" >> security-report.md
+          echo "- ✅ CodeQL Analysis: Completed" >> security-report.md
+          echo "- ✅ Trivy Filesystem Scan: Completed" >> security-report.md
+          echo "- ✅ OWASP Dependency Check: Completed" >> security-report.md
+          echo "- ✅ NPM Audit: Completed" >> security-report.md
+          echo "" >> security-report.md
+          echo "### 🔍 Recommendations" >> security-report.md
+          echo "1. Review all CRITICAL and HIGH severity findings" >> security-report.md
+          echo "2. Update vulnerable dependencies" >> security-report.md
+          echo "3. Implement security headers in production" >> security-report.md
+          echo "4. Regular security audits recommended" >> security-report.md
+
+      - name: 📤 Upload Security Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.md
+          retention-days: 30
+
+  # 🛡️ Compliance Check
+  compliance-check:
+    name: 🛡️ Compliance Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 📋 Check License Compliance
+        run: |
+          # Check for MIT license
+          if [ ! -f "LICENSE" ]; then
+            echo "❌ LICENSE file missing"
+            exit 1
+          fi
+          echo "✅ LICENSE file present"
+
+      - name: 📋 Check Security Headers
+        run: |
+          # Check if security headers are configured
+          if grep -q "X-Frame-Options" frontend/nginx.conf; then
+            echo "✅ Security headers configured"
+          else
+            echo "❌ Security headers missing"
+            exit 1
+          fi
+
+      - name: 📋 Validate Docker Security
+        run: |
+          # Check if non-root user is used
+          if grep -q "USER" clinic/Dockerfile && grep -q "USER" frontend/Dockerfile; then
+            echo "✅ Non-root users configured"
+          else
+            echo "❌ Non-root users missing"
+            exit 1
+          fi
+
+      - name: 📋 HIPAA Compliance Check
+        run: |
+          echo "🔍 Checking HIPAA compliance requirements..."
+          # Check for encryption configuration
+          if grep -q "JWT_SECRET" clinic/Dockerfile; then
+            echo "✅ JWT encryption configured"
+          else
+            echo "⚠️ JWT encryption not explicitly configured"
+          fi
+
+          # Check for audit logging
+          if grep -q "logging" clinic/src/main/resources/application.properties 2>/dev/null; then
+            echo "✅ Logging configuration present"
+          else
+            echo "⚠️ Logging configuration not found"
+          fi

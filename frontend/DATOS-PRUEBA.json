@@ -29,121 +29,69 @@
   },
   "usuarios_prueba": [
     {
-      "cedula": "HR-001",
-      "username": "rrhh",
-      "password": "rrhh123",
-      "fullName": "Recursos Humanos",
-      "email": "rrhh@clinic.com",
+      "cedula": "1234567890",
+      "username": "admin_hr",
+      "password": "password",
+      "fullName": "Admin Recursos Humanos",
+      "email": "admin@clinic.com",
       "phoneNumber": "3001234567",
-      "birthDate": "15/03/1985",
+      "birthDate": "01/01/1980",
       "address": "Calle 123 #45-67",
-      "role": "HUMAN_RESOURCES",
+      "role": "RECURSOS_HUMANOS",
       "active": true,
       "createdAt": "2024-01-15T08:00:00Z"
     },
     {
-      "cedula": "ADMIN-002",
-      "username": "admin2",
-      "password": "admin123",
-      "fullName": "Sofía Herrera",
-      "email": "sofia.herrera@clinica.com",
-      "phoneNumber": "3107654321",
-      "birthDate": "30/09/1983",
-      "address": "Avenida 12 #34-56",
-      "role": "ADMINISTRATIVE_STAFF",
+      "cedula": "1234567891",
+      "username": "admin_staff",
+      "password": "password",
+      "fullName": "Admin Personal",
+      "email": "admin_staff@clinic.com",
+      "phoneNumber": "3001234568",
+      "birthDate": "02/02/1982",
+      "address": "Carrera 45 #12-34",
+      "role": "PERSONAL_ADMINISTRATIVO",
       "active": true,
       "createdAt": "2024-01-16T09:00:00Z"
     },
     {
-      "cedula": "22334455",
-      "username": "admin2",
-      "password": "Admin789!@#",
-      "fullName": "Sofía Herrera",
-      "email": "sofia.herrera@clinica.com",
-      "phoneNumber": "3132233445",
-      "birthDate": "30/09/1983",
-      "address": "Avenida 12 #34-56",
-      "role": "ADMINISTRATIVE_STAFF",
-      "active": true,
-      "createdAt": "2024-01-22T15:00:00Z"
-    },
-    {
-      "cedula": "DOC-001",
-      "username": "drmartinez",
-      "password": "doctor123",
-      "fullName": "Dr. Juan Martínez",
-      "email": "juan.martinez@clinica.com",
-      "phoneNumber": "3201122334",
-      "birthDate": "10/11/1978",
-      "address": "Avenida 45 #67-89",
-      "role": "DOCTOR",
+      "cedula": "1234567892",
+      "username": "soporte_it",
+      "password": "password",
+      "fullName": "Soporte IT",
+      "email": "soporte@clinic.com",
+      "phoneNumber": "3001234569",
+      "birthDate": "03/03/1985",
+      "address": "Avenida 67 #89-01",
+      "role": "SOPORTE_DE_INFORMACION",
       "active": true,
       "createdAt": "2024-01-17T10:00:00Z"
     },
     {
-      "cedula": "NURSE-001",
-      "username": "enflopez",
-      "password": "nurse123",
-      "fullName": "Enf. Ana López",
-      "email": "ana.lopez@clinica.com",
-      "phoneNumber": "3005566778",
-      "birthDate": "05/06/1990",
-      "address": "Calle 78 #90-12",
-      "role": "NURSE",
+      "cedula": "1234567893",
+      "username": "nurse_ana",
+      "password": "password",
+      "fullName": "Ana López",
+      "email": "ana.nurse@clinic.com",
+      "phoneNumber": "3001234570",
+      "birthDate": "04/04/1990",
+      "address": "Transversal 23 #56-78",
+      "role": "ENFERMERA",
       "active": true,
       "createdAt": "2024-01-18T11:00:00Z"
     },
     {
-      "cedula": "SUPPORT-001",
-      "username": "soptecnico",
-      "password": "support123",
-      "fullName": "Luis Ramírez",
-      "email": "luis.ramirez@clinica.com",
-      "phoneNumber": "3159900112",
-      "birthDate": "18/09/1987",
-      "address": "Carrera 34 #56-78",
-      "role": "SUPPORT_STAFF",
+      "cedula": "1234567894",
+      "username": "dr_perez",
+      "password": "password",
+      "fullName": "Dr. Carlos Pérez",
+      "email": "carlos.doctor@clinic.com",
+      "phoneNumber": "3001234571",
+      "birthDate": "15/06/1975",
+      "address": "Diagonal 34 #67-89",
+      "role": "MEDICO",
       "active": true,
       "createdAt": "2024-01-19T12:00:00Z"
-    },
-    {
-      "cedula": "ADMIN-003",
-      "username": "admin3",
-      "password": "admin123",
-      "fullName": "Carlos Mendoza",
-      "email": "carlos.mendoza@clinica.com",
-      "phoneNumber": "3132233445",
-      "birthDate": "25/06/1981",
-      "address": "Carrera 15 #67-89",
-      "role": "ADMINISTRATIVE_STAFF",
-      "active": true,
-      "createdAt": "2024-01-22T15:00:00Z"
-    },
-    {
-      "cedula": "SUPPORT-002",
-      "username": "sop2",
-      "password": "support123",
-      "fullName": "Miguel Torres",
-      "email": "miguel.torres@clinica.com",
-      "phoneNumber": "3146677889",
-      "birthDate": "14/07/1986",
-      "address": "Calle 89 #01-23",
-      "role": "SUPPORT_STAFF",
-      "active": false,
-      "createdAt": "2024-01-23T16:00:00Z"
-    },
-    {
-      "cedula": "HR-002",
-      "username": "rrhh2",
-      "password": "rrhh123",
-      "fullName": "Lucía Fernández",
-      "email": "lucia.fernandez@clinica.com",
-      "phoneNumber": "3151112223",
-      "birthDate": "03/05/1979",
-      "address": "Carrera 78 #90-12",
-      "role": "HUMAN_RESOURCES",
-      "active": true,
-      "createdAt": "2024-01-24T17:00:00Z"
     }
   ],
   "pacientes_prueba": [
@@ -223,8 +171,8 @@
     ],
     "credenciales_sugeridas": {
       "recursos_humanos": {
-        "usuario": "rrhh",
-        "contraseña": "rrhh123",
+        "usuario": "admin_hr",
+        "contraseña": "password",
         "descripcion": "Usuario oficial de Recursos Humanos sincronizado con backend",
         "funcionalidades": [
           "Crear nuevos empleados con validaciones estrictas",
@@ -236,18 +184,9 @@
           "Gestionar estados de empleados (activo/inactivo)"
         ]
       },
-      "recursos_humanos_2": {
-        "usuario": "rrhh2",
-        "contraseña": "rrhh123",
-        "descripcion": "Usuario adicional de RRHH para pruebas",
-        "funcionalidades": [
-          "Todas las funcionalidades de RRHH",
-          "Útil para probar edición entre usuarios del mismo rol"
-        ]
-      },
       "personal_administrativo": {
-        "usuario": "admin2",
-        "contraseña": "admin123",
+        "usuario": "admin_staff",
+        "contraseña": "password",
         "descripcion": "Usuario oficial de Personal Administrativo sincronizado con backend",
         "funcionalidades": [
           "Registrar nuevos pacientes con validaciones estrictas",
@@ -260,32 +199,21 @@
           "Gestionar contactos de emergencia"
         ]
       },
-      "personal_administrativo_2": {
-        "usuario": "admin3",
-        "contraseña": "admin123",
-        "descripcion": "Usuario administrativo adicional para pruebas",
+      "soporte": {
+        "usuario": "soporte_it",
+        "contraseña": "password",
+        "descripcion": "Usuario oficial de Soporte de Información sincronizado con backend",
         "funcionalidades": [
-          "Todas las funcionalidades administrativas",
-          "Útil para probar colaboración administrativa",
-          "Gestión de pacientes y citas",
-          "Sistema de facturación completo"
-        ]
-      },
-      "medico": {
-        "usuario": "drgarcia",
-        "contraseña": "doctor123",
-        "descripcion": "Usuario oficial médico sincronizado con backend",
-        "funcionalidades": [
-          "Crear y gestionar historias clínicas",
-          "Registrar diagnósticos y síntomas",
-          "Recetar medicamentos y tratamientos",
-          "Gestionar órdenes médicas",
-          "Crear notas de evolución"
+          "Gestionar inventario médico",
+          "Controlar medicamentos y suministros",
+          "Administrar procedimientos disponibles",
+          "Mantenimiento de datos del sistema",
+          "Generar reportes de inventario"
         ]
       },
       "enfermera": {
-        "usuario": "enfmorales",
-        "contraseña": "nurse123",
+        "usuario": "nurse_ana",
+        "contraseña": "password",
         "descripcion": "Usuario oficial de enfermería sincronizado con backend",
         "funcionalidades": [
           "Registrar visitas de pacientes",
@@ -295,26 +223,16 @@
           "Actualizar información de pacientes"
         ]
       },
-      "soporte": {
-        "usuario": "soptecnico",
-        "contraseña": "support123",
-        "descripcion": "Gestión técnica y de sistemas",
+      "medico": {
+        "usuario": "dr_perez",
+        "contraseña": "password",
+        "descripcion": "Usuario oficial médico sincronizado con backend",
         "funcionalidades": [
-          "Gestionar inventario médico",
-          "Controlar medicamentos y suministros",
-          "Administrar procedimientos disponibles",
-          "Mantenimiento de datos del sistema",
-          "Generar reportes de inventario"
-        ]
-      },
-      "soporte_inactivo": {
-        "usuario": "sop2",
-        "contraseña": "support123",
-        "descripcion": "Usuario de soporte inactivo (para pruebas de estados)",
-        "funcionalidades": [
-          "Usuario inactivo para probar funcionalidades de RRHH",
-          "No puede acceder al sistema",
-          "Útil para probar activación/desactivación"
+          "Crear y gestionar historias clínicas",
+          "Registrar diagnósticos y síntomas",
+          "Recetar medicamentos y tratamientos",
+          "Gestionar órdenes médicas",
+          "Crear notas de evolución"
         ]
       }
     },
@@ -326,7 +244,7 @@
       "El sistema incluye validaciones estrictas según especificaciones técnicas",
       "Recursos Humanos puede gestionar todos los aspectos del personal",
       "El selector de roles funciona correctamente con todas las opciones disponibles",
-      "Credenciales sincronizadas: rrhh/rrhh123, admin2/admin123, patient1/patient123",
+      "Credenciales sincronizadas: admin_hr/password, admin_staff/password, nurse_ana/password, dr_perez/password, soporte_it/password",
       "Sistema completamente funcional con todas las funcionalidades administrativas"
     ],
     "estadisticas_prueba": {

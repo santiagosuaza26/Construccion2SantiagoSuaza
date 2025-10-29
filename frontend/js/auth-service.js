@@ -60,60 +60,55 @@ class AuthService {
      */
     async login(username, password) {
         try {
-            // Verificar conexión con el backend primero
-            const connectionCheck = await this.checkBackendConnection();
-            if (!connectionCheck.connected) {
-                throw new Error('No se puede conectar con el servidor. Verifique que el backend esté corriendo.');
+            // Usar autenticación local con el usuario HR por defecto
+            const user = window.localStorageService.getUserByUsername(username);
+
+            if (!user) {
+                throw new Error('Usuario no encontrado. Verifique sus credenciales.');
             }
 
-            // Usar el endpoint de autenticación real
-            const response = await fetch(`http://localhost:8080/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: password
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-
-                // Manejar diferentes tipos de errores HTTP
-                if (response.status === 401 || response.status === 403) {
-                    throw new Error('Credenciales inválidas. Verifique su usuario y contraseña.');
-                } else if (response.status === 404) {
-                    throw new Error('Servicio de autenticación no encontrado. Contacte al administrador.');
-                } else if (response.status >= 500) {
-                    throw new Error('Error interno del servidor. Intente nuevamente más tarde.');
-                } else {
-                    throw new Error(errorData.message || `Error del servidor (${response.status})`);
-                }
+            if (user.password !== password) {
+                throw new Error('Contraseña incorrecta. Verifique sus credenciales.');
             }
 
-            const data = await response.json();
-
-            if (data.success && data.user && data.token) {
-                this.saveSession(data.user, data.token);
-                return {
-                    success: true,
-                    user: data.user,
-                    token: data.token
-                };
-            } else {
-                throw new Error(data.message || 'Error de autenticación');
+            if (!user.active) {
+                throw new Error('Usuario inactivo. Contacte al administrador del sistema.');
             }
+
+            // Generar token mock para mantener compatibilidad
+            const token = this.generateMockToken(user);
+
+            // Preparar datos del usuario para la sesión
+            const userData = {
+                id: user.id,
+                cedula: user.cedula,
+                username: user.username,
+                fullName: user.fullName,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+                role: user.role,
+                active: user.active,
+                permissions: user.permissions || []
+            };
+
+            this.saveSession(userData, token);
+
+            return {
+                success: true,
+                user: userData,
+                token: token
+            };
 
         } catch (error) {
             console.error('Login error:', error);
 
             // Proporcionar mensajes de error más específicos
-            if (error.message.includes('fetch')) {
-                throw new Error('Error de conexión. Verifique su conexión a internet y que el backend esté corriendo en el puerto 8080.');
-            } else if (error.message.includes('CORS')) {
-                throw new Error('Error de configuración del servidor. Contacte al administrador.');
+            if (error.message.includes('Usuario no encontrado')) {
+                throw new Error('Usuario no encontrado. Verifique sus credenciales.');
+            } else if (error.message.includes('Contraseña incorrecta')) {
+                throw new Error('Contraseña incorrecta. Verifique sus credenciales.');
+            } else if (error.message.includes('Usuario inactivo')) {
+                throw new Error('Usuario inactivo. Contacte al administrador del sistema.');
             } else {
                 throw new Error(error.message || 'Error inesperado durante el inicio de sesión');
             }
@@ -136,27 +131,25 @@ class AuthService {
     }
 
     /**
-     * Verifica la conexión con el backend
+     * Verifica la conexión con el sistema local
      */
     async checkBackendConnection() {
         try {
-            const response = await fetch(`http://localhost:8080/api/public/health`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('✅ Backend conectado:', data);
-                return { connected: true, data };
-            } else {
-                console.warn('⚠️ Backend respondió con error:', response.status);
-                return { connected: false, error: response.status };
+            // Verificar que el servicio de almacenamiento local esté disponible
+            if (!window.localStorageService) {
+                return { connected: false, error: 'Servicio de almacenamiento local no disponible' };
             }
+
+            // Verificar que el usuario HR esté disponible
+            const hrUser = window.localStorageService.getUserByUsername('admin_hr');
+            if (!hrUser) {
+                return { connected: false, error: 'Usuario administrador no encontrado' };
+            }
+
+            console.log('✅ Sistema local operativo:', { user: hrUser.username });
+            return { connected: true, data: { status: 'Local system operational', user: hrUser.username } };
         } catch (error) {
-            console.error('❌ Error conectando con backend:', error);
+            console.error('❌ Error verificando sistema local:', error);
             return { connected: false, error: error.message };
         }
     }

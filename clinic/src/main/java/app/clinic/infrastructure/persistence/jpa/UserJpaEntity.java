@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserJpaEntity {
     @Id
-    @Column(name = "identification_number")
+    @Column(name = "id")
     private String identificationNumber;
 
     @Column(name = "full_name")
@@ -39,6 +39,6 @@ public class UserJpaEntity {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password_hash")
     private String password;
 }

@@ -19,15 +19,16 @@ class UserManagementService {
         try {
             window.showInfo('Cargando usuarios...');
 
-            const response = await window.userApi.findAllUsers();
+            // Usar localStorage en lugar de API
+            const users = window.localStorageService.getUsers();
 
-            if (response && Array.isArray(response)) {
-                this.users = response;
+            if (users && Array.isArray(users)) {
+                this.users = users;
                 this.filteredUsers = [...this.users];
                 this.renderUsersList();
                 window.showSuccess(`Se cargaron ${this.users.length} usuarios`);
             } else {
-                throw new Error('Formato de respuesta inválido');
+                throw new Error('No se pudieron cargar los usuarios');
             }
 
         } catch (error) {
@@ -354,7 +355,8 @@ class UserManagementService {
         try {
             window.showInfo('Cargando usuario...');
 
-            const user = await window.userApi.findUserByCedula(cedula);
+            // Usar localStorage en lugar de API
+            const user = window.localStorageService.getUserById(cedula);
 
             if (user) {
                 this.currentUser = user;
@@ -442,12 +444,8 @@ class UserManagementService {
         try {
             window.showInfo(this.currentUser ? 'Actualizando usuario...' : 'Creando usuario...');
 
-            let result;
-            if (this.currentUser) {
-                result = await window.userApi.updateUser(this.currentUser.cedula, userData);
-            } else {
-                result = await window.userApi.createUser(userData);
-            }
+            // Usar localStorage en lugar de API
+            const result = window.localStorageService.saveUser(userData);
 
             if (result) {
                 window.showSuccess(`Usuario ${this.currentUser ? 'actualizado' : 'creado'} exitosamente`);
@@ -566,16 +564,12 @@ class UserManagementService {
                 throw new Error('Usuario no encontrado');
             }
 
-            let result;
-            if (user.active) {
-                result = await window.userApi.deactivateUser(cedula);
-                window.showInfo('Usuario desactivado');
-            } else {
-                result = await window.userApi.activateUser(cedula);
-                window.showInfo('Usuario activado');
-            }
+            // Usar localStorage en lugar de API
+            user.active = !user.active;
+            const result = window.localStorageService.saveUser(user);
 
             if (result) {
+                window.showInfo(user.active ? 'Usuario activado' : 'Usuario desactivado');
                 this.loadUsersList(); // Recargar lista
             }
 
@@ -596,7 +590,8 @@ class UserManagementService {
         try {
             window.showInfo('Eliminando usuario...');
 
-            await window.userApi.deleteUserByCedula(cedula);
+            // Usar localStorage en lugar de API
+            window.localStorageService.deleteUser(cedula);
 
             window.showSuccess('Usuario eliminado exitosamente');
             this.loadUsersList(); // Recargar lista

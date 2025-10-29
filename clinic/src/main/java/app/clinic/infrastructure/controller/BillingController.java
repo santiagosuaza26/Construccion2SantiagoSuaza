@@ -32,7 +32,7 @@ public class BillingController {
         );
 
         var dto = new BillingDTO(
-            java.util.UUID.randomUUID().toString(), // Generate proper ID
+            billing.getOrderNumber().getValue(), // Use order number as billing ID
             billing.getIdentificationNumber(), // Using identification number as patient ID
             billing.getPatientName(),
             billing.getDoctorName(),
@@ -57,7 +57,7 @@ public class BillingController {
         var billing = generateBillingFromOrderUseCase.execute(orderNumber, adminId);
 
         var dto = new BillingDTO(
-            java.util.UUID.randomUUID().toString(), // Generate proper ID
+            billing.getOrderNumber().getValue(), // Use order number as billing ID
             billing.getIdentificationNumber(), // Using identification number as patient ID
             billing.getPatientName(),
             billing.getDoctorName(),

@@ -21,7 +21,7 @@ import io.jsonwebtoken.security.Keys;
 public class AuthController {
     private final AuthenticateUserUseCase authenticateUserUseCase;
     private final RedisTemplate<String, String> redisTemplate;
-    private static final String SECRET_KEY = "clinic-secret-key-for-jwt-tokens"; // En producción usar variable de entorno
+    private static final String SECRET_KEY = System.getenv().getOrDefault("JWT_SECRET_KEY", "clinic-secret-key-for-jwt-tokens");
     private static final long EXPIRATION_TIME = 86400000; // 24 horas
 
     public AuthController(AuthenticateUserUseCase authenticateUserUseCase, RedisTemplate<String, String> redisTemplate) {
@@ -42,7 +42,7 @@ public class AuthController {
             .claim("sessionId", sessionId)
             .issuedAt(new Date())
             .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
+            .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), Jwts.SIG.HS256)
             .compact();
 
         // Store session in Redis with expiration
@@ -64,9 +64,9 @@ public class AuthController {
             String token = authHeader.substring(7);
             try {
                 var parser = Jwts.parser()
-                    .setSigningKey(SECRET_KEY.getBytes())
+                    .verifyWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()))
                     .build();
-                var claims = parser.ae(token).getBody();
+                var claims = parser.parseClaimsJws(token).getBody();
 
                 String sessionId = claims.get("sessionId", String.class);
                 if (sessionId != null) {
