@@ -11,6 +11,13 @@ public class AuthenticateUserUseCase {
     }
 
     public User execute(String username, String password) {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Invalid username or password");
+        }
+
         User user = userService.findUserByUsername(username);
         if (user == null) {
             throw new IllegalArgumentException("Invalid username or password");

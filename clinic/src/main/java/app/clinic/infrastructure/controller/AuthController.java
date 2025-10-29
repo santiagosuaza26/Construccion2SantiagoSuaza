@@ -31,6 +31,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequest request) {
+        if (request.username == null || request.username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username is required");
+        }
+        if (request.password == null || request.password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password is required");
+        }
+
         var user = authenticateUserUseCase.execute(request.username, request.password);
 
         // Generate unique session ID
