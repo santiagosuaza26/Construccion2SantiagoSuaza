@@ -45,6 +45,20 @@ public class InventoryController {
     // Medications
     @PostMapping("/medications")
     public ResponseEntity<MedicationDTO> addMedication(@RequestBody AddMedicationRequest request) {
+        // Validar entrada
+        if (request.id == null || request.id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Medication ID is required");
+        }
+        if (request.name == null || request.name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Medication name is required");
+        }
+        if (request.cost < 0) {
+            throw new IllegalArgumentException("Cost must be non-negative");
+        }
+        if (request.specialistType == null || request.specialistType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Specialist type is required");
+        }
+
         var medication = addMedicationUseCase.execute(
             request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
         );
@@ -62,6 +76,20 @@ public class InventoryController {
 
     @PutMapping("/medications/{id}")
     public ResponseEntity<Void> updateMedication(@PathVariable String id, @RequestBody UpdateMedicationRequest request) {
+        // Validar entrada
+        if (id == null || id.trim().isEmpty()) {
+            throw new IllegalArgumentException("Medication ID is required");
+        }
+        if (request.name == null || request.name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Medication name is required");
+        }
+        if (request.cost < 0) {
+            throw new IllegalArgumentException("Cost must be non-negative");
+        }
+        if (request.specialistType == null || request.specialistType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Specialist type is required");
+        }
+
         updateMedicationUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
         return ResponseEntity.ok().build();
     }

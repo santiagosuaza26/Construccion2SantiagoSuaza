@@ -31,6 +31,23 @@ public class AppointmentController {
 
     @PostMapping
     public ResponseEntity<AppointmentDTO> scheduleAppointment(@RequestBody ScheduleAppointmentRequest request) {
+        // Validar entrada
+        if (request.patientId == null || request.patientId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Patient ID is required");
+        }
+        if (request.adminId == null || request.adminId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Admin ID is required");
+        }
+        if (request.doctorId == null || request.doctorId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Doctor ID is required");
+        }
+        if (request.dateTime == null || request.dateTime.trim().isEmpty()) {
+            throw new IllegalArgumentException("Date and time are required");
+        }
+        if (request.reason == null || request.reason.trim().isEmpty()) {
+            throw new IllegalArgumentException("Appointment reason is required");
+        }
+
         var appointment = scheduleAppointmentUseCase.execute(
             request.patientId, request.adminId, request.doctorId,
             LocalDateTime.parse(request.dateTime), request.reason
