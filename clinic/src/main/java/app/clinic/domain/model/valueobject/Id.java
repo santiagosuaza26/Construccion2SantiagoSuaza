@@ -10,10 +10,11 @@ public class Id {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("ID cannot be null or empty");
         }
-        if (!CEDULA_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("ID must contain only digits and be maximum 10 characters");
+        String trimmed = value.trim();
+        if (!CEDULA_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("ID must contain only digits and be 1-10 characters long");
         }
-        this.value = value.trim();
+        this.value = trimmed;
     }
 
     public String getValue() {

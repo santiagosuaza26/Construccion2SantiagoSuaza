@@ -53,6 +53,12 @@ public class Cs2Application {
      */
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(Cs2Application.class);
+        System.out.println("=== DIAGNOSTICO DE CONFIGURACIÓN ===");
+        System.out.println("SPRING_PROFILES_ACTIVE: " + System.getenv("SPRING_PROFILES_ACTIVE"));
+        System.out.println("SPRING_DATASOURCE_URL: " + System.getenv("SPRING_DATASOURCE_URL"));
+        System.out.println("SPRING_DATA_MONGODB_URI: " + System.getenv("SPRING_DATA_MONGODB_URI"));
+        System.out.println("SPRING_DATA_REDIS_HOST: " + System.getenv("SPRING_DATA_REDIS_HOST"));
+        System.out.println("====================================");
         app.run(args);
     }
 }

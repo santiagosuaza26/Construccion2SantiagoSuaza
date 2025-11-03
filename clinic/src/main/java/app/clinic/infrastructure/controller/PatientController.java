@@ -20,6 +20,7 @@ import app.clinic.domain.service.PatientService;
 import app.clinic.domain.service.UserService;
 import app.clinic.infrastructure.dto.AppointmentDTO;
 import app.clinic.infrastructure.dto.PatientDTO;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/patients")
@@ -43,10 +44,10 @@ public class PatientController {
     }
 
     @PostMapping
-    public ResponseEntity<PatientDTO> registerPatient(@RequestBody RegisterPatientRequest request) {
+    public ResponseEntity<PatientDTO> registerPatient(@Valid @RequestBody RegisterPatientRequest request) {
         var patient = registerPatientUseCase.execute(
             request.identificationNumber, request.fullName, request.dateOfBirth, request.gender,
-            request.address, request.phone, request.email, request.password, request.emergencyName, request.emergencyRelation,
+            request.address, request.phone, request.email, request.emergencyName, request.emergencyRelation,
             request.emergencyPhone, request.companyName, request.policyNumber, request.insuranceActive,
             request.validityDate
         );
@@ -72,7 +73,7 @@ public class PatientController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PatientDTO> updatePatient(@PathVariable String id, @RequestBody UpdatePatientRequest request) {
+    public ResponseEntity<PatientDTO> updatePatient(@PathVariable String id, @Valid @RequestBody UpdatePatientRequest request) {
         var patient = updatePatientUseCase.execute(
             id, request.fullName, request.dateOfBirth, request.gender, request.address, request.phone,
             request.email, request.emergencyName, request.emergencyRelation, request.emergencyPhone,
@@ -124,17 +125,42 @@ public class PatientController {
     }
 
     public static class RegisterPatientRequest {
+        @jakarta.validation.constraints.NotBlank(message = "El número de identificación es obligatorio")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{1,10}", message = "El número de identificación debe contener entre 1 y 10 dígitos")
         public String identificationNumber;
+
+        @jakarta.validation.constraints.NotBlank(message = "El nombre completo es obligatorio")
         public String fullName;
+
+        @jakarta.validation.constraints.NotBlank(message = "La fecha de nacimiento es obligatoria")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}", message = "La fecha debe tener formato DD/MM/YYYY")
         public String dateOfBirth;
+
+        @jakarta.validation.constraints.NotBlank(message = "El género es obligatorio")
         public String gender;
+
+        @jakarta.validation.constraints.NotBlank(message = "La dirección es obligatoria")
+        @jakarta.validation.constraints.Size(max = 30, message = "La dirección no puede exceder 30 caracteres")
         public String address;
+
+        @jakarta.validation.constraints.NotBlank(message = "El teléfono es obligatorio")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{10}", message = "El teléfono debe contener exactamente 10 dígitos")
         public String phone;
+
+        @jakarta.validation.constraints.NotBlank(message = "El email es obligatorio")
+        @jakarta.validation.constraints.Email(message = "El email debe tener un formato válido")
         public String email;
-        public String password;
+
+        @jakarta.validation.constraints.NotBlank(message = "El nombre del contacto de emergencia es obligatorio")
         public String emergencyName;
+
+        @jakarta.validation.constraints.NotBlank(message = "La relación del contacto de emergencia es obligatoria")
         public String emergencyRelation;
+
+        @jakarta.validation.constraints.NotBlank(message = "El teléfono del contacto de emergencia es obligatorio")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{10}", message = "El teléfono de emergencia debe contener exactamente 10 dígitos")
         public String emergencyPhone;
+
         public String companyName;
         public String policyNumber;
         public boolean insuranceActive;
@@ -142,15 +168,38 @@ public class PatientController {
     }
 
     public static class UpdatePatientRequest {
+        @jakarta.validation.constraints.NotBlank(message = "El nombre completo es obligatorio")
         public String fullName;
+
+        @jakarta.validation.constraints.NotBlank(message = "La fecha de nacimiento es obligatoria")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}", message = "La fecha debe tener formato DD/MM/YYYY")
         public String dateOfBirth;
+
+        @jakarta.validation.constraints.NotBlank(message = "El género es obligatorio")
         public String gender;
+
+        @jakarta.validation.constraints.NotBlank(message = "La dirección es obligatoria")
+        @jakarta.validation.constraints.Size(max = 30, message = "La dirección no puede exceder 30 caracteres")
         public String address;
+
+        @jakarta.validation.constraints.NotBlank(message = "El teléfono es obligatorio")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{10}", message = "El teléfono debe contener exactamente 10 dígitos")
         public String phone;
+
+        @jakarta.validation.constraints.NotBlank(message = "El email es obligatorio")
+        @jakarta.validation.constraints.Email(message = "El email debe tener un formato válido")
         public String email;
+
+        @jakarta.validation.constraints.NotBlank(message = "El nombre del contacto de emergencia es obligatorio")
         public String emergencyName;
+
+        @jakarta.validation.constraints.NotBlank(message = "La relación del contacto de emergencia es obligatoria")
         public String emergencyRelation;
+
+        @jakarta.validation.constraints.NotBlank(message = "El teléfono del contacto de emergencia es obligatorio")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{10}", message = "El teléfono de emergencia debe contener exactamente 10 dígitos")
         public String emergencyPhone;
+
         public String companyName;
         public String policyNumber;
         public boolean insuranceActive;

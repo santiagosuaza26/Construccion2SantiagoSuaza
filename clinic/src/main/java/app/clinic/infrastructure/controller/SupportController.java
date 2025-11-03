@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.clinic.application.mapper.SupportTicketMapper;
 import app.clinic.application.usecase.ProvideTechnicalSupportUseCase;
 import app.clinic.domain.model.entities.SupportTicket;
 import app.clinic.domain.service.TechnicalSupportService;
@@ -33,15 +34,7 @@ public class SupportController {
     public ResponseEntity<SupportTicketDTO> createSupportTicket(@RequestBody CreateSupportTicketRequest request) {
         SupportTicket supportTicket = provideTechnicalSupportUseCase.execute(request.userId, request.issueDescription);
 
-        SupportTicketDTO dto = new SupportTicketDTO(
-            supportTicket.getId().getValue(),
-            supportTicket.getUserId(),
-            supportTicket.getIssueDescription(),
-            supportTicket.getCreatedAt(),
-            supportTicket.getStatus(),
-            supportTicket.getAssignedTo(),
-            supportTicket.getUpdatedAt()
-        );
+        SupportTicketDTO dto = SupportTicketMapper.toDTO(supportTicket);
 
         return ResponseEntity.ok(dto);
     }
@@ -49,18 +42,7 @@ public class SupportController {
     @GetMapping("/tickets/{id}")
     public ResponseEntity<SupportTicketDTO> getSupportTicket(@PathVariable String id) {
         return technicalSupportService.getSupportTicketById(new app.clinic.domain.model.valueobject.SupportTicketId(id))
-            .map(ticket -> {
-                SupportTicketDTO dto = new SupportTicketDTO(
-                    ticket.getId().getValue(),
-                    ticket.getUserId(),
-                    ticket.getIssueDescription(),
-                    ticket.getCreatedAt(),
-                    ticket.getStatus(),
-                    ticket.getAssignedTo(),
-                    ticket.getUpdatedAt()
-                );
-                return ResponseEntity.ok(dto);
-            })
+            .map(ticket -> ResponseEntity.ok(SupportTicketMapper.toDTO(ticket)))
             .orElse(ResponseEntity.notFound().build());
     }
 
@@ -68,15 +50,7 @@ public class SupportController {
     public ResponseEntity<List<SupportTicketDTO>> getSupportTicketsByUser(@PathVariable String userId) {
         List<SupportTicket> tickets = technicalSupportService.getSupportTicketsByUserId(userId);
         List<SupportTicketDTO> dtos = tickets.stream()
-            .map(ticket -> new SupportTicketDTO(
-                ticket.getId().getValue(),
-                ticket.getUserId(),
-                ticket.getIssueDescription(),
-                ticket.getCreatedAt(),
-                ticket.getStatus(),
-                ticket.getAssignedTo(),
-                ticket.getUpdatedAt()
-            ))
+            .map(SupportTicketMapper::toDTO)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);
@@ -86,15 +60,7 @@ public class SupportController {
     public ResponseEntity<List<SupportTicketDTO>> getAllSupportTickets() {
         List<SupportTicket> tickets = technicalSupportService.getAllSupportTickets();
         List<SupportTicketDTO> dtos = tickets.stream()
-            .map(ticket -> new SupportTicketDTO(
-                ticket.getId().getValue(),
-                ticket.getUserId(),
-                ticket.getIssueDescription(),
-                ticket.getCreatedAt(),
-                ticket.getStatus(),
-                ticket.getAssignedTo(),
-                ticket.getUpdatedAt()
-            ))
+            .map(SupportTicketMapper::toDTO)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(dtos);

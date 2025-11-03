@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@org.springframework.context.annotation.Profile("!mongodb")
 public interface MedicalRecordJpaRepository extends JpaRepository<MedicalRecordJpaEntity, Long> {
     List<MedicalRecordJpaEntity> findByPatientId(String patientId);
 

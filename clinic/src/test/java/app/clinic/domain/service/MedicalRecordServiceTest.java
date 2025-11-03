@@ -26,12 +26,15 @@ class MedicalRecordServiceTest {
     @Mock
     private PatientRepository patientRepository;
 
+    @Mock
+    private RoleBasedAccessService roleBasedAccessService;
+
     private MedicalRecordService medicalRecordService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        medicalRecordService = new MedicalRecordService(medicalRecordRepository, patientRepository);
+        medicalRecordService = new MedicalRecordService(medicalRecordRepository, patientRepository, roleBasedAccessService);
     }
 
     @Test

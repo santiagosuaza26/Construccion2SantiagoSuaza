@@ -1,12 +1,17 @@
 package app.clinic.domain.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 
 import app.clinic.domain.model.entities.Billing;
+import app.clinic.domain.model.entities.Order;
 import app.clinic.domain.model.entities.Patient;
 import app.clinic.domain.model.entities.User;
+import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.model.valueobject.OrderNumber;
+import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.repository.BillingRepository;
 import app.clinic.domain.repository.OrderRepository;
 import app.clinic.domain.repository.PatientRepository;
@@ -27,97 +32,136 @@ public class BillingService {
         this.roleBasedAccessService = roleBasedAccessService;
     }
 
-    public Billing generateBilling(String patientId, String doctorName, String orderNumber, double totalCost, String appliedMedications, String appliedProcedures, String appliedDiagnosticAids) {
-        Patient patient = patientRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(patientId)).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-        double copay = 0.0;
-        double insuranceCoverage = 0.0;
+    public Billing generateBilling(String patientId, String doctorName, String orderNumber, double totalCost, String appliedMedications, String appliedProcedures, String appliedDiagnosticAids, String adminId) {
+        validateAdminRole(adminId);
 
-        if (patient.getInsurance() != null && patient.getInsurance().isActive()) {
-            LocalDate validity = patient.getInsurance().getValidityDate();
-            if (validity.isAfter(LocalDate.now())) {
-                copay = 50000.0; // $50,000 copago
-                insuranceCoverage = totalCost - copay;
-                patient.addToAnnualCopayTotal(copay);
-                if (patient.getAnnualCopayTotal() > 1000000.0) { // $1,000,000
-                    copay = 0.0;
-                    insuranceCoverage = totalCost;
-                }
-            } else {
-                copay = totalCost; // Póliza inactiva
-            }
-        } else {
-            copay = totalCost; // Sin póliza
+        Patient patient = patientRepository.findByIdentificationNumber(new Id(patientId))
+            .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+
+        BillingCalculationResult calculation = calculateBillingDetails(patient, totalCost);
+
+        // Update patient's annual copay only if they actually pay
+        if (calculation.hasActiveInsurance && calculation.copay > 0) {
+            patient.addToAnnualCopayTotal(calculation.copay);
+            patientRepository.save(patient);
         }
 
-        int age = Period.between(patient.getDateOfBirth().getValue(), LocalDate.now()).getYears();
-        int validityDays = patient.getInsurance() != null ? Period.between(LocalDate.now(), patient.getInsurance().getValidityDate()).getDays() : 0;
+        Billing billing = createBillingObject(orderNumber, patient, doctorName, totalCost, calculation,
+                                             appliedMedications, appliedProcedures, appliedDiagnosticAids, adminId);
 
-        Billing billing = new Billing(new OrderNumber(orderNumber), patient.getFullName(), age, patientId, doctorName, patient.getInsurance() != null ? patient.getInsurance().getCompanyName() : "", patient.getInsurance() != null ? patient.getInsurance().getPolicyNumber() : "", validityDays, patient.getInsurance() != null ? patient.getInsurance().getValidityDate() : null, totalCost, copay, insuranceCoverage, appliedMedications, appliedProcedures, appliedDiagnosticAids, java.time.LocalDateTime.now(), "admin-id");
         billingRepository.save(billing);
-        patientRepository.save(patient); // Update annual copay
         return billing;
     }
 
     public Billing generateBillingFromOrder(String orderNumber, String adminId) {
         validateAdminRole(adminId);
-        app.clinic.domain.model.entities.Order order = orderRepository.findByOrderNumber(new OrderNumber(orderNumber)).orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        patientRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(order.getPatientIdentificationNumber())).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
-        User doctor = userRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(order.getDoctorIdentificationNumber())).orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
 
-        double totalCost = calculateTotalCost(order);
-        String appliedMedications = getAppliedMedications(order);
-        String appliedProcedures = getAppliedProcedures(order);
-        String appliedDiagnosticAids = getAppliedDiagnosticAids(order);
+        Order order = orderRepository.findByOrderNumber(new OrderNumber(orderNumber))
+            .orElseThrow(() -> new IllegalArgumentException("Order not found"));
 
-        return generateBilling(order.getPatientIdentificationNumber(), doctor.getFullName(), orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids);
+        User doctor = userRepository.findByIdentificationNumber(new Id(order.getDoctorIdentificationNumber()))
+            .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
+
+        // Use domain logic from Billing entity
+        double totalCost = Billing.calculateTotalCostFromOrder(order);
+        String appliedMedications = Billing.formatAppliedMedications(order);
+        String appliedProcedures = Billing.formatAppliedProcedures(order);
+        String appliedDiagnosticAids = Billing.formatAppliedDiagnosticAids(order);
+
+        return generateBilling(order.getPatientIdentificationNumber(), doctor.getFullName(), orderNumber,
+                              totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids, adminId);
     }
 
-    private double calculateTotalCost(app.clinic.domain.model.entities.Order order) {
-        double total = 0.0;
-        for (var med : order.getMedications()) {
-            total += med.getCost();
+    // Método adicional para generar facturación con lógica específica según póliza activa/inactiva
+    public Billing generateBillingWithInsuranceLogic(String patientId, String doctorName, String orderNumber, double totalCost, String appliedMedications, String appliedProcedures, String appliedDiagnosticAids, String adminId) {
+        validateAdminRole(adminId);
+
+        Patient patient = patientRepository.findByIdentificationNumber(new Id(patientId))
+            .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+
+        BillingCalculationResult calculation = calculateBillingDetails(patient, totalCost);
+
+        // Actualizar copago anual si aplica
+        if (calculation.hasActiveInsurance && calculation.copay > 0) {
+            patient.addToAnnualCopayTotal(calculation.copay);
+            patientRepository.save(patient);
         }
-        for (var proc : order.getProcedures()) {
-            total += proc.getCost();
-        }
-        for (var aid : order.getDiagnosticAids()) {
-            total += aid.getCost();
-        }
-        return total;
+
+        Billing billing = createBillingObject(orderNumber, patient, doctorName, totalCost, calculation,
+                                             appliedMedications, appliedProcedures, appliedDiagnosticAids, adminId);
+
+        billingRepository.save(billing);
+        return billing;
     }
 
-    private String getAppliedMedications(app.clinic.domain.model.entities.Order order) {
-        StringBuilder sb = new StringBuilder();
-        for (var med : order.getMedications()) {
-            sb.append(med.getMedicationName()).append(" - ").append(med.getDosage()).append(" - ").append(med.getDuration()).append("; ");
-        }
-        return sb.toString();
-    }
-
-    private String getAppliedProcedures(app.clinic.domain.model.entities.Order order) {
-        StringBuilder sb = new StringBuilder();
-        for (var proc : order.getProcedures()) {
-            sb.append(proc.getProcedureName()).append(" - ").append(proc.getQuantity()).append(" - ").append(proc.getFrequency()).append("; ");
-        }
-        return sb.toString();
-    }
-
-    private String getAppliedDiagnosticAids(app.clinic.domain.model.entities.Order order) {
-        StringBuilder sb = new StringBuilder();
-        for (var aid : order.getDiagnosticAids()) {
-            sb.append(aid.getDiagnosticAidName()).append(" - ").append(aid.getQuantity()).append("; ");
-        }
-        return sb.toString();
-    }
 
     private void validateAdminRole(String adminId) {
-        app.clinic.domain.model.valueobject.Id adminIdObj = new app.clinic.domain.model.valueobject.Id(adminId);
+        Id adminIdObj = new Id(adminId);
         User admin = userRepository.findByIdentificationNumber(adminIdObj).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
         roleBasedAccessService.checkAccess(admin.getRole(), "billing");
 
         // Validación específica: Solo Personal Administrativo puede generar facturas
-        if (admin.getRole() != app.clinic.domain.model.valueobject.Role.PERSONAL_ADMINISTRATIVO) {
+        if (admin.getRole() != Role.PERSONAL_ADMINISTRATIVO) {
             throw new IllegalAccessError("Only Administrative staff can generate billing");
         }
+    }
+
+    private static class BillingCalculationResult {
+        final int age;
+        final int validityDays;
+        final boolean hasActiveInsurance;
+        final double copay;
+        final double insuranceCoverage;
+
+        BillingCalculationResult(int age, int validityDays, boolean hasActiveInsurance, double copay, double insuranceCoverage) {
+            this.age = age;
+            this.validityDays = validityDays;
+            this.hasActiveInsurance = hasActiveInsurance;
+            this.copay = copay;
+            this.insuranceCoverage = insuranceCoverage;
+        }
+    }
+
+    private BillingCalculationResult calculateBillingDetails(Patient patient, double totalCost) {
+        int age = Period.between(patient.getDateOfBirth().getValue(), LocalDate.now()).getYears();
+        int validityDays = patient.getInsurance() != null ? Period.between(LocalDate.now(), patient.getInsurance().getValidityDate()).getDays() : 0;
+
+        boolean hasActiveInsurance = patient.getInsurance() != null &&
+                                   patient.getInsurance().isActive() &&
+                                   patient.getInsurance().getValidityDate() != null &&
+                                   patient.getInsurance().getValidityDate().isAfter(LocalDate.now());
+
+        double copay = Billing.calculateCopay(totalCost, hasActiveInsurance, patient.getAnnualCopayTotal());
+        double insuranceCoverage = hasActiveInsurance ? totalCost - copay : 0.0;
+
+        return new BillingCalculationResult(age, validityDays, hasActiveInsurance, copay, insuranceCoverage);
+    }
+
+    private Billing createBillingObject(String orderNumber, Patient patient, String doctorName, double totalCost,
+                                       BillingCalculationResult calculation, String appliedMedications,
+                                       String appliedProcedures, String appliedDiagnosticAids, String adminId) {
+        return new Billing(
+            new OrderNumber(orderNumber),
+            patient.getFullName(),
+            calculation.age,
+            patient.getIdentificationNumber().getValue(),
+            doctorName,
+            patient.getInsurance() != null ? patient.getInsurance().getCompanyName() : "",
+            patient.getInsurance() != null ? patient.getInsurance().getPolicyNumber() : "",
+            calculation.validityDays,
+            patient.getInsurance() != null ? patient.getInsurance().getValidityDate() : null,
+            totalCost,
+            calculation.copay,
+            calculation.insuranceCoverage,
+            appliedMedications,
+            appliedProcedures,
+            appliedDiagnosticAids,
+            LocalDateTime.now(),
+            adminId
+        );
+    }
+
+    public List<Billing> findBillingByPatientId(String patientId) {
+        return billingRepository.findByPatientIdentificationNumber(patientId);
     }
 }

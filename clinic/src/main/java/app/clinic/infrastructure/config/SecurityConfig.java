@@ -36,14 +36,15 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
 
-                // Endpoints protegidos por roles
-                .requestMatchers("/api/users/**").hasAnyRole("RECURSOS_HUMANOS", "PERSONAL_ADMINISTRATIVO")
-                .requestMatchers("/api/patients/**").hasAnyRole("PERSONAL_ADMINISTRATIVO", "MEDICO", "ENFERMERA")
-                .requestMatchers("/api/appointments/**").hasAnyRole("PERSONAL_ADMINISTRATIVO", "MEDICO")
-                .requestMatchers("/api/inventory/**").hasAnyRole("PERSONAL_ADMINISTRATIVO", "MEDICO")
-                .requestMatchers("/api/medical/**").hasRole("MEDICO")
-                .requestMatchers("/api/nurse/**").hasRole("ENFERMERA")
-                .requestMatchers("/api/billing/**").hasAnyRole("PERSONAL_ADMINISTRATIVO", "MEDICO")
+                // Endpoints protegidos por roles - usando los roles correctos del enum
+                .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_RECURSOS_HUMANOS", "ROLE_PERSONAL_ADMINISTRATIVO")
+                .requestMatchers("/api/patients/**").hasAnyAuthority("ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO", "ROLE_ENFERMERA")
+                .requestMatchers("/api/appointments/**").hasAnyAuthority("ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO")
+                .requestMatchers("/api/inventory/**").hasAnyAuthority("ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO", "ROLE_SOPORTE_DE_INFORMACION")
+                .requestMatchers("/api/medical/**").hasAuthority("ROLE_MEDICO")
+                .requestMatchers("/api/nurse/**").hasAuthority("ROLE_ENFERMERA")
+                .requestMatchers("/api/billing/**").hasAnyAuthority("ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO")
+                .requestMatchers("/api/support/**").hasAnyAuthority("ROLE_RECURSOS_HUMANOS", "ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO", "ROLE_ENFERMERA", "ROLE_SOPORTE_DE_INFORMACION")
 
                 // Cualquier otro endpoint requiere autenticación
                 .anyRequest().authenticated()
@@ -56,11 +57,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        // Restringir a dominios específicos - cambiar según el entorno
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:3000",
+            "http://localhost:8080",
+            "http://localhost:8081",
+            "https://clinic-frontend.com",
+            "https://clinic-admin.com"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setMaxAge(3600L); // Cache preflight por 1 hora
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

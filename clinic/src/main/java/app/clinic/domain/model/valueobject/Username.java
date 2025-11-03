@@ -3,17 +3,18 @@ package app.clinic.domain.model.valueobject;
 import java.util.regex.Pattern;
 
 public class Username {
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]{1,15}$");
+    private static final Pattern USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{1,15}$");
     private final String value;
 
     public Username(String value) {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
-        if (!USERNAME_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("Username must contain only letters and numbers, maximum 15 characters");
+        String trimmed = value.trim();
+        if (!USERNAME_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("Username must contain only letters, numbers and underscores, maximum 15 characters");
         }
-        this.value = value.trim();
+        this.value = trimmed.toLowerCase();
     }
 
     public String getValue() {

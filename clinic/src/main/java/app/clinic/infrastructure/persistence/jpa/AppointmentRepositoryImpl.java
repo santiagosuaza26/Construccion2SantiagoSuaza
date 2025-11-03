@@ -74,6 +74,17 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         );
     }
 
+    @Override
+    public java.util.Optional<Appointment> findById(Id appointmentId) {
+        return appointmentJpaRepository.findById(appointmentId.getValue())
+            .map(this::toDomain);
+    }
+
+    @Override
+    public void delete(Id appointmentId) {
+        appointmentJpaRepository.deleteById(appointmentId.getValue());
+    }
+
     private String generateAppointmentId() {
         // Simple ID generation - in production, use a proper ID generation strategy
         return "APPT-" + System.currentTimeMillis();

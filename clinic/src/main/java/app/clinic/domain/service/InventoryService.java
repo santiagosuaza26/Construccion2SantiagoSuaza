@@ -1,6 +1,7 @@
 package app.clinic.domain.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
 
 import app.clinic.domain.model.entities.DiagnosticAid;
 import app.clinic.domain.model.entities.Medication;
@@ -8,12 +9,13 @@ import app.clinic.domain.model.entities.Procedure;
 import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.repository.InventoryRepository;
 
-@Service
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
+    private final RoleBasedAccessService roleBasedAccessService;
 
-    public InventoryService(InventoryRepository inventoryRepository) {
+    public InventoryService(InventoryRepository inventoryRepository, RoleBasedAccessService roleBasedAccessService) {
         this.inventoryRepository = inventoryRepository;
+        this.roleBasedAccessService = roleBasedAccessService;
     }
 
     public Medication addMedication(String id, String name, double cost, boolean requiresSpecialist, String specialistType) {
@@ -67,6 +69,10 @@ public class InventoryService {
         inventoryRepository.saveDiagnosticAid(updated);
     }
 
+    public Optional<Medication> findMedicationById(Id id) {
+        return inventoryRepository.findMedicationById(id);
+    }
+
     public void deleteMedication(String id) {
         Id medId = new Id(id);
         if (!inventoryRepository.existsMedicationById(medId)) {
@@ -76,6 +82,10 @@ public class InventoryService {
         // For now, assume deletion is allowed
     }
 
+    public Optional<Procedure> findProcedureById(Id id) {
+        return inventoryRepository.findProcedureById(id);
+    }
+
     public void deleteProcedure(String id) {
         Id procId = new Id(id);
         if (!inventoryRepository.existsProcedureById(procId)) {
@@ -83,10 +93,26 @@ public class InventoryService {
         }
     }
 
+    public Optional<DiagnosticAid> findDiagnosticAidById(Id id) {
+        return inventoryRepository.findDiagnosticAidById(id);
+    }
+
     public void deleteDiagnosticAid(String id) {
         Id aidId = new Id(id);
         if (!inventoryRepository.existsDiagnosticAidById(aidId)) {
             throw new IllegalArgumentException("Diagnostic aid not found");
         }
+    }
+
+    public List<Medication> getAllMedications() {
+        return inventoryRepository.findAllMedications();
+    }
+
+    public List<Procedure> getAllProcedures() {
+        return inventoryRepository.findAllProcedures();
+    }
+
+    public List<DiagnosticAid> getAllDiagnosticAids() {
+        return inventoryRepository.findAllDiagnosticAids();
     }
 }

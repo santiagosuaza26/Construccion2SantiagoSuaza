@@ -2,15 +2,12 @@ package app.clinic.domain.service;
 
 import java.time.LocalDateTime;
 
-import org.springframework.stereotype.Service;
-
 import app.clinic.domain.model.entities.User;
 import app.clinic.domain.model.entities.VitalSigns;
 import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.repository.PatientRepository;
 import app.clinic.domain.repository.UserRepository;
 
-@Service
 public class VitalSignsService {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
@@ -60,6 +57,19 @@ public class VitalSignsService {
         // In real implementation, add method to OrderRepository
         // For now, just validate and assume it's saved
         // patientRepository.saveProcedureRealization(patientId, nurseId, orderNumber, item, realizationDetails, LocalDateTime.now());
+    }
+
+    public void recordDiagnosticAidResult(String patientId, String nurseId, String orderNumber, int item, String resultDetails) {
+        validateNurseRole(nurseId);
+        Id patientIdObj = new Id(patientId);
+        if (!patientRepository.existsByIdentificationNumber(patientIdObj)) {
+            throw new IllegalArgumentException("Patient not found");
+        }
+        // Validate that the order exists and has the diagnostic aid item
+        // For simplicity, assume orderRepository has a method to find by orderNumber and check item
+        // In real implementation, add method to OrderRepository
+        // For now, just validate and assume it's saved
+        // patientRepository.saveDiagnosticAidResult(patientId, nurseId, orderNumber, item, resultDetails, LocalDateTime.now());
     }
 
     private void validateNurseRole(String nurseId) {

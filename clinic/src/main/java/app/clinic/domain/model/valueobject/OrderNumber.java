@@ -10,10 +10,11 @@ public class OrderNumber {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("Order number cannot be null or empty");
         }
-        if (!ORDER_NUMBER_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("Order number must contain only digits and be maximum 6 characters");
+        String trimmed = value.trim();
+        if (!ORDER_NUMBER_PATTERN.matcher(trimmed).matches()) {
+            throw new IllegalArgumentException("Order number must contain only digits and be 1-6 characters long");
         }
-        this.value = value.trim();
+        this.value = trimmed;
     }
 
     public String getValue() {

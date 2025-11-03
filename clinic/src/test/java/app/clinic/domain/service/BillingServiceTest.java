@@ -69,7 +69,7 @@ class BillingServiceTest {
         when(patientRepository.findByIdentificationNumber(any(Id.class))).thenReturn(Optional.of(patient));
 
         // When
-        Billing billing = billingService.generateBilling(patientId, doctorName, orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids);
+        Billing billing = billingService.generateBilling(patientId, doctorName, orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids, "admin-id");
 
         // Then
         assertNotNull(billing);
@@ -94,7 +94,7 @@ class BillingServiceTest {
         when(patientRepository.findByIdentificationNumber(any(Id.class))).thenReturn(Optional.of(patient));
 
         // When
-        Billing billing = billingService.generateBilling(patientId, doctorName, orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids);
+        Billing billing = billingService.generateBilling(patientId, doctorName, orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids, "admin-id");
 
         // Then
         assertNotNull(billing);
@@ -117,7 +117,7 @@ class BillingServiceTest {
         when(patientRepository.findByIdentificationNumber(any(Id.class))).thenReturn(Optional.of(patient));
 
         // When
-        Billing billing = billingService.generateBilling(patientId, doctorName, orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids);
+        Billing billing = billingService.generateBilling(patientId, doctorName, orderNumber, totalCost, appliedMedications, appliedProcedures, appliedDiagnosticAids, "admin-id");
 
         // Then
         assertNotNull(billing);
@@ -131,6 +131,6 @@ class BillingServiceTest {
         when(patientRepository.findByIdentificationNumber(any(Id.class))).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> billingService.generateBilling("123456789", "Dr. Smith", "000001", 100000.0, "Aspirin", "Checkup", ""));
+        assertThrows(IllegalArgumentException.class, () -> billingService.generateBilling("123456789", "Dr. Smith", "000001", 100000.0, "Aspirin", "Checkup", "", "admin-id"));
     }
 }

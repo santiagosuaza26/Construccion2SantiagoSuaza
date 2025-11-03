@@ -18,20 +18,26 @@ public class Order {
     private final List<MedicationOrder> medications;
     private final List<ProcedureOrder> procedures;
     private final List<DiagnosticAidOrder> diagnosticAids;
+    private final OrderStrategy orderStrategy;
 
     public Order(OrderNumber orderNumber, String patientIdentificationNumber, String doctorIdentificationNumber, LocalDate date, String diagnosis) {
+        this(orderNumber, patientIdentificationNumber, doctorIdentificationNumber, date, diagnosis, new MedicationProcedureOrderStrategy());
+    }
+
+    public Order(OrderNumber orderNumber, String patientIdentificationNumber, String doctorIdentificationNumber, LocalDate date) {
+        this(orderNumber, patientIdentificationNumber, doctorIdentificationNumber, date, null, new MedicationProcedureOrderStrategy());
+    }
+
+    public Order(OrderNumber orderNumber, String patientIdentificationNumber, String doctorIdentificationNumber, LocalDate date, String diagnosis, OrderStrategy orderStrategy) {
         this.orderNumber = orderNumber;
         this.patientIdentificationNumber = patientIdentificationNumber;
         this.doctorIdentificationNumber = doctorIdentificationNumber;
         this.date = date;
         this.diagnosis = diagnosis;
+        this.orderStrategy = orderStrategy;
         this.medications = new ArrayList<>();
         this.procedures = new ArrayList<>();
         this.diagnosticAids = new ArrayList<>();
-    }
-
-    public Order(OrderNumber orderNumber, String patientIdentificationNumber, String doctorIdentificationNumber, LocalDate date) {
-        this(orderNumber, patientIdentificationNumber, doctorIdentificationNumber, date, null);
     }
 
     public OrderNumber getOrderNumber() {
@@ -70,23 +76,34 @@ public class Order {
         return !diagnosticAids.isEmpty() && medications.isEmpty() && procedures.isEmpty();
     }
 
+    public boolean hasDiagnosticAids() {
+        return !diagnosticAids.isEmpty();
+    }
+
+    public boolean hasMedicationsOrProcedures() {
+        return !medications.isEmpty() || !procedures.isEmpty();
+    }
+
     public void addMedication(MedicationOrder medication) {
-        if (isDiagnosticAidOnly()) {
-            throw new InvalidOrderStateException("No se pueden agregar medicamentos a una orden de ayuda diagnóstica.");
+        if (!orderStrategy.canAddMedication(this, medication)) {
+            throw new InvalidOrderStateException("No se pueden agregar medicamentos según la estrategia de la orden.");
         }
         validateUniqueItem(medication.getItem());
         medications.add(medication);
     }
 
     public void addProcedure(ProcedureOrder procedure) {
-        if (isDiagnosticAidOnly()) {
-            throw new InvalidOrderStateException("No se pueden agregar procedimientos a una orden de ayuda diagnóstica.");
+        if (!orderStrategy.canAddProcedure(this, procedure)) {
+            throw new InvalidOrderStateException("No se pueden agregar procedimientos según la estrategia de la orden.");
         }
         validateUniqueItem(procedure.getItem());
         procedures.add(procedure);
     }
 
     public void addDiagnosticAid(DiagnosticAidOrder aid) {
+        if (!orderStrategy.canAddDiagnosticAid(this, aid)) {
+            throw new InvalidOrderStateException("No se pueden agregar ayudas diagnósticas según la estrategia de la orden.");
+        }
         validateUniqueItem(aid.getItem());
         diagnosticAids.add(aid);
     }

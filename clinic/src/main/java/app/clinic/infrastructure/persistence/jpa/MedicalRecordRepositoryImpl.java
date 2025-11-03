@@ -16,6 +16,7 @@ import app.clinic.domain.model.entities.MedicalRecord;
 import app.clinic.domain.repository.MedicalRecordRepository;
 
 @Repository
+@org.springframework.context.annotation.Profile("!mongodb")
 public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
 
     private final MedicalRecordJpaRepository jpaRepository;
@@ -47,7 +48,8 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
                     Map<String, Object> medication = objectMapper.readValue(entity.getPrescriptions(), new TypeReference<Map<String, Object>>() {});
                     record.put("medication", medication);
                 } catch (JsonProcessingException e) {
-                    // Handle parsing error
+                    // Log error and skip corrupted data
+                    System.err.println("Error parsing prescriptions JSON for patient " + entity.getPatientId() + ": " + e.getMessage());
                 }
             }
 
@@ -57,7 +59,8 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
                     Map<String, Object> procedure = objectMapper.readValue(entity.getProcedures(), new TypeReference<Map<String, Object>>() {});
                     record.put("procedure", procedure);
                 } catch (JsonProcessingException e) {
-                    // Handle parsing error
+                    // Log error and skip corrupted data
+                    System.err.println("Error parsing procedures JSON for patient " + entity.getPatientId() + ": " + e.getMessage());
                 }
             }
 
@@ -67,7 +70,8 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
                     Map<String, Object> aid = objectMapper.readValue(entity.getDiagnosticAids(), new TypeReference<Map<String, Object>>() {});
                     record.put("diagnosticAid", aid);
                 } catch (JsonProcessingException e) {
-                    // Handle parsing error
+                    // Log error and skip corrupted data
+                    System.err.println("Error parsing diagnostic aids JSON for patient " + entity.getPatientId() + ": " + e.getMessage());
                 }
             }
 
@@ -101,7 +105,8 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
                 try {
                     entity.setPrescriptions(objectMapper.writeValueAsString(record.get("medication")));
                 } catch (JsonProcessingException e) {
-                    // Handle serialization error
+                    // Log error and skip corrupted data
+                    System.err.println("Error serializing medication JSON for patient " + medicalRecord.getPatientIdentificationNumber() + ": " + e.getMessage());
                 }
             }
 
@@ -110,7 +115,8 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
                 try {
                     entity.setProcedures(objectMapper.writeValueAsString(record.get("procedure")));
                 } catch (JsonProcessingException e) {
-                    // Handle serialization error
+                    // Log error and skip corrupted data
+                    System.err.println("Error serializing procedure JSON for patient " + medicalRecord.getPatientIdentificationNumber() + ": " + e.getMessage());
                 }
             }
 
@@ -119,7 +125,8 @@ public class MedicalRecordRepositoryImpl implements MedicalRecordRepository {
                 try {
                     entity.setDiagnosticAids(objectMapper.writeValueAsString(record.get("diagnosticAid")));
                 } catch (JsonProcessingException e) {
-                    // Handle serialization error
+                    // Log error and skip corrupted data
+                    System.err.println("Error serializing diagnostic aid JSON for patient " + medicalRecord.getPatientIdentificationNumber() + ": " + e.getMessage());
                 }
             }
 

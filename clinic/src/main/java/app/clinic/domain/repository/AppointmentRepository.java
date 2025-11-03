@@ -12,4 +12,6 @@ public interface AppointmentRepository {
     List<Appointment> findByDoctorId(Id doctorId);
     List<Appointment> findByDateTime(LocalDateTime dateTime);
     boolean existsByPatientIdAndDateTime(Id patientId, LocalDateTime dateTime);
+    java.util.Optional<Appointment> findById(Id appointmentId);
+    void delete(Id appointmentId);
 }

@@ -12,6 +12,7 @@ public interface PatientRepository {
     Optional<Patient> findByIdentificationNumber(Id identificationNumber);
     List<Patient> findAll();
     boolean existsByIdentificationNumber(Id identificationNumber);
+    boolean existsByUsername(String username);
     void deleteByIdentificationNumber(Id identificationNumber);
     void saveVitalSigns(VitalSigns vitalSigns);
     List<VitalSigns> findVitalSignsByPatientId(Id patientId);

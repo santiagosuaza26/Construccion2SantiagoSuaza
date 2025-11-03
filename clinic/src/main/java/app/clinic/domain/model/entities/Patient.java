@@ -20,6 +20,9 @@ public class Patient {
     private final Insurance insurance;
     private double annualCopayTotal;
 
+    // Estado médico separado en entidad dedicada (PatientMedicalState)
+    // Los atributos específicos se manejan ahora en PatientMedicalState
+
     public Patient(Id identificationNumber, String fullName, DateOfBirth dateOfBirth, Gender gender, Address address, Phone phone, Email email, EmergencyContact emergencyContact, Insurance insurance) {
         if (fullName == null || fullName.trim().isEmpty()) {
             throw new IllegalArgumentException("Full name cannot be null or empty");
@@ -79,6 +82,9 @@ public class Patient {
     public void addToAnnualCopayTotal(double amount) {
         this.annualCopayTotal += amount;
     }
+
+    // Nota: Los métodos relacionados con estado médico ahora se manejan en PatientMedicalState
+    // Para mantener compatibilidad temporal, se pueden agregar métodos delegados si es necesario
 
     @Override
     public boolean equals(Object o) {

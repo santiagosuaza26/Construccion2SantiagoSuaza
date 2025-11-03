@@ -26,12 +26,15 @@ class UserServiceTest {
     @Mock
     private UserValidationService validationService;
 
+    @Mock
+    private RoleBasedAccessService roleBasedAccessService;
+
     private UserService userService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userService = new UserService(userRepository, validationService);
+        userService = new UserService(userRepository, validationService, roleBasedAccessService);
     }
 
     @Test

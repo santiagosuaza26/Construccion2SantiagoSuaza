@@ -60,7 +60,7 @@ public class InventoryController {
         }
 
         var medication = addMedicationUseCase.execute(
-            request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
+            null, request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
         );
 
         var dto = new MedicationDTO(
@@ -75,7 +75,7 @@ public class InventoryController {
     }
 
     @PutMapping("/medications/{id}")
-    public ResponseEntity<Void> updateMedication(@PathVariable String id, @RequestBody UpdateMedicationRequest request) {
+    public ResponseEntity<MedicationDTO> updateMedication(@PathVariable String id, @RequestBody UpdateMedicationRequest request) {
         // Validar entrada
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("Medication ID is required");
@@ -90,15 +90,24 @@ public class InventoryController {
             throw new IllegalArgumentException("Specialist type is required");
         }
 
-        updateMedicationUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
-        return ResponseEntity.ok().build();
+        var medication = updateMedicationUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
+
+        var dto = new MedicationDTO(
+            medication.getId().getValue(),
+            medication.getName(),
+            medication.getCost(),
+            medication.isRequiresSpecialist(),
+            medication.getSpecialistType().getValue()
+        );
+
+        return ResponseEntity.ok(dto);
     }
 
     // Procedures
     @PostMapping("/procedures")
     public ResponseEntity<ProcedureDTO> addProcedure(@RequestBody AddProcedureRequest request) {
         var procedure = addProcedureUseCase.execute(
-            request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
+            null, request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
         );
 
         var dto = new ProcedureDTO(
@@ -113,16 +122,25 @@ public class InventoryController {
     }
 
     @PutMapping("/procedures/{id}")
-    public ResponseEntity<Void> updateProcedure(@PathVariable String id, @RequestBody UpdateProcedureRequest request) {
-        updateProcedureUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ProcedureDTO> updateProcedure(@PathVariable String id, @RequestBody UpdateProcedureRequest request) {
+        var procedure = updateProcedureUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
+
+        var dto = new ProcedureDTO(
+            procedure.getId().getValue(),
+            procedure.getName(),
+            procedure.getCost(),
+            procedure.isRequiresSpecialist(),
+            procedure.getSpecialistType().getValue()
+        );
+
+        return ResponseEntity.ok(dto);
     }
 
     // Diagnostic Aids
     @PostMapping("/diagnostic-aids")
     public ResponseEntity<DiagnosticAidDTO> addDiagnosticAid(@RequestBody AddDiagnosticAidRequest request) {
         var diagnosticAid = addDiagnosticAidUseCase.execute(
-            request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
+            null, request.id, request.name, request.cost, request.requiresSpecialist, request.specialistType
         );
 
         var dto = new DiagnosticAidDTO(
@@ -137,9 +155,18 @@ public class InventoryController {
     }
 
     @PutMapping("/diagnostic-aids/{id}")
-    public ResponseEntity<Void> updateDiagnosticAid(@PathVariable String id, @RequestBody UpdateDiagnosticAidRequest request) {
-        updateDiagnosticAidUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DiagnosticAidDTO> updateDiagnosticAid(@PathVariable String id, @RequestBody UpdateDiagnosticAidRequest request) {
+        var diagnosticAid = updateDiagnosticAidUseCase.execute(id, request.name, request.cost, request.requiresSpecialist, request.specialistType);
+
+        var dto = new DiagnosticAidDTO(
+            diagnosticAid.getId().getValue(),
+            diagnosticAid.getName(),
+            diagnosticAid.getCost(),
+            diagnosticAid.isRequiresSpecialist(),
+            diagnosticAid.getSpecialistType().getValue()
+        );
+
+        return ResponseEntity.ok(dto);
     }
 
     // Request DTOs

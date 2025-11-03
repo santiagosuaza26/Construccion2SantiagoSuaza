@@ -3,8 +3,6 @@ package app.clinic.domain.service;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import app.clinic.domain.model.entities.DiagnosticAidOrder;
 import app.clinic.domain.model.entities.MedicationOrder;
 import app.clinic.domain.model.entities.Order;
@@ -17,7 +15,6 @@ import app.clinic.domain.repository.OrderRepository;
 import app.clinic.domain.repository.PatientRepository;
 import app.clinic.domain.repository.UserRepository;
 
-@Service
 public class OrderService {
     private final OrderRepository orderRepository;
     private final PatientRepository patientRepository;
@@ -58,6 +55,12 @@ public class OrderService {
         if (!patientRepository.existsByIdentificationNumber(patientIdObj)) {
             throw new IllegalArgumentException("Patient not found");
         }
+
+        // Validar que el médico tenga cédula de máximo 10 dígitos
+        if (doctorId.length() > 10) {
+            throw new IllegalArgumentException("Doctor ID must be maximum 10 digits");
+        }
+
         OrderNumber orderNumber = generateUniqueOrderNumber();
         Order order = new Order(orderNumber, patientId, doctorId, LocalDate.now(), diagnosis);
         for (MedicationOrder med : medications) {
@@ -162,5 +165,9 @@ public class OrderService {
             attempt++;
         }
         throw new RuntimeException("No se pudo generar un número de orden único.");
+    }
+
+    public List<Order> findOrdersByPatientId(String patientId) {
+        return orderRepository.findByPatientIdentificationNumber(patientId);
     }
 }

@@ -21,12 +21,15 @@ class PatientServiceTest {
     @Mock
     private PatientRepository patientRepository;
 
+    @Mock
+    private RoleBasedAccessService roleBasedAccessService;
+
     private PatientService patientService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        patientService = new PatientService(patientRepository);
+        patientService = new PatientService(patientRepository, roleBasedAccessService);
     }
 
     @Test
@@ -50,7 +53,7 @@ class PatientServiceTest {
         when(patientRepository.existsByIdentificationNumber(any(Id.class))).thenReturn(false);
 
         // When
-        Patient patient = patientService.registerPatient(identificationNumber, fullName, dateOfBirth, gender, address, phone, email, "Password123!", emergencyName, emergencyRelation, emergencyPhone, companyName, policyNumber, insuranceActive, validityDate);
+        Patient patient = patientService.registerPatient(identificationNumber, fullName, dateOfBirth, gender, address, phone, email, emergencyName, emergencyRelation, emergencyPhone, companyName, policyNumber, insuranceActive, validityDate);
 
         // Then
         assertNotNull(patient);
@@ -63,7 +66,7 @@ class PatientServiceTest {
         when(patientRepository.existsByIdentificationNumber(any(Id.class))).thenReturn(true);
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> patientService.registerPatient("123456789", "John Doe", "01/01/1990", "MASCULINO", "123 Main St", "1234567890", "john@example.com", "Password123!", "Jane Doe", "Sister", "0987654321", "Insurance Co", "POL123", true, "2025-12-31"));
+        assertThrows(IllegalArgumentException.class, () -> patientService.registerPatient("123456789", "John Doe", "01/01/1990", "MASCULINO", "123 Main St", "1234567890", "john@example.com", "Jane Doe", "Sister", "0987654321", "Insurance Co", "POL123", true, "2025-12-31"));
     }
 
     @Test

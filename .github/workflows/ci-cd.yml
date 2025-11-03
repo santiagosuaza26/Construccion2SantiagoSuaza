@@ -59,6 +59,17 @@ jobs:
           name: Backend Coverage
           fail_ci_if_error: false
 
+      - name: ✅ Check Backend Coverage Threshold
+        run: |
+          COVERAGE=$(cat ./clinic/target/site/jacoco/jacoco.xml | grep -oP '(?<=line-rate=")[^"]*')
+          COVERAGE_PERCENT=$(echo "scale=2; $COVERAGE * 100" | bc)
+          if (( $(echo "$COVERAGE_PERCENT < 80" | bc -l) )); then
+            echo "❌ Backend coverage too low: $COVERAGE_PERCENT%"
+            exit 1
+          else
+            echo "✅ Backend coverage: $COVERAGE_PERCENT%"
+          fi
+
       - name: 🔒 Security Scan with Trivy (Backend)
         uses: aquasecurity/trivy-action@master
         with:
@@ -159,7 +170,6 @@ jobs:
         run: |
           cd frontend
           npm test -- --coverage --watchAll=false
-        continue-on-error: true
 
       - name: 📊 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -168,6 +178,22 @@ jobs:
           flags: frontend
           name: Frontend Coverage
           fail_ci_if_error: false
+
+      - name: ✅ Check Frontend Coverage Threshold
+        run: |
+          cd frontend
+          if [ -f coverage/coverage-summary.json ]; then
+            COVERAGE=$(node -p "JSON.parse(require('fs').readFileSync('coverage/coverage-summary.json')).total.lines.pct")
+            if (( $(echo "$COVERAGE < 70" | bc -l) )); then
+              echo "❌ Frontend coverage too low: $COVERAGE%"
+              exit 1
+            else
+              echo "✅ Frontend coverage: $COVERAGE%"
+            fi
+          else
+            echo "❌ Coverage file not found"
+            exit 1
+          fi
 
       - name: 🏗️ Build for production
         run: |

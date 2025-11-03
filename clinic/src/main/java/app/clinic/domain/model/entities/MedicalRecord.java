@@ -1,90 +1,131 @@
 package app.clinic.domain.model.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MedicalRecord {
     private final String patientIdentificationNumber;
-    private final Map<LocalDate, Map<String, Object>> records;
+    private final Map<LocalDate, List<MedicalEntry>> typedRecords;
+
+    // Mantener compatibilidad con el formato anterior para migración
+    private final Map<LocalDate, Map<String, Object>> legacyRecords;
 
     public MedicalRecord(String patientIdentificationNumber) {
         this.patientIdentificationNumber = patientIdentificationNumber;
-        this.records = new HashMap<>();
+        this.typedRecords = new HashMap<>();
+        this.legacyRecords = new HashMap<>();
     }
 
     public String getPatientIdentificationNumber() {
         return patientIdentificationNumber;
     }
 
+    // Nuevo método con tipado fuerte
+    public Map<LocalDate, List<MedicalEntry>> getTypedRecords() {
+        return typedRecords;
+    }
+
+    // Mantener compatibilidad con código existente
     public Map<LocalDate, Map<String, Object>> getRecords() {
-        return records;
+        return legacyRecords;
     }
 
+    // Nuevos métodos con tipado fuerte
+    public void addDiagnosisEntry(DiagnosisEntry entry) {
+        typedRecords.computeIfAbsent(entry.getDate(), k -> new ArrayList<>()).add(entry);
+        // También actualizar legacy para compatibilidad
+        updateLegacyRecord(entry.getDate(), entry);
+    }
+
+    public void addMedicationEntry(MedicationEntry entry) {
+        typedRecords.computeIfAbsent(entry.getDate(), k -> new ArrayList<>()).add(entry);
+        updateLegacyRecord(entry.getDate(), entry);
+    }
+
+    public void addProcedureEntry(ProcedureEntry entry) {
+        typedRecords.computeIfAbsent(entry.getDate(), k -> new ArrayList<>()).add(entry);
+        updateLegacyRecord(entry.getDate(), entry);
+    }
+
+    public void addDiagnosticAidEntry(DiagnosticAidEntry entry) {
+        typedRecords.computeIfAbsent(entry.getDate(), k -> new ArrayList<>()).add(entry);
+        updateLegacyRecord(entry.getDate(), entry);
+    }
+
+    private void updateLegacyRecord(LocalDate date, MedicalEntry entry) {
+        Map<String, Object> record = legacyRecords.computeIfAbsent(date, k -> new HashMap<>());
+        if (entry instanceof DiagnosisEntry) {
+            DiagnosisEntry de = (DiagnosisEntry) entry;
+            record.put("fecha", date);
+            record.put("cedula_medico", de.getDoctorId());
+            record.put("motivo_consulta", ""); // Mantener estructura legacy
+            record.put("sintomatologia", de.getSymptoms());
+            record.put("diagnostico", de.getDiagnosis());
+        } else if (entry instanceof MedicationEntry) {
+            MedicationEntry me = (MedicationEntry) entry;
+            Map<String, Object> medication = new HashMap<>();
+            medication.put("numero_orden", me.getOrderNumber());
+            medication.put("id_medicamento", me.getMedicationId());
+            medication.put("dosis", me.getDosage());
+            medication.put("duracion_tratamiento", me.getDuration());
+            record.put("medicamento", medication);
+        } else if (entry instanceof ProcedureEntry) {
+            ProcedureEntry pe = (ProcedureEntry) entry;
+            Map<String, Object> procedure = new HashMap<>();
+            procedure.put("numero_orden", pe.getOrderNumber());
+            procedure.put("id_procedimiento", pe.getProcedureId());
+            procedure.put("cantidad", pe.getQuantity());
+            procedure.put("frecuencia", pe.getFrequency());
+            procedure.put("requiere_especialista", pe.isRequiresSpecialist());
+            procedure.put("id_tipo_especialidad", pe.getSpecialistId());
+            record.put("procedimiento", procedure);
+        } else if (entry instanceof DiagnosticAidEntry) {
+            DiagnosticAidEntry dae = (DiagnosticAidEntry) entry;
+            Map<String, Object> aid = new HashMap<>();
+            aid.put("numero_orden", dae.getOrderNumber());
+            aid.put("id_ayuda_diagnostica", dae.getDiagnosticAidId());
+            aid.put("cantidad", dae.getQuantity());
+            aid.put("requiere_especialista", dae.isRequiresSpecialist());
+            aid.put("id_tipo_especialidad", dae.getSpecialistId());
+            record.put("ayuda_diagnostica", aid);
+        }
+    }
+
+    // Métodos legacy para compatibilidad (marcados como deprecated)
+    @Deprecated
     public void addRecord(LocalDate date, String doctorIdentificationNumber, String reason, String symptoms, String diagnosis) {
-        Map<String, Object> record = new HashMap<>();
-        record.put("doctorIdentificationNumber", doctorIdentificationNumber);
-        record.put("reason", reason);
-        record.put("symptoms", symptoms);
-        record.put("diagnosis", diagnosis);
-        records.put(date, record);
+        DiagnosisEntry entry = new DiagnosisEntry(date, doctorIdentificationNumber, diagnosis, symptoms);
+        addDiagnosisEntry(entry);
     }
 
+    @Deprecated
     public void addMedicationToRecord(LocalDate date, String orderNumber, String medicationId, String dosage, String duration) {
-        Map<String, Object> record = records.get(date);
-        if (record == null) {
-            record = new HashMap<>();
-            records.put(date, record);
-        }
-        Map<String, Object> medication = new HashMap<>();
-        medication.put("orderNumber", orderNumber);
-        medication.put("medicationId", medicationId);
-        medication.put("dosage", dosage);
-        medication.put("duration", duration);
-        record.put("medication", medication);
+        MedicationEntry entry = new MedicationEntry(date, "", orderNumber, medicationId, dosage, duration);
+        addMedicationEntry(entry);
     }
 
+    @Deprecated
     public void addProcedureToRecord(LocalDate date, String orderNumber, String procedureId, String quantity, String frequency, boolean requiresSpecialist, String specialistId) {
-        Map<String, Object> record = records.get(date);
-        if (record == null) {
-            record = new HashMap<>();
-            records.put(date, record);
-        }
-        Map<String, Object> procedure = new HashMap<>();
-        procedure.put("orderNumber", orderNumber);
-        procedure.put("procedureId", procedureId);
-        procedure.put("quantity", quantity);
-        procedure.put("frequency", frequency);
-        procedure.put("requiresSpecialist", requiresSpecialist);
-        procedure.put("specialistId", specialistId);
-        record.put("procedure", procedure);
+        ProcedureEntry entry = new ProcedureEntry(date, "", orderNumber, procedureId, quantity, frequency, requiresSpecialist, specialistId);
+        addProcedureEntry(entry);
     }
 
+    @Deprecated
     public void addDiagnosticAidToRecord(LocalDate date, String orderNumber, String diagnosticAidId, String quantity, boolean requiresSpecialist, String specialistId) {
-        Map<String, Object> record = records.get(date);
-        if (record == null) {
-            record = new HashMap<>();
-            records.put(date, record);
-        }
-        Map<String, Object> aid = new HashMap<>();
-        aid.put("orderNumber", orderNumber);
-        aid.put("diagnosticAidId", diagnosticAidId);
-        aid.put("quantity", quantity);
-        aid.put("requiresSpecialist", requiresSpecialist);
-        aid.put("specialistId", specialistId);
-        record.put("diagnosticAid", aid);
+        DiagnosticAidEntry entry = new DiagnosticAidEntry(date, "", orderNumber, diagnosticAidId, quantity, requiresSpecialist, specialistId);
+        addDiagnosticAidEntry(entry);
     }
 
+    @Deprecated
     public void addOrderToRecord(LocalDate date, String orderNumber, String diagnosis) {
-        Map<String, Object> record = records.get(date);
-        if (record == null) {
-            record = new HashMap<>();
-            records.put(date, record);
-        }
-        record.put("orderNumber", orderNumber);
         if (diagnosis != null && !diagnosis.trim().isEmpty()) {
-            record.put("diagnosis", diagnosis);
+            DiagnosisEntry entry = new DiagnosisEntry(date, "", diagnosis, "");
+            addDiagnosisEntry(entry);
         }
+        // Para order number, se podría agregar a una entrada separada si es necesario
     }
 
     @Override

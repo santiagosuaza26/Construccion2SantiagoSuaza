@@ -10,9 +10,11 @@ import app.clinic.domain.repository.SupportTicketRepository;
 
 public class TechnicalSupportService {
     private final SupportTicketRepository supportTicketRepository;
+    private final RoleBasedAccessService roleBasedAccessService;
 
-    public TechnicalSupportService(SupportTicketRepository supportTicketRepository) {
+    public TechnicalSupportService(SupportTicketRepository supportTicketRepository, RoleBasedAccessService roleBasedAccessService) {
         this.supportTicketRepository = supportTicketRepository;
+        this.roleBasedAccessService = roleBasedAccessService;
     }
 
     public SupportTicket createSupportTicket(String userId, String issueDescription) {

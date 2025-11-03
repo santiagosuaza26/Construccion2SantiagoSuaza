@@ -10,14 +10,42 @@ public class Phone {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("Phone cannot be null or empty");
         }
-        if (!PHONE_PATTERN.matcher(value).matches()) {
-            throw new IllegalArgumentException("Phone must contain only digits and be maximum 10 characters");
+
+        String cleanValue = value.replaceAll("[\\s\\-\\(\\)]", "");
+        if (!PHONE_PATTERN.matcher(cleanValue).matches()) {
+            throw new IllegalArgumentException("Phone must contain only digits and be 1-10 characters long");
         }
-        this.value = value.trim();
+
+        // Validación adicional para números colombianos
+        if (cleanValue.length() == 10 && !isValidColombianPhone(cleanValue)) {
+            throw new IllegalArgumentException("Invalid Colombian phone number format");
+        }
+
+        this.value = cleanValue;
+    }
+
+    private boolean isValidColombianPhone(String phone) {
+        // Móviles empiezan con 3, líneas fijas con 60
+        return phone.startsWith("3") || phone.startsWith("60");
     }
 
     public String getValue() {
         return value;
+    }
+
+    public String getFormattedValue() {
+        if (value.length() == 10) {
+            return "(" + value.substring(0, 3) + ") " + value.substring(3, 6) + "-" + value.substring(6);
+        }
+        return value;
+    }
+
+    public boolean isColombianMobile() {
+        return value.length() == 10 && value.startsWith("3");
+    }
+
+    public boolean isColombianLandline() {
+        return value.length() == 10 && value.startsWith("60");
     }
 
     @Override

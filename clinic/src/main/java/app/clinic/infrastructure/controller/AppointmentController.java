@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.clinic.application.mapper.AppointmentMapper;
 import app.clinic.application.usecase.ScheduleAppointmentUseCase;
 import app.clinic.domain.model.valueobject.AppointmentStatus;
 import app.clinic.domain.service.PatientService;
@@ -58,17 +59,13 @@ public class AppointmentController {
         var admin = userService.findUserById(request.adminId);
         var doctor = userService.findUserById(request.doctorId);
 
-        var dto = new AppointmentDTO(
-            appointment.getPatientId().getValue(), // Use patient ID as appointment ID
-            appointment.getPatientId().getValue(),
-            patient.getFullName(), // Get from patient service
-            request.adminId, // Get from request
-            admin.getFullName(), // Get from user service
-            appointment.getDoctorId().getValue(),
-            doctor.getFullName(), // Get from user service
-            appointment.getDateTime(),
-            appointment.getReason(),
-            AppointmentStatus.SCHEDULED.name() // Use status enum
+        var dto = AppointmentMapper.toDTO(
+            appointment,
+            patient.getFullName(),
+            request.adminId,
+            admin.getFullName(),
+            doctor.getFullName(),
+            AppointmentStatus.SCHEDULED.name()
         );
 
         return ResponseEntity.ok(dto);

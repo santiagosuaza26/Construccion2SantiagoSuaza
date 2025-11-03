@@ -70,6 +70,12 @@ public class PatientRepositoryImpl implements PatientRepository {
     }
 
     @Override
+    public boolean existsByUsername(String username) {
+        // Pacientes no tienen username único, siempre retorna false
+        return false;
+    }
+
+    @Override
     public void deleteByIdentificationNumber(Id identificationNumber) {
         patientJpaRepository.deleteById(identificationNumber.getValue());
     }

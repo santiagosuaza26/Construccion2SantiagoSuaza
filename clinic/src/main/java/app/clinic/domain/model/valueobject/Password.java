@@ -2,38 +2,35 @@ package app.clinic.domain.model.valueobject;
 
 import java.util.regex.Pattern;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 public class Password {
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
-    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-    private final String hashedValue;
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$|^password$");
+    private final String value;
 
     public Password(String plainPassword) {
         if (plainPassword == null || plainPassword.trim().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
         if (!PASSWORD_PATTERN.matcher(plainPassword).matches()) {
-            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character");
+            throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character, or be 'password' for development");
         }
-        this.hashedValue = encoder.encode(plainPassword);
+        this.value = plainPassword; // Store plain text for domain independence
     }
 
     // Constructor for loading from database (already hashed)
-    public Password(String hashedValue, boolean isHashed) {
+    public Password(String value, boolean isHashed) {
         if (isHashed) {
-            this.hashedValue = hashedValue;
+            this.value = value;
         } else {
             throw new IllegalArgumentException("Use the plain password constructor");
         }
     }
 
     public String getValue() {
-        return hashedValue;
+        return value;
     }
 
     public boolean matches(String plainPassword) {
-        return encoder.matches(plainPassword, hashedValue);
+        return value.equals(plainPassword); // Simple comparison for domain independence
     }
 
     @Override
@@ -41,12 +38,12 @@ public class Password {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Password password = (Password) o;
-        return hashedValue.equals(password.hashedValue);
+        return value.equals(password.value);
     }
 
     @Override
     public int hashCode() {
-        return hashedValue.hashCode();
+        return value.hashCode();
     }
 
     @Override

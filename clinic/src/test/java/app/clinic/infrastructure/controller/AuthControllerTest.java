@@ -1,18 +1,18 @@
 package app.clinic.infrastructure.controller;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.mock;
+import org.mockito.Mockito;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +33,8 @@ import app.clinic.domain.model.valueobject.Phone;
 import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.model.valueobject.Username;
 import app.clinic.infrastructure.dto.AuthResponseDTO;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -43,7 +45,12 @@ class AuthControllerTest {
     @Mock
     private RedisTemplate<String, String> redisTemplate;
 
-    @InjectMocks
+    @Mock
+    private org.springframework.data.redis.core.ValueOperations<String, String> valueOperations;
+
+    @Mock
+    private app.clinic.infrastructure.service.JwtService jwtService;
+
     private AuthController authController;
 
     private User testUser;
@@ -51,6 +58,11 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
+        authController = new AuthController(authenticateUserUseCase, jwtService, redisTemplate);
+
+        // Initialize mocks
+        Mockito.lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+
         // Create test user
         Credentials credentials = new Credentials(
             new Username("testuser"),
@@ -78,7 +90,9 @@ class AuthControllerTest {
     void login_WithValidCredentials_ShouldReturnOkResponse() {
         // Arrange
         when(authenticateUserUseCase.execute("testuser", "TestPass123!")).thenReturn(testUser);
-        when(redisTemplate.opsForValue()).thenReturn(mock(org.springframework.data.redis.core.ValueOperations.class));
+        when(jwtService.generateSessionId()).thenReturn("test-session-id");
+        when(jwtService.generateToken(testUser, "test-session-id")).thenReturn("test-jwt-token");
+        when(jwtService.getExpirationTime()).thenReturn(86400000L);
 
         // Act
         ResponseEntity<AuthResponseDTO> response = authController.login(loginRequest);
@@ -86,12 +100,18 @@ class AuthControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getFullName());
         assertEquals("Test User", response.getBody().getFullName());
+        assertNotNull(response.getBody().getRole());
         assertEquals("MEDICO", response.getBody().getRole());
         assertNotNull(response.getBody().getToken());
-        assertTrue(response.getBody().getExpiresIn() > 0);
+        assertEquals("test-jwt-token", response.getBody().getToken());
+        assertEquals(86400000L, response.getBody().getExpiresIn());
 
         verify(authenticateUserUseCase).execute("testuser", "TestPass123!");
+        verify(jwtService).generateSessionId();
+        verify(jwtService).generateToken(testUser, "test-session-id");
+        verify(jwtService).getExpirationTime();
         verify(redisTemplate.opsForValue()).set(anyString(), anyString(), anyLong(), any());
     }
 
@@ -104,9 +124,10 @@ class AuthControllerTest {
         loginRequest.password = "wrongpassword";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authController.login(loginRequest);
         });
+        assertNotNull(exception);
 
         verify(authenticateUserUseCase).execute("testuser", "wrongpassword");
         verify(redisTemplate.opsForValue(), never()).set(anyString(), anyString(), anyLong(), any());
@@ -121,9 +142,10 @@ class AuthControllerTest {
         loginRequest.username = "nonexistent";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authController.login(loginRequest);
         });
+        assertNotNull(exception);
 
         verify(authenticateUserUseCase).execute("nonexistent", "TestPass123!");
         verify(redisTemplate.opsForValue(), never()).set(anyString(), anyString(), anyLong(), any());
@@ -135,9 +157,10 @@ class AuthControllerTest {
         loginRequest.username = null;
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authController.login(loginRequest);
         });
+        assertNotNull(exception);
 
         verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
     }
@@ -148,9 +171,10 @@ class AuthControllerTest {
         loginRequest.password = null;
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authController.login(loginRequest);
         });
+        assertNotNull(exception);
 
         verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
     }
@@ -161,9 +185,10 @@ class AuthControllerTest {
         loginRequest.username = "";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authController.login(loginRequest);
         });
+        assertNotNull(exception);
 
         verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
     }
@@ -174,9 +199,10 @@ class AuthControllerTest {
         loginRequest.password = "";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             authController.login(loginRequest);
         });
+        assertNotNull(exception);
 
         verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
     }
@@ -184,8 +210,16 @@ class AuthControllerTest {
     @Test
     void logout_WithValidToken_ShouldReturnOk() {
         // Arrange
-        String validToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dXNlciIsInJvbGUiOiJNRURJQ08iLCJzZXNzaW9uSWQiOiIxMjM0NTY3ODkwIiwiZXhwIjoxNzMzNjY5NjAwfQ.mock-signature";
+        String validToken = "Bearer " + Jwts.builder()
+            .subject("testuser")
+            .claim("role", "MEDICO")
+            .claim("sessionId", "1234567890")
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() + 86400000))
+            .signWith(Keys.hmacShaKeyFor("test-secret-key-with-sufficient-length-for-hmac-sha256-algorithm".getBytes()), Jwts.SIG.HS256)
+            .compact();
 
+        when(jwtService.getSecretKey()).thenReturn("test-secret-key-with-sufficient-length-for-hmac-sha256-algorithm");
         when(redisTemplate.delete(anyString())).thenReturn(true);
 
         // Act

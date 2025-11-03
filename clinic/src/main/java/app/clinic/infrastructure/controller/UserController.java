@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import app.clinic.application.usecase.CreateUserUseCase;
 import app.clinic.application.usecase.DeleteUserUseCase;
 import app.clinic.application.usecase.UpdateUserUseCase;
+import app.clinic.domain.model.DomainException;
 import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.service.RoleBasedAccessService;
 import app.clinic.infrastructure.dto.UserDTO;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
@@ -53,7 +55,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserRequest request) {
+        // Validar que solo RRHH puede crear usuarios
+        Role currentRole = getCurrentUserRole();
+        if (currentRole != Role.RECURSOS_HUMANOS) {
+            throw new DomainException("Solo Recursos Humanos puede crear usuarios");
+        }
+
         var user = createUserUseCase.execute(
             request.fullName, request.identificationNumber, request.email,
             request.phone, request.dateOfBirth, request.address,
@@ -75,7 +83,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable String id, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable String id, @Valid @RequestBody UpdateUserRequest request) {
         var user = updateUserUseCase.execute(
             id, request.fullName, request.email, request.phone,
             request.dateOfBirth, request.address, request.role
@@ -97,6 +105,12 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+        // Validar que solo RRHH puede eliminar usuarios
+        Role currentRole = getCurrentUserRole();
+        if (currentRole != Role.RECURSOS_HUMANOS) {
+            throw new DomainException("Solo Recursos Humanos puede eliminar usuarios");
+        }
+
         deleteUserUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
@@ -110,7 +124,7 @@ public class UserController {
             try {
                 roleBasedAccessService.checkAccess(userRole, "patient");
                 canView = true;
-            } catch (IllegalAccessError e) {
+            } catch (DomainException e) {
                 canView = false;
             }
         }
@@ -129,7 +143,7 @@ public class UserController {
             try {
                 roleBasedAccessService.checkAccess(userRole, "user");
                 canManage = true;
-            } catch (IllegalAccessError e) {
+            } catch (DomainException e) {
                 canManage = false;
             }
         }
@@ -148,7 +162,7 @@ public class UserController {
             try {
                 roleBasedAccessService.checkAccess(userRole, "patient");
                 canRegister = true;
-            } catch (IllegalAccessError e) {
+            } catch (DomainException e) {
                 canRegister = false;
             }
         }

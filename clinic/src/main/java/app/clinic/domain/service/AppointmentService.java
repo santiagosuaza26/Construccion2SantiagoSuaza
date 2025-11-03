@@ -47,4 +47,11 @@ public class AppointmentService {
         User admin = userRepository.findByIdentificationNumber(adminIdObj).orElseThrow(() -> new IllegalArgumentException("Admin not found"));
         roleBasedAccessService.checkAccess(admin.getRole(), "appointment");
     }
+
+    public void cancelAppointment(String appointmentId, String adminId) {
+        validateAdminRole(adminId);
+        Id appointmentIdObj = new Id(appointmentId);
+        Appointment appointment = appointmentRepository.findById(appointmentIdObj).orElseThrow(() -> new IllegalArgumentException("Appointment not found"));
+        appointmentRepository.delete(appointmentIdObj);
+    }
 }

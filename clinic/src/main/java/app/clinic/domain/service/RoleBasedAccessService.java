@@ -1,152 +1,149 @@
 package app.clinic.domain.service;
 
-import org.springframework.stereotype.Service;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
 
+import app.clinic.domain.model.DomainException;
 import app.clinic.domain.model.valueobject.Role;
 
-@Service
 public class RoleBasedAccessService {
 
+    // Enum para recursos para mejor mantenibilidad y evitar errores de tipeo
+    public enum Resource {
+        USER,
+        PATIENT,
+        APPOINTMENT,
+        BILLING,
+        INSURANCE,
+        INVENTORY,
+        MEDICATION,
+        PROCEDURE,
+        DIAGNOSTIC_AID,
+        DATA_INTEGRITY,
+        VITAL_SIGNS,
+        MEDICATION_ADMINISTRATION,
+        PROCEDURE_ADMINISTRATION,
+        MEDICAL_RECORD,
+        FULL_MEDICAL_RECORD,
+        ORDER
+    }
+
+    // Mapa de permisos por rol para mejor rendimiento y mantenibilidad
+    private final Map<Role, Set<Resource>> rolePermissions;
+
+    public RoleBasedAccessService() {
+        rolePermissions = new EnumMap<>(Role.class);
+
+        // Recursos Humanos: solo usuarios (NO pacientes, medicamentos, procedimientos)
+        rolePermissions.put(Role.RECURSOS_HUMANOS, EnumSet.of(Resource.USER));
+
+        // Personal Administrativo: pacientes, citas, facturación, seguros, usuarios
+        rolePermissions.put(Role.PERSONAL_ADMINISTRATIVO, EnumSet.of(
+            Resource.PATIENT, Resource.APPOINTMENT, Resource.BILLING,
+            Resource.INSURANCE, Resource.USER
+        ));
+
+        // Soporte de Información: inventarios y datos técnicos (NO pacientes)
+        rolePermissions.put(Role.SOPORTE_DE_INFORMACION, EnumSet.of(
+            Resource.INVENTORY, Resource.MEDICATION, Resource.PROCEDURE,
+            Resource.DIAGNOSTIC_AID, Resource.DATA_INTEGRITY
+        ));
+
+        // Enfermeras: acceso limitado a pacientes y registros médicos
+        rolePermissions.put(Role.ENFERMERA, EnumSet.of(
+            Resource.PATIENT, Resource.VITAL_SIGNS, Resource.MEDICATION_ADMINISTRATION,
+            Resource.PROCEDURE_ADMINISTRATION, Resource.MEDICAL_RECORD, Resource.ORDER
+        ));
+
+        // Médicos: acceso completo
+        rolePermissions.put(Role.MEDICO, EnumSet.allOf(Resource.class));
+    }
+
     public void checkAccess(Role userRole, String resource) {
+        validateParameters(userRole, resource);
+
+        Resource resourceEnum = parseResource(resource);
+        Set<Resource> allowedResources = rolePermissions.get(userRole);
+
+        if (allowedResources == null || !allowedResources.contains(resourceEnum)) {
+            throw new DomainException(
+                String.format("Acceso denegado para el rol %s al recurso %s", userRole, resource)
+            );
+        }
+
+        // Validaciones adicionales específicas
+        if (resourceEnum == Resource.PATIENT && (userRole == Role.RECURSOS_HUMANOS || userRole == Role.SOPORTE_DE_INFORMACION)) {
+            throw new DomainException("Recursos Humanos y Soporte de Información no pueden acceder a datos de pacientes");
+        }
+    }
+
+    private void validateParameters(Role userRole, String resource) {
         if (userRole == null) {
-            throw new IllegalArgumentException("Unknown role");
+            throw new DomainException("User role cannot be null");
         }
-
-        switch (userRole) {
-            case RECURSOS_HUMANOS:
-                validateHumanResourcesAccess(resource);
-                break;
-            case PERSONAL_ADMINISTRATIVO:
-                validateAdministrativeAccess(resource);
-                break;
-            case SOPORTE_DE_INFORMACION:
-                validateSupportAccess(resource);
-                break;
-            case ENFERMERA:
-                validateNursingAccess(resource);
-                break;
-            case MEDICO:
-                validateMedicalAccess(resource);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown role: " + userRole);
+        if (resource == null || resource.trim().isEmpty()) {
+            throw new DomainException("Resource cannot be null or empty");
         }
     }
 
-    private void validateHumanResourcesAccess(String resource) {
-        // Recursos Humanos solo pueden gestionar usuarios
-        if (!resource.equals("user")) {
-            throw new IllegalAccessError("Human Resources can only manage users. Access denied to: " + resource);
+    private Resource parseResource(String resource) {
+        try {
+            // Convertir string a enum (asumiendo que los recursos vienen en camelCase o UPPER_CASE)
+            String normalized = resource.toUpperCase().replace("-", "_");
+            return Resource.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            throw new DomainException("Unknown resource: " + resource);
         }
-    }
-
-    private void validateAdministrativeAccess(String resource) {
-        // Personal Administrativo puede:
-        // - Gestionar pacientes (registrar, actualizar info básica)
-        // - Programar citas
-        // - Gestionar facturación
-        // - Gestionar seguros médicos
-        // NO puede acceder a historia clínica completa
-        if (resource.equals("fullMedicalRecord") || resource.equals("medicalRecord")) {
-            throw new IllegalAccessError("Administrative staff cannot access medical records. Access denied to: " + resource);
-        }
-        // Validar recursos permitidos
-        if (!isAdministrativeAllowedResource(resource)) {
-            throw new IllegalAccessError("Administrative staff access denied to: " + resource);
-        }
-    }
-
-    private void validateSupportAccess(String resource) {
-        // Soporte de Información puede:
-        // - Gestionar inventarios (medicamentos, procedimientos, ayudas diagnósticas)
-        // - Mantener integridad de datos
-        // NO puede acceder a datos de pacientes
-        if (resource.equals("patient") || resource.equals("medicalRecord") || resource.equals("fullMedicalRecord")) {
-            throw new IllegalAccessError("IT Support cannot access patient data. Access denied to: " + resource);
-        }
-        // Validar recursos permitidos
-        if (!isSupportAllowedResource(resource)) {
-            throw new IllegalAccessError("IT Support access denied to: " + resource);
-        }
-    }
-
-    private void validateNursingAccess(String resource) {
-        // Enfermeras pueden:
-        // - Consultar información básica de pacientes
-        // - Registrar signos vitales
-        // - Administrar medicamentos y procedimientos según órdenes médicas
-        // - Registrar observaciones
-        // NO pueden acceder a historia clínica completa
-        if (resource.equals("fullMedicalRecord")) {
-            throw new IllegalAccessError("Nurses cannot access full medical records. Access denied to: " + resource);
-        }
-        // Validar recursos permitidos
-        if (!isNursingAllowedResource(resource)) {
-            throw new IllegalAccessError("Nursing staff access denied to: " + resource);
-        }
-    }
-
-    private void validateMedicalAccess(String resource) {
-        // Médicos tienen acceso completo a:
-        // - Historia clínica completa
-        // - Crear y gestionar órdenes médicas
-        // - Gestionar registros médicos
-        // Todas las operaciones están permitidas
-    }
-
-    private boolean isAdministrativeAllowedResource(String resource) {
-        return resource.equals("patient") ||
-               resource.equals("appointment") ||
-               resource.equals("billing") ||
-               resource.equals("insurance") ||
-               resource.equals("user"); // Para ver usuarios si es necesario
-    }
-
-    private boolean isSupportAllowedResource(String resource) {
-        return resource.equals("inventory") ||
-               resource.equals("medication") ||
-               resource.equals("procedure") ||
-               resource.equals("diagnosticAid") ||
-               resource.equals("dataIntegrity");
-    }
-
-    private boolean isNursingAllowedResource(String resource) {
-        return resource.equals("patient") ||
-               resource.equals("vitalSigns") ||
-               resource.equals("medicationAdministration") ||
-               resource.equals("procedureAdministration") ||
-               resource.equals("medicalRecord") || // Acceso limitado
-               resource.equals("order"); // Para ver órdenes asignadas
     }
 
     // Método adicional para validar operaciones específicas
     public void validateOrderCreation(Role userRole, String orderType) {
         if (userRole != Role.MEDICO) {
-            throw new IllegalAccessError("Only doctors can create medical orders");
+            throw new DomainException("Only doctors can create medical orders");
         }
 
-        // Validar reglas específicas de órdenes médicas
-        if ("diagnosticAid".equals(orderType)) {
-            // Si es ayuda diagnóstica, no puede incluir medicamentos ni procedimientos
-            // Esta validación se hace en el dominio Order
+        validateOrderType(orderType);
+    }
+
+    private void validateOrderType(String orderType) {
+        if (orderType == null || orderType.trim().isEmpty()) {
+            throw new DomainException("Order type cannot be null or empty");
         }
-        if ("postDiagnostic".equals(orderType)) {
-            // Órdenes post-diagnóstico pueden incluir medicamentos y procedimientos
-        }
+
+        // Validaciones específicas pueden agregarse aquí si es necesario
+        // Por ahora, solo validamos que no sea vacío
     }
 
     public void validatePatientDataAccess(Role userRole, boolean isFullRecord) {
-        if (userRole == Role.PERSONAL_ADMINISTRATIVO && isFullRecord) {
-            throw new IllegalAccessError("Administrative staff cannot access full patient medical records");
+        if (userRole == null) {
+            throw new DomainException("User role cannot be null");
         }
-        if (userRole == Role.ENFERMERA && isFullRecord) {
-            throw new IllegalAccessError("Nursing staff cannot access full patient medical records");
+
+        // Restricción crítica: RRHH y Soporte no pueden acceder a datos de pacientes
+        if (userRole == Role.SOPORTE_DE_INFORMACION || userRole == Role.RECURSOS_HUMANOS) {
+            throw new DomainException(
+                String.format("%s no puede acceder a información de pacientes", userRole)
+            );
         }
-        if (userRole == Role.SOPORTE_DE_INFORMACION) {
-            throw new IllegalAccessError("IT Support cannot access patient data");
+
+        // Restricción adicional: Solo médicos pueden acceder a registros médicos completos
+        if (isFullRecord && userRole != Role.MEDICO) {
+            throw new DomainException(
+                String.format("%s no puede acceder a registros médicos completos", userRole)
+            );
         }
-        if (userRole == Role.RECURSOS_HUMANOS) {
-            throw new IllegalAccessError("Human Resources cannot access patient data");
+
+        if (isFullRecord) {
+            if (userRole == Role.PERSONAL_ADMINISTRATIVO || userRole == Role.ENFERMERA) {
+                throw new DomainException(
+                    String.format("%s no puede acceder a registros médicos completos", userRole)
+                );
+            }
+        } else {
+            // Para acceso no completo, verificar permisos generales
+            checkAccess(userRole, "patient");
         }
     }
 }

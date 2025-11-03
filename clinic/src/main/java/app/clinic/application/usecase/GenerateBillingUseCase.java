@@ -11,8 +11,8 @@ public class GenerateBillingUseCase {
     }
 
     public Billing execute(String patientId, String doctorName, String orderNumber, double totalCost,
-                          String appliedMedications, String appliedProcedures, String appliedDiagnosticAids) {
+                          String appliedMedications, String appliedProcedures, String appliedDiagnosticAids, String adminId) {
         return billingService.generateBilling(patientId, doctorName, orderNumber, totalCost,
-                                            appliedMedications, appliedProcedures, appliedDiagnosticAids);
+                                            appliedMedications, appliedProcedures, appliedDiagnosticAids, adminId);
     }
 }

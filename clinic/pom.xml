@@ -24,9 +24,7 @@
     <properties>
         <!-- Java Configuration -->
         <java.version>17</java.version>
-        <maven.compiler.release>17</maven.compiler.release>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <!-- Project Configuration -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,19 +32,19 @@
 
         <!-- Version Management -->
         <springdoc-openapi.version>2.7.0</springdoc-openapi.version>
-        <testcontainers.version>1.19.8</testcontainers.version>
-        <mockito.version>5.5.0</mockito.version>
-        <assertj.version>3.24.2</assertj.version>
-        <jjwt.version>0.12.3</jjwt.version>
+        <testcontainers.version>1.20.1</testcontainers.version>
+        <mockito.version>5.12.0</mockito.version>
+        <assertj.version>3.26.0</assertj.version>
+        <jjwt.version>0.12.6</jjwt.version>
 
         <!-- Plugin Configuration -->
-        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.5.0</maven-failsafe-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <jacoco.version>0.8.12</jacoco.version>
-        <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
 
         <!-- Build Configuration -->
         <skipTests>false</skipTests>
@@ -275,6 +273,18 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Rate Limiting -->
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>7.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vladimir-bukhtoyarov</groupId>
+            <artifactId>bucket4j-redis</artifactId>
+            <version>7.6.0</version>
+        </dependency>
+
     </dependencies>
 
 	   <!-- Build Configuration -->
@@ -289,8 +299,7 @@
 	                   <artifactId>maven-compiler-plugin</artifactId>
 	                   <version>${maven-compiler-plugin.version}</version>
 	                   <configuration>
-	                       <source>${java.version}</source>
-	                       <target>${java.version}</target>
+	                       <release>${java.version}</release>
 	                       <encoding>${project.build.sourceEncoding}</encoding>
 	                       <showWarnings>true</showWarnings>
 	                       <showDeprecation>true</showDeprecation>
@@ -493,6 +502,20 @@
 	           <testResource>
 	               <directory>src/test/resources</directory>
 	               <filtering>true</filtering>
+	               <includes>
+	                   <include>**/*.properties</include>
+	                   <include>**/*.yml</include>
+	                   <include>**/*.yaml</include>
+	               </includes>
+	           </testResource>
+	           <testResource>
+	               <directory>src/test/resources</directory>
+	               <filtering>false</filtering>
+	               <excludes>
+	                   <exclude>**/*.properties</exclude>
+	                   <exclude>**/*.yml</exclude>
+	                   <exclude>**/*.yaml</exclude>
+	               </excludes>
 	           </testResource>
 	       </testResources>
 	   </build>
