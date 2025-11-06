@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.Mock;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,7 @@ class UserServiceTest {
     @Test
     void shouldThrowExceptionWhenUserAlreadyExists() {
         // Given
-        when(userRepository.existsByIdentificationNumber(any(Id.class))).thenReturn(true);
+        doThrow(new IllegalArgumentException("Identification number already exists")).when(validationService).validateUserData(any(), any(), any(), any(), any(), any(), any(), any(), any());
 
         // When & Then
         assertThrows(IllegalArgumentException.class, () -> userService.createUser("John Doe", "123456789", "john@example.com", "1234567890", "01/01/1990", "123 Main St", "MEDICO", "johndoe", "Password123!"));

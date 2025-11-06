@@ -62,8 +62,7 @@ public class MedicalRecordController {
         // Process typed records
         for (var entry : medicalRecord.getTypedRecords().values()) {
             for (var medicalEntry : entry) {
-                if (medicalEntry instanceof DiagnosisEntry) {
-                    DiagnosisEntry de = (DiagnosisEntry) medicalEntry;
+                if (medicalEntry instanceof DiagnosisEntry de) {
                     MedicalRecordDTO.RecordEntryDTO recordEntry = new MedicalRecordDTO.RecordEntryDTO();
                     recordEntry.setDate(de.getDate());
                     recordEntry.setDoctorId(de.getDoctorId());
@@ -71,8 +70,7 @@ public class MedicalRecordController {
                     recordEntry.setSymptoms(de.getSymptoms());
                     recordEntry.setDiagnosis(de.getDiagnosis());
                     recordEntries.add(recordEntry);
-                } else if (medicalEntry instanceof MedicationEntry) {
-                    MedicationEntry me = (MedicationEntry) medicalEntry;
+                } else if (medicalEntry instanceof MedicationEntry me) {
                     MedicalRecordDTO.MedicationEntryDTO medicationEntry = new MedicalRecordDTO.MedicationEntryDTO();
                     medicationEntry.setDate(me.getDate());
                     medicationEntry.setOrderNumber(me.getOrderNumber());
@@ -80,8 +78,7 @@ public class MedicalRecordController {
                     medicationEntry.setDosage(me.getDosage());
                     medicationEntry.setDuration(me.getDuration());
                     medicationEntries.add(medicationEntry);
-                } else if (medicalEntry instanceof ProcedureEntry) {
-                    ProcedureEntry pe = (ProcedureEntry) medicalEntry;
+                } else if (medicalEntry instanceof ProcedureEntry pe) {
                     MedicalRecordDTO.ProcedureEntryDTO procedureEntry = new MedicalRecordDTO.ProcedureEntryDTO();
                     procedureEntry.setDate(pe.getDate());
                     procedureEntry.setOrderNumber(pe.getOrderNumber());
@@ -91,8 +88,7 @@ public class MedicalRecordController {
                     procedureEntry.setRequiresSpecialist(pe.isRequiresSpecialist());
                     procedureEntry.setSpecialistId(pe.getSpecialistId());
                     procedureEntries.add(procedureEntry);
-                } else if (medicalEntry instanceof DiagnosticAidEntry) {
-                    DiagnosticAidEntry dae = (DiagnosticAidEntry) medicalEntry;
+                } else if (medicalEntry instanceof DiagnosticAidEntry dae) {
                     MedicalRecordDTO.DiagnosticAidEntryDTO aidEntry = new MedicalRecordDTO.DiagnosticAidEntryDTO();
                     aidEntry.setDate(dae.getDate());
                     aidEntry.setOrderNumber(dae.getOrderNumber());
@@ -126,7 +122,86 @@ public class MedicalRecordController {
     @Operation(summary = "Actualizar registro médico", description = "Actualiza el registro médico agregando una nueva entrada")
     @PreAuthorize("hasRole('MEDICO')")
     public ResponseEntity<Void> updateMedicalRecord(@PathVariable @NotBlank String patientId,
-                                                   @Valid @RequestBody UpdateMedicalRecordRequest request) {
+                                                    @Valid @RequestBody UpdateMedicalRecordRequest request) {
+        updateMedicalRecordUseCase.execute(patientId, request.doctorId, request.reason, request.symptoms, request.diagnosis);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{patientId}/{date}")
+    @Operation(summary = "Obtener registro médico por fecha", description = "Obtiene el registro médico de un paciente para una fecha específica")
+    @PreAuthorize("hasAnyRole('MEDICO', 'ENFERMERA')")
+    public ResponseEntity<MedicalRecordDTO> getMedicalRecordByDate(@PathVariable @NotBlank String patientId, @PathVariable @NotBlank String date) {
+        // This would need a use case to get medical record by date
+        // For now, return the full record (simplified implementation)
+        var medicalRecord = getMedicalRecordUseCase.execute(patientId);
+
+        // Convert domain entity to DTO with proper mapping
+        MedicalRecordDTO dto = new MedicalRecordDTO();
+        dto.setPatientId(patientId);
+
+        // Map all entries from the medical record
+        java.util.List<MedicalRecordDTO.RecordEntryDTO> recordEntries = new java.util.ArrayList<>();
+        java.util.List<MedicalRecordDTO.MedicationEntryDTO> medicationEntries = new java.util.ArrayList<>();
+        java.util.List<MedicalRecordDTO.ProcedureEntryDTO> procedureEntries = new java.util.ArrayList<>();
+        java.util.List<MedicalRecordDTO.DiagnosticAidEntryDTO> diagnosticAidEntries = new java.util.ArrayList<>();
+
+        // Process typed records
+        for (var entry : medicalRecord.getTypedRecords().values()) {
+            for (var medicalEntry : entry) {
+                if (medicalEntry instanceof DiagnosisEntry de) {
+                    MedicalRecordDTO.RecordEntryDTO recordEntry = new MedicalRecordDTO.RecordEntryDTO();
+                    recordEntry.setDate(de.getDate());
+                    recordEntry.setDoctorId(de.getDoctorId());
+                    recordEntry.setReason(""); // Not stored in DiagnosisEntry
+                    recordEntry.setSymptoms(de.getSymptoms());
+                    recordEntry.setDiagnosis(de.getDiagnosis());
+                    recordEntries.add(recordEntry);
+                } else if (medicalEntry instanceof MedicationEntry me) {
+                    MedicalRecordDTO.MedicationEntryDTO medicationEntry = new MedicalRecordDTO.MedicationEntryDTO();
+                    medicationEntry.setDate(me.getDate());
+                    medicationEntry.setOrderNumber(me.getOrderNumber());
+                    medicationEntry.setMedicationId(me.getMedicationId());
+                    medicationEntry.setDosage(me.getDosage());
+                    medicationEntry.setDuration(me.getDuration());
+                    medicationEntries.add(medicationEntry);
+                } else if (medicalEntry instanceof ProcedureEntry pe) {
+                    MedicalRecordDTO.ProcedureEntryDTO procedureEntry = new MedicalRecordDTO.ProcedureEntryDTO();
+                    procedureEntry.setDate(pe.getDate());
+                    procedureEntry.setOrderNumber(pe.getOrderNumber());
+                    procedureEntry.setProcedureId(pe.getProcedureId());
+                    procedureEntry.setQuantity(pe.getQuantity());
+                    procedureEntry.setFrequency(pe.getFrequency());
+                    procedureEntry.setRequiresSpecialist(pe.isRequiresSpecialist());
+                    procedureEntry.setSpecialistId(pe.getSpecialistId());
+                    procedureEntries.add(procedureEntry);
+                } else if (medicalEntry instanceof DiagnosticAidEntry dae) {
+                    MedicalRecordDTO.DiagnosticAidEntryDTO aidEntry = new MedicalRecordDTO.DiagnosticAidEntryDTO();
+                    aidEntry.setDate(dae.getDate());
+                    aidEntry.setOrderNumber(dae.getOrderNumber());
+                    aidEntry.setDiagnosticAidId(dae.getDiagnosticAidId());
+                    aidEntry.setQuantity(dae.getQuantity());
+                    aidEntry.setRequiresSpecialist(dae.isRequiresSpecialist());
+                    aidEntry.setSpecialistId(dae.getSpecialistId());
+                    diagnosticAidEntries.add(aidEntry);
+                }
+            }
+        }
+
+        dto.setRecords(recordEntries);
+        dto.setMedications(medicationEntries);
+        dto.setProcedures(procedureEntries);
+        dto.setDiagnosticAids(diagnosticAidEntries);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @PutMapping("/{patientId}/{date}")
+    @Operation(summary = "Actualizar registro médico por fecha", description = "Actualiza el registro médico de un paciente para una fecha específica")
+    @PreAuthorize("hasRole('MEDICO')")
+    public ResponseEntity<Void> updateMedicalRecordByDate(@PathVariable @NotBlank String patientId, @PathVariable @NotBlank String date,
+                                                         @Valid @RequestBody UpdateMedicalRecordRequest request) {
+        // This would need a use case to update medical record by date
+        // For now, just call the general update method
         updateMedicalRecordUseCase.execute(patientId, request.doctorId, request.reason, request.symptoms, request.diagnosis);
         return ResponseEntity.ok().build();
     }

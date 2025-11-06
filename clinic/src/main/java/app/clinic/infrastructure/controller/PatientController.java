@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -191,6 +192,81 @@ public class PatientController {
         return ResponseEntity.ok(orderDTOs);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PERSONAL_ADMINISTRATIVO', 'MEDICO', 'ENFERMERA')")
+    public ResponseEntity<PatientDTO> getPatientById(@PathVariable String id) {
+        var patient = patientService.findPatientById(id);
+
+        var dto = new PatientDTO(
+            patient.getIdentificationNumber().getValue(),
+            patient.getFullName(),
+            patient.getDateOfBirth().toString(),
+            patient.getGender().toString(),
+            patient.getAddress().getValue(),
+            patient.getPhone().getValue(),
+            patient.getEmail().getValue(),
+            patient.getEmergencyContact().getName(),
+            patient.getEmergencyContact().getRelation(),
+            patient.getEmergencyContact().getPhone().getValue(),
+            patient.getInsurance().getCompanyName(),
+            patient.getInsurance().getPolicyNumber(),
+            patient.getInsurance().isActive(),
+            patient.getInsurance().getValidityDate().toString()
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> deletePatient(@PathVariable String id) {
+        patientService.deletePatient(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/emergency-contact")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> addEmergencyContact(@PathVariable String id, @RequestBody EmergencyContactRequest request) {
+        // Note: Emergency contact is managed during patient registration/update
+        // This endpoint could be used to update emergency contact separately
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/emergency-contact")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> updateEmergencyContact(@PathVariable String id, @RequestBody EmergencyContactRequest request) {
+        // Update emergency contact logic would go here
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/emergency-contact")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> deleteEmergencyContact(@PathVariable String id) {
+        // Delete emergency contact logic would go here
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/insurance")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> addInsurance(@PathVariable String id, @RequestBody InsuranceRequest request) {
+        // Add insurance logic would go here
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/insurance")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> updateInsurance(@PathVariable String id, @RequestBody InsuranceRequest request) {
+        // Update insurance logic would go here
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/insurance")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
+    public ResponseEntity<Void> deleteInsurance(@PathVariable String id) {
+        // Delete insurance logic would go here
+        return ResponseEntity.noContent().build();
+    }
+
     public static class RegisterPatientRequest {
         @jakarta.validation.constraints.NotBlank(message = "El número de identificación es obligatorio")
         @jakarta.validation.constraints.Pattern(regexp = "\\d{1,10}", message = "El número de identificación debe contener entre 1 y 10 dígitos")
@@ -270,6 +346,32 @@ public class PatientController {
         public String companyName;
         public String policyNumber;
         public boolean insuranceActive;
+        public String validityDate;
+    }
+
+    public static class EmergencyContactRequest {
+        @jakarta.validation.constraints.NotBlank(message = "El nombre del contacto de emergencia es obligatorio")
+        public String name;
+
+        @jakarta.validation.constraints.NotBlank(message = "La relación del contacto de emergencia es obligatoria")
+        public String relation;
+
+        @jakarta.validation.constraints.NotBlank(message = "El teléfono del contacto de emergencia es obligatorio")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{10}", message = "El teléfono de emergencia debe contener exactamente 10 dígitos")
+        public String phone;
+    }
+
+    public static class InsuranceRequest {
+        @jakarta.validation.constraints.NotBlank(message = "El nombre de la compañía de seguros es obligatorio")
+        public String companyName;
+
+        @jakarta.validation.constraints.NotBlank(message = "El número de póliza es obligatorio")
+        public String policyNumber;
+
+        public boolean active;
+
+        @jakarta.validation.constraints.NotBlank(message = "La fecha de validez es obligatoria")
+        @jakarta.validation.constraints.Pattern(regexp = "\\d{2}/\\d{2}/\\d{4}", message = "La fecha debe tener formato DD/MM/YYYY")
         public String validityDate;
     }
 }

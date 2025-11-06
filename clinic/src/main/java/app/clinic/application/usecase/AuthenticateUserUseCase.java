@@ -12,15 +12,15 @@ public class AuthenticateUserUseCase {
 
     public User execute(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username is required");
+            throw new IllegalArgumentException("Invalid username or password");
         }
         if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Password is required");
+            throw new IllegalArgumentException("Invalid username or password");
         }
 
         User user = userService.findUserByUsername(username);
         if (user == null) {
-            throw new IllegalArgumentException("User not found");
+            throw new IllegalArgumentException("Invalid username or password");
         }
         // For development: simple password comparison (passwords are stored in plain text)
         if (!user.getPassword().getValue().equals(password)) {

@@ -36,7 +36,7 @@ public class OrderService {
             throw new IllegalArgumentException("Patient not found");
         }
         OrderNumber orderNumber = generateUniqueOrderNumber();
-        Order order = new Order(orderNumber, patientId, doctorId, LocalDate.now());
+        Order order = new Order(orderNumber, patientId, doctorId, LocalDate.now(), null, new app.clinic.domain.model.entities.DiagnosticAidOrderStrategy());
         for (DiagnosticAidOrder aid : diagnosticAids) {
             if (!inventoryRepository.existsDiagnosticAidById(aid.getDiagnosticAidId())) {
                 throw new IllegalArgumentException("Diagnostic aid not found in inventory");
@@ -86,7 +86,7 @@ public class OrderService {
             throw new IllegalArgumentException("Patient not found");
         }
         OrderNumber orderNumber = generateUniqueOrderNumber();
-        Order order = new Order(orderNumber, patientId, doctorId, LocalDate.now());
+        Order order = new Order(orderNumber, patientId, doctorId, LocalDate.now(), null, new app.clinic.domain.model.entities.DiagnosticAidOrderStrategy());
         for (MedicationOrder med : medications) {
             if (!inventoryRepository.existsMedicationById(med.getMedicationId())) {
                 throw new IllegalArgumentException("Medication not found in inventory");

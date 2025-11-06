@@ -111,7 +111,7 @@ class AuthControllerTest {
         verify(authenticateUserUseCase).execute("testuser", "TestPass123!");
         verify(jwtService).generateSessionId();
         verify(jwtService).generateToken(testUser, "test-session-id");
-        verify(jwtService).getExpirationTime();
+        verify(jwtService, Mockito.times(2)).getExpirationTime();
         verify(redisTemplate.opsForValue()).set(anyString(), anyString(), anyLong(), any());
     }
 
@@ -234,6 +234,7 @@ class AuthControllerTest {
     void logout_WithInvalidToken_ShouldReturnOk() {
         // Arrange
         String invalidToken = "Bearer invalid-token";
+        when(jwtService.getSecretKey()).thenReturn("test-secret-key-with-sufficient-length-for-hmac-sha256-algorithm");
 
         // Act
         ResponseEntity<Void> response = authController.logout(invalidToken);

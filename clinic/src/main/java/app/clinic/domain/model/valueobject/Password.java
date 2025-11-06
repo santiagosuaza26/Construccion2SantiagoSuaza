@@ -18,6 +18,12 @@ public class Password {
 
     // Constructor for loading from database (already hashed)
     public Password(String value, boolean isHashed) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
+        if (!isHashed) {
+            throw new IllegalArgumentException("Password must be hashed when using this constructor");
+        }
         this.value = value; // Store directly regardless of hashing for development
     }
 
@@ -27,7 +33,7 @@ public class Password {
 
     public boolean matches(String plainPassword) {
         if (plainPassword == null) {
-            return false; // Return false instead of throwing exception for better test compatibility
+            throw new IllegalArgumentException("Password to match cannot be null");
         }
         return value.equals(plainPassword); // Simple comparison for domain independence
     }
@@ -42,7 +48,7 @@ public class Password {
 
     @Override
     public int hashCode() {
-        return 0; // Always return same hash code to avoid issues in tests
+        return value.hashCode(); // Use value's hash code for proper hashing
     }
 
     @Override

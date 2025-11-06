@@ -198,6 +198,28 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('RECURSOS_HUMANOS')")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
+        var user = listUsersUseCase.execute().stream()
+            .filter(u -> u.getIdentificationNumber().getValue().equals(id))
+            .findFirst()
+            .orElseThrow(() -> new DomainException("Usuario no encontrado"));
+
+        var dto = new UserDTO(
+            user.getIdentificationNumber().getValue(),
+            user.getFullName(),
+            user.getEmail().getValue(),
+            user.getPhone().getValue(),
+            user.getDateOfBirth().toString(),
+            user.getAddress().getValue(),
+            user.getRole().toString(),
+            user.getCredentials().getUsername().getValue()
+        );
+
+        return ResponseEntity.ok(dto);
+    }
+
     public static class CreateUserRequest {
         public String fullName;
         public String identificationNumber;

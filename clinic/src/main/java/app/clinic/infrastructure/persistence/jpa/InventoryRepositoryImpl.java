@@ -117,6 +117,9 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     }
 
     private Medication toMedicationDomain(MedicationJpaEntity entity) {
+        if (entity.getId() == null || entity.getSpecialistType() == null) {
+            throw new IllegalArgumentException("MedicationJpaEntity has null required fields");
+        }
         return new Medication(
             new Id(entity.getId()),
             entity.getName(),
@@ -127,6 +130,9 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     }
 
     private Procedure toProcedureDomain(ProcedureJpaEntity entity) {
+        if (entity.getId() == null || entity.getSpecialistType() == null) {
+            throw new IllegalArgumentException("ProcedureJpaEntity has null required fields");
+        }
         return new Procedure(
             new Id(entity.getId()),
             entity.getName(),
@@ -137,6 +143,9 @@ public class InventoryRepositoryImpl implements InventoryRepository {
     }
 
     private DiagnosticAid toDiagnosticAidDomain(DiagnosticAidJpaEntity entity) {
+        if (entity.getId() == null || entity.getSpecialistType() == null) {
+            throw new IllegalArgumentException("DiagnosticAidJpaEntity has null required fields");
+        }
         return new DiagnosticAid(
             new Id(entity.getId()),
             entity.getName(),

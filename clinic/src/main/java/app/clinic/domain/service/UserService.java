@@ -37,6 +37,9 @@ public class UserService {
         Id id = new Id(identificationNumber);
         Credentials credentials = new Credentials(new Username(username), new Password(password));
 
+        // Validar unicidad de credenciales
+        validationService.validateCredentialsUniqueness(credentials);
+
         User user = new User(credentials, fullName, id, new Email(email), new Phone(phone), new DateOfBirth(dateOfBirth), new Address(address), Role.valueOf(role));
 
         // Solo RRHH puede crear usuarios

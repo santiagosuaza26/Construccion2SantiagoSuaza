@@ -1,492 +1,593 @@
-# 🏥 Sistema de Gestión Clínica
+# Sistema de Gestión de Clínica Médica
 
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue.svg)](https://www.postgresql.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7.0-green.svg)](https://www.mongodb.com/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-7-green)](https://www.mongodb.com/)
+[![Redis](https://img.shields.io/badge/Redis-7-red)](https://redis.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.0.1-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<div align="center">
-  <h3>🏥 Gestión Integral de Clínicas y Centros Médicos</h3>
-  <p>Solución completa para la administración de servicios médicos, pacientes y personal clínico</p>
-</div>
-
----
+Un sistema completo de gestión de clínicas médicas desarrollado con arquitectura de microservicios, diseñado para optimizar la administración de pacientes, citas médicas, registros médicos, facturación y soporte técnico.
 
 ## 📋 Tabla de Contenidos
 
-- [🏥 Sistema de Gestión Clínica](#-sistema-de-gestión-clínica)
-  - [📋 Tabla de Contenidos](#-tabla-de-contenidos)
-  - [🎯 Visión General](#-visión-general)
-  - [🏗️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
-  - [✨ Características Principales](#-características-principales)
-  - [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
-  - [🚀 Inicio Rápido](#-inicio-rápido)
-  - [📁 Estructura del Proyecto](#-estructura-del-proyecto)
-  - [🔧 Instalación y Configuración](#-instalación-y-configuración)
-  - [🗄️ Base de Datos](#️-base-de-datos)
-  - [🔐 Seguridad](#-seguridad)
-  - [🧪 Pruebas y Calidad](#-pruebas-y-calidad)
-  - [📊 Monitoreo y Logs](#-monitoreo-y-logs)
-  - [🚢 Despliegue](#-despliegue)
-  - [📚 Documentación](#-documentación)
-  - [👥 Equipo de Desarrollo](#-equipo-de-desarrollo)
-  - [🤝 Contribución](#-contribución)
-  - [📄 Licencia](#-licencia)
-  - [🙏 Agradecimientos](#-agradecimientos)
+- [Características](#-características)
+- [Arquitectura](#-arquitectura)
+- [Tecnologías](#-tecnologías)
+- [Requisitos Previos](#-requisitos-previos)
+- [Instalación y Despliegue](#-instalación-y-despliegue)
+- [Configuración](#-configuración)
+- [Uso](#-uso)
+- [API Documentation](#-api-documentation)
+- [Desarrollo](#-desarrollo)
+- [Testing](#-testing)
+- [Monitoreo](#-monitoreo)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Contribución](#-contribución)
+- [Licencia](#-licencia)
+- [Contacto](#-contacto)
 
-## 🎯 Visión General
+## ✨ Características
 
-El **Sistema de Gestión Clínica** es una solución integral y moderna para la administración completa de clínicas, centros médicos y consultorios. Desarrollado con tecnologías de vanguardia, proporciona herramientas avanzadas para:
+### 👥 Gestión de Usuarios y Roles
 
-- ✅ **Gestión integral de pacientes** con historial médico completo
-- ✅ **Sistema de citas médicas** con programación inteligente
-- ✅ **Control de inventario médico** y gestión de medicamentos
-- ✅ **Facturación automática** con soporte para seguros médicos
-- ✅ **Historia clínica digital** con almacenamiento seguro
-- ✅ **Gestión de personal médico** con roles y permisos granulares
+- Autenticación JWT con roles (Admin, Doctor, Enfermera, Soporte)
+- Control de acceso basado en roles (RBAC)
+- Gestión de perfiles de usuario
+- Validación de datos de usuario
 
-## 🏗️ Arquitectura del Sistema
+### 🏥 Gestión de Pacientes
+
+- Registro completo de pacientes
+- Historial médico electrónico
+- Información de contacto de emergencia
+- Seguimiento de signos vitales
+
+### 📅 Gestión de Citas
+
+- Programación de citas médicas
+- Gestión de estados de citas
+- Recordatorios automáticos
+- Cancelación y reprogramación
+
+### 📋 Registros Médicos
+
+- Historial médico completo
+- Registros de diagnósticos y tratamientos
+- Seguimiento de medicamentos
+- Observaciones médicas
+
+### 💊 Gestión de Órdenes Médicas
+
+- Órdenes de medicamentos
+- Órdenes de procedimientos
+- Órdenes de ayudas diagnósticas
+- Seguimiento de ejecución
+
+### 💰 Facturación y Pagos
+
+- Generación automática de facturas
+- Integración con seguros médicos
+- Seguimiento de pagos
+- Reportes financieros
+
+### 🛠️ Soporte Técnico
+
+- Sistema de tickets de soporte
+- Gestión de problemas técnicos
+- Seguimiento de resoluciones
+
+## 🏗️ Arquitectura
+
+El sistema sigue una arquitectura limpia (Clean Architecture) con separación clara de responsabilidades:
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                      Sistema de Gestión Clínica                          │
-├─────────────────────────────────────────────────────────────────────────┤
-│  🌐 Frontend (React + TypeScript)                                      │
-│  🔗 API Gateway (Spring Cloud Gateway)                                 │
-│  🔐 Servicio de Autenticación (Spring Security + JWT)                   │
-├─────────────────────────────────────────────────────────────────────────┤
-│  📋 Servicio de Pacientes     │  📅 Servicio de Citas                   │
-│  💊 Servicio de Inventario    │  💰 Servicio de Facturación             │
-│  👥 Servicio de Usuarios      │  📋 Servicio de Historia Clínica        │
-├─────────────────────────────────────────────────────────────────────────┤
-│  🗄️ PostgreSQL (Datos Relacionales)                                    │
-│  🍃 MongoDB (Historia Clínica NoSQL)                                   │
-│  🔄 Redis (Cache y Sesiones)                                           │
-└─────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Frontend Layer                           │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │  Next.js + TypeScript + Tailwind CSS                   │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 Application Layer                           │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │  Use Cases, DTOs, Mappers                              │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  Domain Layer                               │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │  Entities, Value Objects, Services, Repositories       │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│               Infrastructure Layer                          │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │  Controllers, Persistence, External Services           │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 External Systems                            │
+│  ┌─────────────────────────────────────────────────────────┐ │
+│  │  PostgreSQL, MongoDB, Redis, Docker                     │ │
+│  └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### **Patrones Arquitectónicos**
-- **Microservicios** - Servicios independientes y escalables
-- **Domain-Driven Design (DDD)** - Modelo de dominio rico
-- **CQRS** - Separación de comandos y consultas
-- **Event Sourcing** - Auditoría completa de cambios
-- **API-First** - Diseño centrado en APIs RESTful
+### Componentes Principales
 
-## ✨ Características Principales
+- **Backend (Spring Boot)**: API RESTful con arquitectura hexagonal
+- **Frontend (Next.js)**: Interfaz de usuario moderna y responsiva
+- **PostgreSQL**: Base de datos relacional para datos estructurados
+- **MongoDB**: Base de datos NoSQL para registros médicos
+- **Redis**: Cache y sesiones de usuario
+- **Docker**: Contenedorización completa del sistema
 
-### 👥 **Gestión Integral de Usuarios**
-- **Autenticación segura** con JWT y refresh tokens
-- **Autorización granular** basada en roles médicos
-- **Gestión de personal** médico y administrativo
-- **Perfiles especializados** para diferentes tipos de usuario
+## 🛠️ Tecnologías
 
-### 🏥 **Gestión Avanzada de Pacientes**
-- **Registro completo** de información del paciente
-- **Contactos de emergencia** y familiares
-- **Pólizas de seguros médicos** con validación automática
-- **Historial médico integrado** con evolución del paciente
+### Backend
 
-### 📅 **Sistema Inteligente de Citas**
-- **Programación automática** considerando disponibilidad
-- **Recordatorios inteligentes** vía múltiples canales
-- **Gestión de conflictos** de horarios médicos
-- **Estados en tiempo real** de citas y consultas
+- **Java 17** - Lenguaje de programación principal
+- **Spring Boot 3.5.7** - Framework web
+- **Spring Security** - Autenticación y autorización
+- **Spring Data JPA** - Acceso a datos relacionales
+- **Spring Data MongoDB** - Acceso a datos NoSQL
+- **Spring Data Redis** - Cache y sesiones
+- **JWT** - Autenticación stateless
+- **Flyway** - Migraciones de base de datos
+- **OpenAPI/Swagger** - Documentación de API
+- **Bucket4j** - Rate limiting
+- **Lombok** - Reducción de código boilerplate
 
-### 💊 **Control de Inventario Médico**
-- **Catálogo completo** de medicamentos y suministros
-- **Alertas automáticas** de vencimiento y stock mínimo
-- **Órdenes de reposición** automáticas
-- **Trazabilidad completa** de lotes médicos
+### Frontend
 
-### 💰 **Facturación y Administración Financiera**
-- **Cálculo automático** de copagos según pólizas
-- **Soporte multi-seguro** con reglas complejas
-- **Facturación electrónica** integrada
-- **Reportes financieros** en tiempo real
+- **Next.js 16.0.1** - Framework React
+- **TypeScript 5** - Tipado estático
+- **React 19.2.0** - Biblioteca de UI
+- **Tailwind CSS** - Framework CSS
+- **ESLint** - Linting de código
 
-### 📋 **Historia Clínica Digital**
-- **Registros médicos** estructurados y no estructurados
-- **Signos vitales** con gráficos de evolución
-- **Diagnósticos y tratamientos** con seguimiento
-- **Archivos adjuntos** médicos (imágenes, PDFs)
+### Bases de Datos y Cache
 
-## 🛠️ Tecnologías Utilizadas
+- **PostgreSQL 15** - Base de datos relacional
+- **MongoDB 7** - Base de datos de documentos
+- **Redis 7** - Cache y sesiones
+- **H2 Database** - Base de datos embebida para desarrollo
 
-### **Backend Stack**
-| Tecnología | Versión | Descripción |
-|------------|---------|-------------|
-| **Java** | 17 | Lenguaje de programación principal |
-| **Spring Boot** | 3.0.0 | Framework de aplicaciones |
-| **Spring Security** | 6.0 | Seguridad y autenticación |
-| **PostgreSQL** | 15 | Base de datos relacional |
-| **MongoDB** | 7.0 | Base de datos NoSQL |
-| **Redis** | 7.0 | Sistema de caché |
+### DevOps y Testing
 
-### **Frontend Stack**
-| Tecnología | Versión | Descripción |
-|------------|---------|-------------|
-| **React** | 18.2 | Librería de interfaz de usuario |
-| **TypeScript** | 5.0 | Tipado estático |
-| **Vite** | 4.0 | Build tool moderno |
-| **Tailwind CSS** | 3.0 | Framework CSS utilitario |
-| **React Query** | 4.0 | Gestión de estado de servidor |
+- **Docker & Docker Compose** - Contenedorización
+- **JUnit 5** - Testing unitario
+- **Testcontainers** - Testing de integración
+- **Mockito** - Mocking para tests
+- **JaCoCo** - Cobertura de código
+- **Maven** - Gestión de dependencias
 
-### **DevOps & Herramientas**
-| Tecnología | Descripción |
-|------------|-------------|
-| **Docker** | Containerización |
-| **Docker Compose** | Orquestación de servicios |
-| **Maven** | Gestión de dependencias Java |
-| **NPM** | Gestión de dependencias Node.js |
-| **Git** | Control de versiones |
+## 📋 Requisitos Previos
 
-## 🚀 Inicio Rápido
+- **Sistema Operativo**: Windows 10/11, macOS, Linux
+- **Java**: JDK 17 o superior
+- **Node.js**: Versión 18 o superior (para desarrollo frontend)
+- **Docker**: Versión 20.10 o superior
+- **Docker Compose**: Versión 2.0 o superior
+- **RAM**: Mínimo 4GB disponible
+- **Espacio en Disco**: 2GB libres
+- **Puertos Disponibles**: 3000, 8080, 5432, 27017, 6379
 
-### **1. Prerrequisitos**
-- Docker y Docker Compose
-- Git
-- Navegador web moderno
+## 🚀 Instalación y Despliegue
 
-### **2. Instalación con Docker (Recomendado)**
+### Opción 1: Despliegue con Docker (Recomendado)
 
-```bash
-# Clonar el repositorio completo
-git clone <repository-url>
-cd clinica
+1. **Clonar el repositorio**:
 
-# Iniciar todos los servicios
-docker-compose up -d
+   ```bash
+   git clone <repository-url>
+   cd Construccion2SantiagoSuaza
+   ```
 
-# Verificar estado de servicios
-docker-compose ps
+2. **Configurar variables de entorno** (opcional):
 
-# Acceder a la aplicación
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:8080
-# Documentación API: http://localhost:8080/swagger-ui.html
-```
+   ```bash
+   cp .env.example .env
+   # Editar .env con sus valores personalizados
+   ```
 
-### **3. Instalación Manual**
+3. **Desplegar con Docker Compose**:
 
-#### **Backend**
+   ```bash
+   docker-compose up -d
+   ```
+
+4. **Verificar el despliegue**:
+
+   ```bash
+   docker-compose ps
+   ```
+
+5. **Acceder a la aplicación**:
+   - **Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:8080
+   - **Documentación API**: http://localhost:8080/swagger-ui.html
+   - **Consola H2** (desarrollo): http://localhost:8080/h2-console
+
+### Opción 2: Desarrollo Local
+
+#### Backend
+
 ```bash
 cd clinic
 mvn clean install
 mvn spring-boot:run
 ```
 
-#### **Frontend**
+#### Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## 📁 Estructura del Proyecto
+## ⚙️ Configuración
 
-```
-clinica/
-├── clinic/                    # Backend - Spring Boot
-│   ├── src/main/java/app/clinic/
-│   │   ├── application/       # Capa de aplicación
-│   │   ├── domain/           # Capa de dominio (DDD)
-│   │   └── infrastructure/   # Capa de infraestructura
-│   ├── src/test/             # Pruebas automatizadas
-│   └── docker-compose.yml    # Servicios backend
-├── frontend/                 # Frontend - React + TypeScript
-│   ├── src/
-│   │   ├── components/       # Componentes React
-│   │   ├── services/         # Servicios API
-│   │   └── stores/          # Gestión de estado
-│   └── public/              # Archivos estáticos
-├── docker-compose.yml       # Servicios completos
-├── README.md               # Esta documentación
-├── clinic/README.md        # Documentación backend
-└── frontend/README.md      # Documentación frontend
-```
+### Variables de Entorno (.env)
 
-## 🔧 Instalación y Configuración
+```env
+# Base de Datos PostgreSQL
+POSTGRES_DB=clinic_management
+POSTGRES_USER=clinic_user
+POSTGRES_PASSWORD=clinic_password_2024
 
-### **Configuración con Docker Compose**
+# MongoDB
+MONGO_INITDB_DATABASE=clinic_medical_records
+MONGO_INITDB_ROOT_USERNAME=clinic_admin
+MONGO_INITDB_ROOT_PASSWORD=clinic_password_2024
 
-```yaml
-version: '3.8'
-services:
-  # Base de datos PostgreSQL
-  postgres:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_DB: clinic_management
-      POSTGRES_USER: clinic_user
-      POSTGRES_PASSWORD: clinic_password_2024
+# JWT
+JWT_SECRET=clinic_jwt_secret_key_minimum_256_bits_long_for_security_2025
 
-  # Base de datos MongoDB
-  mongodb:
-    image: mongo:7-jammy
-    environment:
-      MONGO_INITDB_DATABASE: clinic_history
+# CORS
+CLINIC_CORS_ALLOWED_ORIGINS=http://localhost:3000
 
-  # Aplicación Backend
-  app:
-    build: ./clinic
-    depends_on:
-      - postgres
-      - mongodb
-
-  # Aplicación Frontend
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:80"
+# Perfiles Spring Boot
+SPRING_PROFILES_ACTIVE=docker
 ```
 
-### **Variables de Entorno Importantes**
+### Perfiles de Spring Boot
 
-```bash
-# Base de datos
-DATABASE_URL=postgresql://clinic_user:clinic_password_2024@postgres:5432/clinic_management
-MONGODB_URL=mongodb://mongodb:27017/clinic_history
+- **`dev`**: Desarrollo local con H2 Database
+- **`docker`**: Producción con PostgreSQL y MongoDB
+- **`prod`**: Producción optimizada
+- **`test`**: Testing con bases de datos embebidas
 
-# JWT Security
-JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXPIRATION=86400000
+## 📖 Uso
 
-# Aplicación
-NODE_ENV=production
-API_BASE_URL=http://localhost:8080/api
-```
+### Acceso al Sistema
 
-## 🗄️ Base de Datos
+1. **Usuario Administrador**:
+   - Email: admin@clinic.com
+   - Contraseña: admin123
 
-### **Arquitectura de Datos**
-- **PostgreSQL** para datos relacionales estructurados
-- **MongoDB** para historia clínica no estructurada
-- **Redis** para caché y sesiones de usuario
+2. **Usuario Doctor**:
+   - Email: doctor@clinic.com
+   - Contraseña: doctor123
 
-### **Esquema Principal**
+3. **Usuario Enfermera**:
+   - Email: nurse@clinic.com
+   - Contraseña: nurse123
 
-#### **Usuarios del Sistema**
-```sql
-CREATE TABLE users (
-    cedula VARCHAR(20) PRIMARY KEY,
-    username VARCHAR(15) UNIQUE,
-    password_hash VARCHAR(255),
-    full_name VARCHAR(100),
-    role VARCHAR(30),
-    active BOOLEAN DEFAULT true
-);
-```
+### Funcionalidades Principales
 
-#### **Historia Clínica (MongoDB)**
-```javascript
-{
-    "patientNationalId": "CC-12345678",
-    "records": [
-        {
-            "date": "2024-01-15T10:30:00Z",
-            "diagnosis": "Hipertensión arterial",
-            "vitalSigns": {
-                "bloodPressureSystolic": 140,
-                "bloodPressureDiastolic": 90
-            }
-        }
-    ]
-}
-```
+#### Gestión de Pacientes
 
-## 🔐 Seguridad
+- Registrar nuevos pacientes
+- Actualizar información del paciente
+- Consultar historial médico
+- Gestionar contactos de emergencia
 
-### **Características de Seguridad**
-- **Autenticación JWT** con refresh tokens
-- **Autorización RBAC** (Role-Based Access Control)
-- **Encriptación AES-256** para datos sensibles
-- **Validación estricta** de entrada y salida
-- **Protección contra ataques comunes**:
-  - SQL Injection
-  - XSS (Cross-Site Scripting)
-  - CSRF (Cross-Site Request Forgery)
-  - Clickjacking
+#### Programación de Citas
 
-### **Roles y Permisos**
+- Crear citas médicas
+- Modificar estados de citas
+- Cancelar citas
+- Ver calendario de citas
 
-| Rol | Descripción | Permisos Clave |
-|-----|-------------|----------------|
-| **ADMIN** | Administrador completo | Todos los permisos |
-| **HUMAN_RESOURCES** | Recursos Humanos | Gestión de usuarios |
-| **ADMINISTRATIVE_STAFF** | Personal Administrativo | Gestión de pacientes |
-| **SUPPORT_STAFF** | Personal de Soporte | Gestión de inventario |
-| **DOCTOR** | Médico | Crear historias clínicas |
-| **NURSE** | Enfermera | Registrar signos vitales |
+#### Registros Médicos
 
-## 🧪 Pruebas y Calidad
+- Crear registros médicos
+- Agregar diagnósticos
+- Prescribir medicamentos
+- Registrar procedimientos
 
-### **Cobertura de Pruebas**
-- ✅ **Pruebas Unitarias** (> 85% cobertura)
-- ✅ **Pruebas de Integración** (flujos completos)
-- ✅ **Pruebas E2E** (escenarios reales)
-- ✅ **Pruebas de Seguridad** (OWASP Top 10)
-- ✅ **Pruebas de Performance** (carga y estrés)
+#### Facturación
 
-### **Ejecutar Pruebas**
+- Generar facturas automáticamente
+- Gestionar pagos
+- Integración con seguros
+- Reportes financieros
 
-```bash
-# Backend - Todas las pruebas
-cd clinic && mvn test
+## 📚 API Documentation
 
-# Frontend - Todas las pruebas
-cd frontend && npm run test
+La documentación completa de la API está disponible en:
 
-# Pruebas E2E
-npm run test:e2e
-
-# Cobertura de código
-mvn test jacoco:report
-```
-
-## 📊 Monitoreo y Logs
-
-### **Métricas Disponibles**
-- Health checks automáticos
-- Métricas de JVM y aplicación
-- Métricas de base de datos
-- Métricas de negocio personalizadas
-- Logs estructurados con niveles apropiados
-
-### **Acceso a Información**
-
-```bash
-# Health endpoint
-curl http://localhost:8080/actuator/health
-
-# Métricas de aplicación
-curl http://localhost:8080/actuator/metrics
-
-# Información detallada
-curl http://localhost:8080/actuator/info
-```
-
-## 🚢 Despliegue
-
-### **Entornos Disponibles**
-- **Desarrollo** (`dev`) - H2 Database, logs detallados
-- **Producción** (`prod`) - PostgreSQL + MongoDB, configuración optimizada
-
-### **Despliegue en Producción**
-
-```bash
-# Construir imágenes
-docker-compose -f docker-compose.prod.yml build
-
-# Desplegar servicios
-docker-compose -f docker-compose.prod.yml up -d
-
-# Actualizar aplicación
-docker-compose -f docker-compose.prod.yml pull
-docker-compose -f docker-compose.prod.yml up -d --no-deps app frontend
-```
-
-### **Plataformas Cloud Soportadas**
-- ✅ **AWS** (ECS, EKS, Lambda)
-- ✅ **Google Cloud** (Cloud Run, GKE)
-- ✅ **Azure** (Container Instances, AKS)
-- ✅ **DigitalOcean** (App Platform, Kubernetes)
-
-## 📚 Documentación
-
-### **Documentación Técnica**
-- [📖 Guía de Arquitectura](docs/architecture.md)
-- [🔧 Guía de Despliegue](docs/deployment.md)
-- [🗄️ Guía de Base de Datos](docs/database.md)
-- [🔐 Guía de Seguridad](docs/security.md)
-- [🧪 Guía de Pruebas](docs/testing.md)
-
-### **Documentación de APIs**
 - **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI Spec**: http://localhost:8080/api-docs
-- **Postman Collection**: Disponible en `/docs`
+- **OpenAPI JSON**: http://localhost:8080/v3/api-docs
 
-## 👥 Equipo de Desarrollo
+### Endpoints Principales
 
-### **Arquitectura y Backend**
-| Rol | Nombre | Especialidad |
-|-----|--------|--------------|
-| **Arquitecto Principal** | Santiago Suaza | Arquitectura, DDD, Microservicios |
-| **Tech Lead Backend** | Equipo Backend | Spring Boot, Bases de Datos |
-| **DevOps Engineer** | Equipo DevOps | Docker, CI/CD, Cloud |
+#### Autenticación
 
-### **Frontend y UX**
-| Rol | Nombre | Especialidad |
-|-----|--------|--------------|
-| **Tech Lead Frontend** | Equipo Frontend | React, TypeScript, UX |
-| **UI/UX Designer** | Equipo Diseño | Diseño de interfaces |
-| **QA Engineer** | Equipo QA | Testing, Calidad |
+- `POST /api/auth/login` - Iniciar sesión
+- `POST /api/auth/register` - Registrar usuario
+- `POST /api/auth/logout` - Cerrar sesión
+
+#### Pacientes
+
+- `GET /api/patients` - Listar pacientes
+- `POST /api/patients` - Crear paciente
+- `GET /api/patients/{id}` - Obtener paciente
+- `PUT /api/patients/{id}` - Actualizar paciente
+
+#### Citas
+
+- `GET /api/appointments` - Listar citas
+- `POST /api/appointments` - Crear cita
+- `PUT /api/appointments/{id}/status` - Cambiar estado
+
+#### Registros Médicos
+
+- `GET /api/medical-records/{patientId}` - Obtener historial
+- `POST /api/medical-records` - Crear registro médico
+
+## 💻 Desarrollo
+
+### Estructura del Proyecto
+
+```
+Construccion2SantiagoSuaza/
+├── clinic/                          # Backend Spring Boot
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── src/
+│       ├── main/java/app/clinic/
+│       │   ├── application/         # Casos de uso, DTOs
+│       │   ├── domain/              # Entidades, servicios de dominio
+│       │   ├── infrastructure/      # Controladores, persistencia
+│       │   └── Cs2Application.java  # Clase principal
+│       └── test/                    # Tests
+├── frontend/                        # Frontend Next.js
+│   ├── Dockerfile
+│   ├── package.json
+│   └── src/
+│       ├── app/                     # Páginas Next.js
+│       ├── components/              # Componentes React
+│       └── lib/                     # Utilidades
+├── docker-compose.yml               # Configuración Docker
+├── .env                             # Variables de entorno
+└── README.md
+```
+
+### Comandos de Desarrollo
+
+#### Backend
+
+```bash
+# Compilar
+mvn clean compile
+
+# Ejecutar tests
+mvn test
+
+# Ejecutar con perfil específico
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+
+# Generar cobertura de código
+mvn jacoco:report
+```
+
+#### Frontend
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo
+npm run dev
+
+# Construir para producción
+npm run build
+
+# Ejecutar tests
+npm test
+
+# Linting
+npm run lint
+```
+
+## 🧪 Testing
+
+### Backend Testing
+
+```bash
+# Ejecutar todos los tests
+mvn test
+
+# Ejecutar tests de integración
+mvn verify -Dspring.profiles.active=test
+
+# Ejecutar con cobertura
+mvn test jacoco:report
+
+# Ejecutar tests específicos
+mvn test -Dtest=UserServiceTest
+```
+
+### Tipos de Tests
+
+- **Unit Tests**: Pruebas de unidades individuales
+- **Integration Tests**: Pruebas de integración con Testcontainers
+- **Performance Tests**: Pruebas de rendimiento
+- **Security Tests**: Pruebas de seguridad
+
+### Cobertura de Código
+
+La cobertura mínima requerida es del 80%. Para ver el reporte:
+
+```bash
+mvn jacoco:report
+# Reporte disponible en: target/site/jacoco/index.html
+```
+
+## 📊 Monitoreo
+
+### Health Checks
+
+- **Health Endpoint**: http://localhost:8080/actuator/health
+- **Metrics**: http://localhost:8080/actuator/metrics
+- **Info**: http://localhost:8080/actuator/info
+
+### Logs
+
+Los logs se configuran por perfil:
+
+- **dev**: Nivel DEBUG para aplicación
+- **docker/prod**: Nivel INFO/WARN para producción
+
+### Métricas
+
+- **JVM Metrics**: Memoria, CPU, GC
+- **HTTP Metrics**: Requests, responses, errores
+- **Database Metrics**: Conexiones, queries
+- **Custom Metrics**: Métricas de negocio
+
+## 🔧 Solución de Problemas
+
+### Problemas Comunes
+
+#### Error de Dependencias Maven
+
+```bash
+# Limpiar caché de Maven
+mvn dependency:purge-local-repository
+
+# Reconstruir sin caché
+docker-compose build --no-cache backend
+```
+
+#### Puertos Ocupados
+
+```bash
+# Ver procesos usando puertos
+netstat -tulpn | grep :8080
+netstat -tulpn | grep :3000
+
+# Cambiar puertos en docker-compose.yml o application.properties
+```
+
+#### Problemas de Base de Datos
+
+```bash
+# Acceder a PostgreSQL
+docker-compose exec postgres psql -U clinic_user -d clinic_management
+
+# Acceder a MongoDB
+docker-compose exec mongodb mongo -u clinic_admin -p clinic_password_2024 --authenticationDatabase admin clinic_medical_records
+
+# Acceder a Redis
+docker-compose exec redis redis-cli
+```
+
+#### Problemas de Memoria
+
+```bash
+# Verificar uso de memoria
+docker stats
+
+# Aumentar límite de memoria en Docker Desktop
+# Settings > Resources > Memory > 4GB mínimo
+```
+
+### Logs de Debugging
+
+```bash
+# Ver logs de todos los servicios
+docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f backend
+
+# Ver logs con timestamps
+docker-compose logs -f --timestamps
+```
+
+### Reset del Sistema
+
+```bash
+# Detener y eliminar contenedores
+docker-compose down -v
+
+# Limpiar imágenes no utilizadas
+docker system prune -f
+
+# Reiniciar desde cero
+docker-compose up --build -d
+```
 
 ## 🤝 Contribución
 
-### **Cómo Contribuir**
-1. **Fork** el repositorio
-2. **Crear rama** para nueva funcionalidad (`git checkout -b feature/nueva-funcionalidad`)
-3. **Desarrollar** siguiendo estándares del proyecto
-4. **Probar** cambios exhaustivamente
-5. **Crear Pull Request** con descripción detallada
+1. **Fork** el proyecto
+2. **Crear** una rama para tu funcionalidad (`git checkout -b feature/AmazingFeature`)
+3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)
+5. **Abrir** un Pull Request
 
-### **Estándares de Desarrollo**
-- **Commits**: [Conventional Commits](https://conventionalcommits.org/)
-- **Código**: Google Java Style Guide + Airbnb JavaScript Guide
-- **PRs**: Template estructurado con descripción y pruebas
-- **Reviews**: Aprobación de al menos 2 desarrolladores senior
+### Guías de Contribución
+
+- Seguir las convenciones de código
+- Escribir tests para nuevas funcionalidades
+- Actualizar documentación según sea necesario
+- Mantener compatibilidad con versiones anteriores
+
+### Estándares de Código
+
+- **Java**: Google Java Style Guide
+- **TypeScript**: Airbnb TypeScript Style Guide
+- **Commits**: Conventional Commits
+- **Branches**: Git Flow
 
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
----
+## 📞 Contacto
 
-## 🙏 Agradecimientos
+**Santiago Suaza**
 
-Agradecemos a todas las personas e instituciones que han contribuido al desarrollo de este sistema:
+- Email: santiagosuaza5@gmail.com
+- LinkedIn: [Tu LinkedIn]
+- GitHub: [Tu GitHub]
 
-- **Comunidad Spring Boot** por el excelente framework
-- **Comunidad React** por las herramientas de desarrollo frontend
-- **Profesionales de la salud** que proporcionaron requisitos médicos reales
-- **Equipo de desarrollo** por su dedicación y profesionalismo
+### Soporte
 
----
+Para soporte técnico:
 
-<div align="center">
-
-## 🏥 Sistema de Gestión Clínica
-
-**Transformando la gestión médica con tecnología moderna**
-
-[![Java](https://img.shields.io/badge/Java-17-orange.svg)](https://www.oracle.com/java/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue.svg)](https://www.postgresql.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7.0-green.svg)](https://www.mongodb.com/)
-
-### 📞 Contacto
-- **Email**: info@clinica.com
-- **Teléfono**: +57 300 123 4567
-- **Dirección**: Carrera 123 #45-67, Bogotá, Colombia
-
-### 🌐 Enlaces Importantes
-- [📚 Documentación Completa](docs/)
-- [🐛 Reportar Problemas](https://github.com/clinica/issues)
-- [💬 Foro de la Comunidad](https://github.com/clinica/discussions)
-- [📖 Wiki del Proyecto](https://github.com/clinica/wiki)
-
-### 🎯 Estado del Proyecto
-- **Versión**: 1.0.0
-- **Estado**: ✅ Activo y en Desarrollo
-- **Última Actualización**: Octubre 2024
-- **Próxima Versión**: 1.1.0 (Diciembre 2024)
+1. Revisar la [documentación](docs/)
+2. Crear un issue en GitHub
+3. Contactar al equipo de desarrollo
 
 ---
 
-*"Tecnología al servicio de la salud - Desarrollado con ❤️ para mejorar vidas"*
+⭐ Si este proyecto te resulta útil, ¡dale una estrella en GitHub!
 
-</div>
+Última actualización: Noviembre 2025

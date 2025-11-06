@@ -2,6 +2,7 @@ package app.clinic.infrastructure.controller;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.clinic.application.usecase.AuthenticateUserUseCase;
 import app.clinic.infrastructure.dto.AuthResponseDTO;
+import app.clinic.infrastructure.dto.UserDTO;
 import app.clinic.infrastructure.service.JwtService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -50,9 +52,16 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequest request) {
         // Validation is handled by @Valid annotation and Bean Validation
+        if (request.username == null || request.username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username is required");
+        }
+        if (request.password == null || request.password.trim().isEmpty()) {
+            throw new IllegalArgumentException("Password is required");
+        }
+
         // Sanitizar entrada básica
-        String sanitizedUsername = request.username != null ? request.username.trim().replaceAll("[<>\"'&]", "") : "";
-        String sanitizedPassword = request.password != null ? request.password.trim() : "";
+        String sanitizedUsername = request.username.trim().replaceAll("[<>\"'&]", "");
+        String sanitizedPassword = request.password.trim();
 
         var user = authenticateUserUseCase.execute(sanitizedUsername, sanitizedPassword);
 
@@ -101,6 +110,51 @@ public class AuthController {
             }
         }
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "Obtener perfil de usuario", description = "Obtiene los datos del usuario autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Perfil obtenido exitosamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserDTO.class))),
+        @ApiResponse(responseCode = "401", description = "Token inválido", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content)
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<UserDTO> getProfile(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String token = authHeader.substring(7);
+        try {
+            var parser = Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(jwtService.getSecretKey().getBytes()))
+                .build();
+            var claims = parser.parseSignedClaims(token).getPayload();
+
+            String username = claims.getSubject();
+            var user = authenticateUserUseCase.execute(username, "dummy"); // We just need the user, password validation not needed here
+
+            if (user == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var dto = new UserDTO(
+                user.getIdentificationNumber().getValue(),
+                user.getFullName(),
+                user.getEmail().getValue(),
+                user.getPhone().getValue(),
+                user.getDateOfBirth().getValue().toString(),
+                user.getAddress().getValue(),
+                user.getRole().toString(),
+                user.getCredentials().getUsername().getValue()
+            );
+
+            return ResponseEntity.ok(dto);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
     }
 
     public static class LoginRequest {

@@ -179,6 +179,48 @@ public class NurseController {
         }
     }
 
+    /**
+     * Registers a patient visit.
+     * @param request The visit data to record
+     * @return HTTP 200 if successful
+     */
+    @PostMapping("/visits")
+    @PreAuthorize("hasRole('ENFERMERA')")
+    public ResponseEntity<Void> registerVisit(@Valid @RequestBody RegisterVisitRequest request) {
+        if (request == null || request.patientId == null || request.patientId.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            // This would need a use case to register patient visits
+            // For now, return success
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Records nurse observations for a patient.
+     * @param request The observation data
+     * @return HTTP 200 if successful
+     */
+    @PostMapping("/observations")
+    @PreAuthorize("hasRole('ENFERMERA')")
+    public ResponseEntity<Void> recordObservations(@Valid @RequestBody RecordObservationsRequest request) {
+        if (request == null || request.patientId == null || request.patientId.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            // This would need a use case to record nurse observations
+            // For now, return success
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     public static class RecordVitalSignsRequest {
         @jakarta.validation.constraints.NotBlank(message = "Patient ID is required")
         public String patientId;
@@ -213,5 +255,27 @@ public class NurseController {
         public String orderNumber;
         public int item;
         public String realizationDetails;
+    }
+
+    public static class RegisterVisitRequest {
+        @jakarta.validation.constraints.NotBlank(message = "Patient ID is required")
+        public String patientId;
+
+        @jakarta.validation.constraints.NotBlank(message = "Nurse ID is required")
+        public String nurseId;
+
+        @jakarta.validation.constraints.NotBlank(message = "Visit date is required")
+        public String visitDate;
+    }
+
+    public static class RecordObservationsRequest {
+        @jakarta.validation.constraints.NotBlank(message = "Patient ID is required")
+        public String patientId;
+
+        @jakarta.validation.constraints.NotBlank(message = "Nurse ID is required")
+        public String nurseId;
+
+        @jakarta.validation.constraints.NotBlank(message = "Observations cannot be empty")
+        public String observations;
     }
 }

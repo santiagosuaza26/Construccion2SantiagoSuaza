@@ -48,7 +48,7 @@ class PatientServiceTest {
         String companyName = "Insurance Co";
         String policyNumber = "POL123";
         boolean insuranceActive = true;
-        String validityDate = "2025-12-31";
+        String validityDate = "31/12/2025";
 
         when(patientRepository.existsByIdentificationNumber(any(Id.class))).thenReturn(false);
 
@@ -66,7 +66,7 @@ class PatientServiceTest {
         when(patientRepository.existsByIdentificationNumber(any(Id.class))).thenReturn(true);
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> patientService.registerPatient("123456789", "John Doe", "01/01/1990", "MASCULINO", "123 Main St", "1234567890", "john@example.com", "Jane Doe", "Sister", "0987654321", "Insurance Co", "POL123", true, "2025-12-31"));
+        assertThrows(IllegalArgumentException.class, () -> patientService.registerPatient("123456789", "John Doe", "01/01/1990", "MASCULINO", "123 Main St", "1234567890", "john@example.com", "Jane Doe", "Sister", "0987654321", "Insurance Co", "POL123", true, "31/12/2025"));
     }
 
     @Test
@@ -76,7 +76,7 @@ class PatientServiceTest {
         when(patientRepository.findByIdentificationNumber(any(Id.class))).thenReturn(java.util.Optional.of(existingPatient));
 
         // When
-        patientService.updatePatient("123456789", "Jane Doe", "01/01/1990", "FEMENINO", "456 Oak St", "0987654321", "jane@example.com", "John Doe", "Brother", "1234567890", "New Insurance", "POL456", false, "2024-12-31");
+        patientService.updatePatient("123456789", "Jane Doe", "01/01/1990", "FEMENINO", "456 Oak St", "0987654321", "jane@example.com", "John Doe", "Brother", "1234567890", "New Insurance", "POL456", false, "31/12/2024");
 
         // Then
         verify(patientRepository).save(any(Patient.class));
@@ -88,7 +88,7 @@ class PatientServiceTest {
         when(patientRepository.findByIdentificationNumber(any(Id.class))).thenReturn(java.util.Optional.empty());
 
         // When & Then
-        assertThrows(IllegalArgumentException.class, () -> patientService.updatePatient("123456789", "Jane Doe", "01/01/1990", "FEMENINO", "456 Oak St", "0987654321", "jane@example.com", "John Doe", "Brother", "1234567890", "New Insurance", "POL456", false, "2024-12-31"));
+        assertThrows(IllegalArgumentException.class, () -> patientService.updatePatient("123456789", "Jane Doe", "01/01/1990", "FEMENINO", "456 Oak St", "0987654321", "jane@example.com", "John Doe", "Brother", "1234567890", "New Insurance", "POL456", false, "31/12/2024"));
     }
 
     @Test

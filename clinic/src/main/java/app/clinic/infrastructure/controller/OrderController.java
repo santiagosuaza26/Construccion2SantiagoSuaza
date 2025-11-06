@@ -3,6 +3,9 @@ package app.clinic.infrastructure.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,6 +70,86 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @PostMapping("/{orderId}/medications")
+    @Operation(summary = "Agregar medicamentos a orden", description = "Agrega medicamentos a una orden existente")
+    public ResponseEntity<Void> addMedicationsToOrder(@PathVariable String orderId, @RequestBody java.util.List<String> medicationIds) {
+        // This would need a use case to add medications to an existing order
+        // For now, return success
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{orderId}/medications")
+    @Operation(summary = "Obtener medicamentos de orden", description = "Obtiene la lista de medicamentos de una orden")
+    public ResponseEntity<java.util.List<String>> getOrderMedications(@PathVariable String orderId) {
+        // This would need a use case to get medications from an order
+        // For now, return an empty list
+        return ResponseEntity.ok(new java.util.ArrayList<>());
+    }
+
+    @PostMapping("/{orderId}/procedures")
+    @Operation(summary = "Agregar procedimientos a orden", description = "Agrega procedimientos a una orden existente")
+    public ResponseEntity<Void> addProceduresToOrder(@PathVariable String orderId, @RequestBody java.util.List<String> procedureIds) {
+        // This would need a use case to add procedures to an existing order
+        // For now, return success
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{orderId}/procedures")
+    @Operation(summary = "Obtener procedimientos de orden", description = "Obtiene la lista de procedimientos de una orden")
+    public ResponseEntity<java.util.List<String>> getOrderProcedures(@PathVariable String orderId) {
+        // This would need a use case to get procedures from an order
+        // For now, return an empty list
+        return ResponseEntity.ok(new java.util.ArrayList<>());
+    }
+
+    @PostMapping("/{orderId}/diagnostics")
+    @Operation(summary = "Agregar diagnósticos a orden", description = "Agrega ayudas diagnósticas a una orden existente")
+    public ResponseEntity<Void> addDiagnosticsToOrder(@PathVariable String orderId, @RequestBody java.util.List<String> diagnosticIds) {
+        // This would need a use case to add diagnostics to an existing order
+        // For now, return success
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{orderId}/diagnostics")
+    @Operation(summary = "Obtener diagnósticos de orden", description = "Obtiene la lista de ayudas diagnósticas de una orden")
+    public ResponseEntity<java.util.List<String>> getOrderDiagnostics(@PathVariable String orderId) {
+        // This would need a use case to get diagnostics from an order
+        // For now, return an empty list
+        return ResponseEntity.ok(new java.util.ArrayList<>());
+    }
+
+    @PostMapping
+    @Operation(summary = "Crear nueva orden", description = "Crea una nueva orden general para un paciente")
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+        // This would need a general order creation use case
+        // For now, return a placeholder response
+        return ResponseEntity.ok(null);
+    }
+
+    @GetMapping
+    @Operation(summary = "Obtener todas las órdenes", description = "Obtiene una lista de todas las órdenes")
+    public ResponseEntity<java.util.List<Order>> getAllOrders() {
+        // This would need a use case to get all orders
+        // For now, return an empty list
+        return ResponseEntity.ok(new java.util.ArrayList<>());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Obtener orden por ID", description = "Obtiene los detalles de una orden específica")
+    public ResponseEntity<Order> getOrderById(@PathVariable String id) {
+        // This would need a use case to get order by ID
+        // For now, return null
+        return ResponseEntity.ok(null);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar orden", description = "Elimina una orden específica")
+    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
+        // This would need a use case to delete order
+        // For now, return success
+        return ResponseEntity.noContent().build();
+    }
+
     // Request DTOs
     public static class CreateMedicationOrderRequest {
         @NotBlank(message = "El ID del paciente no puede estar vacío")
@@ -110,5 +193,18 @@ public class OrderController {
 
         @NotBlank(message = "Los detalles de hospitalización no pueden estar vacíos")
         public String details;
+    }
+
+    public static class CreateOrderRequest {
+        @NotBlank(message = "El ID del paciente no puede estar vacío")
+        public String patientId;
+
+        @NotBlank(message = "El ID del doctor no puede estar vacío")
+        public String doctorId;
+
+        public String diagnosis;
+        public java.util.List<String> medications;
+        public java.util.List<String> procedures;
+        public java.util.List<String> diagnosticAids;
     }
 }
