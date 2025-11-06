@@ -46,6 +46,11 @@
         <jacoco.version>0.8.12</jacoco.version>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
 
+        <!-- Flyway Configuration -->
+        <flyway.url>jdbc:h2:file:./clinic_db;DB_CLOSE_DELAY=-1;MODE=MySQL</flyway.url>
+        <flyway.user>root</flyway.user>
+        <flyway.password>123456789</flyway.password>
+
         <!-- Build Configuration -->
         <skipTests>false</skipTests>
         <skipITs>false</skipITs>
@@ -408,7 +413,6 @@
 	           <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-resources-plugin</artifactId>
-	               <version>${maven-resources-plugin.version}</version>
 	               <configuration>
 	                   <encoding>${project.build.sourceEncoding}</encoding>
 	                   <includeEmptyDirs>true</includeEmptyDirs>
@@ -442,18 +446,17 @@
 	           <plugin>
 	               <groupId>org.flywaydb</groupId>
 	               <artifactId>flyway-maven-plugin</artifactId>
-	               <version>11.7.2</version>
 	               <configuration>
-	                   <url>jdbc:h2:file:./clinic_db;DB_CLOSE_DELAY=-1;MODE=MySQL</url>
-	                   <user>sa</user>
-	                   <password></password>
+	                   <url>${flyway.url}</url>
+	                   <user>${flyway.user}</user>
+	                   <password>${flyway.password}</password>
 	                   <schemas>
 	                       <schema>PUBLIC</schema>
 	                   </schemas>
 	                   <locations>
 	                       <location>classpath:db/migration</location>
 	                   </locations>
-	                   <cleanDisabled>false</cleanDisabled>
+	                   <cleanDisabled>true</cleanDisabled>
 	               </configuration>
 	           </plugin>
 
@@ -461,7 +464,6 @@
 	           <plugin>
 	               <groupId>org.jacoco</groupId>
 	               <artifactId>jacoco-maven-plugin</artifactId>
-	               <version>${jacoco.version}</version>
 	               <executions>
 	                   <execution>
 	                       <goals>
@@ -482,7 +484,6 @@
 	           <plugin>
 	               <groupId>org.apache.maven.plugins</groupId>
 	               <artifactId>maven-enforcer-plugin</artifactId>
-	               <version>${maven-enforcer-plugin.version}</version>
 	               <executions>
 	                   <execution>
 	                       <id>enforce-maven</id>
