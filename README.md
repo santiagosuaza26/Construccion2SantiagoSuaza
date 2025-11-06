@@ -217,9 +217,10 @@ El sistema sigue una arquitectura limpia (Clean Architecture) con separación cl
 
 5. **Acceder a la aplicación**:
    - **Frontend**: http://localhost:3000
-   - **Backend API**: http://localhost:8080
-   - **Documentación API**: http://localhost:8080/swagger-ui.html
-   - **Consola H2** (desarrollo): http://localhost:8080/h2-console
+   - **Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:8081
+   - **Documentación API**: http://localhost:8081/swagger-ui.html
+   - **Consola H2** (desarrollo): http://localhost:8081/h2-console
 
 ### Opción 2: Desarrollo Local
 
@@ -321,8 +322,8 @@ SPRING_PROFILES_ACTIVE=docker
 
 La documentación completa de la API está disponible en:
 
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8080/v3/api-docs
+- **Swagger UI**: http://localhost:8081/swagger-ui.html
+- **OpenAPI JSON**: http://localhost:8081/v3/api-docs
 
 ### Endpoints Principales
 
