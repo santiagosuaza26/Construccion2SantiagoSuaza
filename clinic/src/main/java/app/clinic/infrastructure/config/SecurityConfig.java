@@ -1,7 +1,9 @@
 package app.clinic.infrastructure.config;
 
 import java.util.Arrays;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,6 +21,12 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    @Value("${clinic.cors.allowed-origins:http://localhost:3000}")
+    private String allowedOrigins;
+
+    @Value("${clinic.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
+    private String allowedMethods;
+
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
@@ -34,9 +42,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
 
-                // Endpoints protegidos por roles - usando los roles correctos del enum
+                // Endpoints protegidos por roles
                 .requestMatchers("/api/users/**").hasAnyAuthority("ROLE_RECURSOS_HUMANOS", "ROLE_PERSONAL_ADMINISTRATIVO")
                 .requestMatchers("/api/patients/**").hasAnyAuthority("ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO", "ROLE_ENFERMERA")
                 .requestMatchers("/api/appointments/**").hasAnyAuthority("ROLE_PERSONAL_ADMINISTRATIVO", "ROLE_MEDICO")
@@ -51,22 +60,25 @@ public class SecurityConfig {
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
+        // Permitir acceso a H2 console
+        http.headers(headers -> headers.frameOptions().disable());
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Restringir a dominios específicos - cambiar según el entorno
-        configuration.setAllowedOriginPatterns(Arrays.asList(
-            "http://localhost:3000",
-            "http://localhost:8080",
-            "http://localhost:8081",
-            "https://clinic-frontend.com",
-            "https://clinic-admin.com"
-        ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        
+        // Usar variables de entorno para configurar orígenes permitidos
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOriginPatterns(origins);
+        
+        // Usar variables de entorno para configurar métodos permitidos
+        List<String> methods = Arrays.asList(allowedMethods.split(","));
+        configuration.setAllowedMethods(methods);
+        
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setMaxAge(3600L); // Cache preflight por 1 hora

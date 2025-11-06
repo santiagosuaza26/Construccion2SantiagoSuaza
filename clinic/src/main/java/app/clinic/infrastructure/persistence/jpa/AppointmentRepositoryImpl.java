@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 import app.clinic.domain.model.entities.Appointment;
+import app.clinic.domain.model.valueobject.AppointmentStatus;
 import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.repository.AppointmentRepository;
 
@@ -22,17 +23,16 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     public void save(Appointment appointment) {
         // Generate a unique ID for the appointment (you might want to use a UUID or similar)
         String id = generateAppointmentId();
-        AppointmentJpaEntity entity = new AppointmentJpaEntity(
-            id,
-            appointment.getPatientId().getValue(),
-            null, // adminId - not in domain model, set to null or handle separately
-            appointment.getDoctorId().getValue(),
-            appointment.getDateTime(),
-            appointment.getReason(),
-            "SCHEDULED", // default status
-            LocalDateTime.now(),
-            LocalDateTime.now()
-        );
+        AppointmentJpaEntity entity = new AppointmentJpaEntity();
+        entity.setId(id);
+        entity.setPatientId(appointment.getPatientId().getValue());
+        entity.setAdminId(null); // adminId - not in domain model, set to null or handle separately
+        entity.setDoctorId(appointment.getDoctorId().getValue());
+        entity.setAppointmentDate(appointment.getDateTime());
+        entity.setReason(appointment.getReason());
+        entity.setStatus(appointment.getStatus().toString());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(LocalDateTime.now());
         appointmentJpaRepository.save(entity);
     }
 
@@ -66,12 +66,38 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     private Appointment toDomain(AppointmentJpaEntity entity) {
-        return new Appointment(
+        Appointment appointment = new Appointment(
+            new Id(entity.getId()),
             new Id(entity.getPatientId()),
             new Id(entity.getDoctorId()),
             entity.getAppointmentDate(),
             entity.getReason()
         );
+        // Set status from entity
+        AppointmentStatus status = AppointmentStatus.valueOf(entity.getStatus());
+        // Note: We can't directly set status, but we can use the methods to transition
+        switch (status) {
+            case CONFIRMED:
+                appointment.confirm();
+                break;
+            case IN_PROGRESS:
+                appointment.confirm();
+                appointment.start();
+                break;
+            case COMPLETED:
+                appointment.confirm();
+                appointment.start();
+                appointment.complete();
+                break;
+            case CANCELLED:
+                appointment.cancel();
+                break;
+            case SCHEDULED:
+            default:
+                // Already scheduled by default
+                break;
+        }
+        return appointment;
     }
 
     @Override

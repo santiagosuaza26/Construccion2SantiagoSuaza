@@ -90,16 +90,10 @@ public class UserValidationServiceImpl implements UserValidationService {
         if (role == null || role.trim().isEmpty()) {
             throw new IllegalArgumentException("Role is required");
         }
-        String[] validRoles = {"Médico", "Enfermera", "Personal administrativo", "Recursos Humanos", "Soporte"};
-        boolean validRole = false;
-        for (String validRoleOption : validRoles) {
-            if (validRoleOption.equals(role)) {
-                validRole = true;
-                break;
-            }
-        }
-        if (!validRole) {
-            throw new IllegalArgumentException("Invalid role. Must be one of: Médico, Enfermera, Personal administrativo, Recursos Humanos, Soporte");
+        try {
+            app.clinic.domain.model.valueobject.Role.valueOf(role);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role. Must be one of: MEDICO, ENFERMERA, PERSONAL_ADMINISTRATIVO, RECURSOS_HUMANOS, SOPORTE_DE_INFORMACION");
         }
 
         // Validar username

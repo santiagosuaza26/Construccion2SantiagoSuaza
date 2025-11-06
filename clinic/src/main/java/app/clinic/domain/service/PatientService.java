@@ -21,24 +21,12 @@ public class PatientService {
     }
 
     public Patient registerPatient(String identificationNumber, String fullName, String dateOfBirth, String gender, String address, String phone, String email, String emergencyName, String emergencyRelation, String emergencyPhone, String companyName, String policyNumber, boolean insuranceActive, String validityDate) {
-        // Validar género
-        try {
-            Gender.valueOf(gender);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Género inválido: " + gender + ". Valores permitidos: MASCULINO, FEMENINO, OTRO");
-        }
-
-        Id id = new Id(identificationNumber);
-        if (patientRepository.existsByIdentificationNumber(id)) {
-            throw new IllegalArgumentException("Ya existe un paciente con este número de identificación");
-        }
-
-        // Validar unicidad de cédula (única en toda la aplicación)
-        // Nota: En una implementación real, se debería verificar contra todos los usuarios también
+        // Validar todos los datos del paciente
+        validatePatientData(identificationNumber, fullName, dateOfBirth, gender, address, phone, email, emergencyName, emergencyRelation, emergencyPhone, companyName, policyNumber, insuranceActive, validityDate);
 
         EmergencyContact emergencyContact = new EmergencyContact(emergencyName, emergencyRelation, new Phone(emergencyPhone));
-        Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate));
-        Patient patient = new Patient(id, fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
+        Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        Patient patient = new Patient(new Id(identificationNumber), fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
         patientRepository.save(patient);
         return patient;
     }

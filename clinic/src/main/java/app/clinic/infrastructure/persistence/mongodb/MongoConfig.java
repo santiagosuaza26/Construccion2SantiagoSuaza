@@ -13,6 +13,6 @@ public class MongoConfig {
 
     @Bean
     public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(MongoClients.create("mongodb://localhost:27017"), "clinic");
+        return new MongoTemplate(MongoClients.create("mongodb://localhost:27017"), "clinic_db");
     }
 }

@@ -1,9 +1,12 @@
 package app.clinic.infrastructure.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.clinic.application.usecase.CreateUserUseCase;
 import app.clinic.application.usecase.DeleteUserUseCase;
+import app.clinic.application.usecase.ListUsersUseCase;
 import app.clinic.application.usecase.UpdateUserUseCase;
 import app.clinic.domain.model.DomainException;
 import app.clinic.domain.model.valueobject.Role;
@@ -30,15 +34,18 @@ public class UserController {
     private final CreateUserUseCase createUserUseCase;
     private final UpdateUserUseCase updateUserUseCase;
     private final DeleteUserUseCase deleteUserUseCase;
+    private final ListUsersUseCase listUsersUseCase;
     private final RoleBasedAccessService roleBasedAccessService;
 
     public UserController(CreateUserUseCase createUserUseCase,
-                         UpdateUserUseCase updateUserUseCase,
-                         DeleteUserUseCase deleteUserUseCase,
-                         RoleBasedAccessService roleBasedAccessService) {
+                          UpdateUserUseCase updateUserUseCase,
+                          DeleteUserUseCase deleteUserUseCase,
+                          ListUsersUseCase listUsersUseCase,
+                          RoleBasedAccessService roleBasedAccessService) {
         this.createUserUseCase = createUserUseCase;
         this.updateUserUseCase = updateUserUseCase;
         this.deleteUserUseCase = deleteUserUseCase;
+        this.listUsersUseCase = listUsersUseCase;
         this.roleBasedAccessService = roleBasedAccessService;
     }
 
@@ -151,6 +158,25 @@ public class UserController {
         Map<String, Boolean> response = new HashMap<>();
         response.put("canManage", canManage);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('RECURSOS_HUMANOS')")
+    public ResponseEntity<List<UserDTO>> listUsers() {
+        var users = listUsersUseCase.execute();
+
+        var userDTOs = users.stream().map(user -> new UserDTO(
+            user.getIdentificationNumber().getValue(),
+            user.getFullName(),
+            user.getEmail().getValue(),
+            user.getPhone().getValue(),
+            user.getDateOfBirth().toString(),
+            user.getAddress().getValue(),
+            user.getRole().toString(),
+            user.getCredentials().getUsername().getValue()
+        )).collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDTOs);
     }
 
     @GetMapping("/can-register-patients")

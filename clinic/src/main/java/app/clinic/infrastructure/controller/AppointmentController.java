@@ -14,9 +14,18 @@ import app.clinic.domain.model.valueobject.AppointmentStatus;
 import app.clinic.domain.service.PatientService;
 import app.clinic.domain.service.UserService;
 import app.clinic.infrastructure.dto.AppointmentDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/api/appointments")
+@Tag(name = "Appointments", description = "API para gestión de citas médicas")
 public class AppointmentController {
     private final ScheduleAppointmentUseCase scheduleAppointmentUseCase;
     private final PatientService patientService;
@@ -31,24 +40,15 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<AppointmentDTO> scheduleAppointment(@RequestBody ScheduleAppointmentRequest request) {
-        // Validar entrada
-        if (request.patientId == null || request.patientId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Patient ID is required");
-        }
-        if (request.adminId == null || request.adminId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Admin ID is required");
-        }
-        if (request.doctorId == null || request.doctorId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Doctor ID is required");
-        }
-        if (request.dateTime == null || request.dateTime.trim().isEmpty()) {
-            throw new IllegalArgumentException("Date and time are required");
-        }
-        if (request.reason == null || request.reason.trim().isEmpty()) {
-            throw new IllegalArgumentException("Appointment reason is required");
-        }
-
+    @Operation(summary = "Programar cita médica", description = "Programa una nueva cita médica para un paciente")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cita programada exitosamente",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = AppointmentDTO.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+        @ApiResponse(responseCode = "401", description = "No autorizado", content = @Content),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    })
+    public ResponseEntity<AppointmentDTO> scheduleAppointment(@Valid @RequestBody ScheduleAppointmentRequest request) {
         var appointment = scheduleAppointmentUseCase.execute(
             request.patientId, request.adminId, request.doctorId,
             LocalDateTime.parse(request.dateTime), request.reason
@@ -71,11 +71,26 @@ public class AppointmentController {
         return ResponseEntity.ok(dto);
     }
 
+    @Schema(description = "Solicitud para programar una cita médica")
     public static class ScheduleAppointmentRequest {
+        @NotBlank(message = "El ID del paciente es obligatorio")
+        @Schema(description = "ID del paciente", example = "12345")
         public String patientId;
+
+        @NotBlank(message = "El ID del administrador es obligatorio")
+        @Schema(description = "ID del administrador que programa la cita", example = "admin001")
         public String adminId;
+
+        @NotBlank(message = "El ID del médico es obligatorio")
+        @Schema(description = "ID del médico asignado", example = "doc001")
         public String doctorId;
+
+        @NotBlank(message = "La fecha y hora son obligatorias")
+        @Schema(description = "Fecha y hora de la cita en formato ISO 8601", example = "2023-12-01T10:00:00")
         public String dateTime;
+
+        @NotBlank(message = "El motivo de la cita es obligatorio")
+        @Schema(description = "Motivo de la cita médica", example = "Consulta general")
         public String reason;
     }
 }

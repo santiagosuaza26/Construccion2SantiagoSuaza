@@ -1,6 +1,7 @@
 package app.clinic.infrastructure.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,7 @@ public class NurseController {
      * @return PatientDTO with patient information
      */
     @GetMapping("/patients/{id}")
+    @PreAuthorize("hasRole('ENFERMERA')")
     public ResponseEntity<PatientDTO> getPatient(@PathVariable String id) {
         if (id == null || id.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -81,6 +83,7 @@ public class NurseController {
      * @return VitalSignsDTO with the recorded data
      */
     @PostMapping("/vital-signs")
+    @PreAuthorize("hasRole('ENFERMERA')")
     public ResponseEntity<VitalSignsDTO> recordVitalSigns(@Valid @RequestBody RecordVitalSignsRequest request) {
         if (request == null || request.patientId == null || request.patientId.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -107,6 +110,7 @@ public class NurseController {
      * @return HTTP 200 if successful
      */
     @PostMapping("/medication-administration")
+    @PreAuthorize("hasRole('ENFERMERA')")
     public ResponseEntity<Void> recordMedicationAdministration(@RequestBody RecordMedicationAdministrationRequest request) {
         if (request == null || request.patientId == null || request.patientId.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -132,6 +136,7 @@ public class NurseController {
      * @return HTTP 200 if successful
      */
     @PostMapping("/procedure-realization")
+    @PreAuthorize("hasRole('ENFERMERA')")
     public ResponseEntity<Void> recordProcedureRealization(@RequestBody RecordProcedureRealizationRequest request) {
         if (request == null || request.patientId == null || request.patientId.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
@@ -157,6 +162,7 @@ public class NurseController {
      * @return List of vital signs DTOs for the patient
      */
     @GetMapping("/vital-signs")
+    @PreAuthorize("hasRole('ENFERMERA')")
     public ResponseEntity<java.util.List<VitalSignsDTO>> getVitalSigns(@RequestParam String patientId) {
         if (patientId == null || patientId.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();

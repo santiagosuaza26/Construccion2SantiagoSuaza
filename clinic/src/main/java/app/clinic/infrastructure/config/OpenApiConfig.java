@@ -9,6 +9,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class OpenApiConfig {
@@ -19,13 +20,15 @@ public class OpenApiConfig {
             .info(new Info()
                 .title("Clinic Management System API")
                 .version("1.0.0")
-                .description("API para el sistema de gestión de clínicas médicas")
+                .description("API completa para el sistema de gestión de clínicas médicas. Incluye funcionalidades para pacientes, citas, registros médicos, facturación y soporte técnico.")
                 .contact(new Contact()
                     .name("Santiago Suaza")
-                    .email("santiago.suaza@example.com"))
+                    .email("santiago.suaza@correo.tdea.edu.co"))
                 .license(new License()
                     .name("MIT License")
                     .url("https://opensource.org/licenses/MIT")))
+            .addServersItem(new Server().url("http://localhost:8081").description("Servidor de desarrollo local"))
+            .addServersItem(new Server().url("https://api.clinic-management.com").description("Servidor de producción"))
             .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
             .components(new io.swagger.v3.oas.models.Components()
                 .addSecuritySchemes("Bearer Authentication",
@@ -33,6 +36,6 @@ public class OpenApiConfig {
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer")
                         .bearerFormat("JWT")
-                        .description("Ingrese el token JWT sin el prefijo 'Bearer'")));
+                        .description("Ingrese el token JWT obtenido del endpoint de login, sin el prefijo 'Bearer'")));
     }
 }

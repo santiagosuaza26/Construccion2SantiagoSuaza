@@ -30,7 +30,7 @@ public class Insurance {
     }
 
     public boolean isActive() {
-        return active;
+        return active && (validityDate == null || validityDate.isAfter(LocalDate.now()));
     }
 
     public LocalDate getValidityDate() {

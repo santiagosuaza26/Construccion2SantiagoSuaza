@@ -20,9 +20,10 @@ public class AuthenticateUserUseCase {
 
         User user = userService.findUserByUsername(username);
         if (user == null) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new IllegalArgumentException("User not found");
         }
-        if (!user.getPassword().matches(password)) {
+        // For development: simple password comparison (passwords are stored in plain text)
+        if (!user.getPassword().getValue().equals(password)) {
             throw new IllegalArgumentException("Invalid username or password");
         }
         return user;

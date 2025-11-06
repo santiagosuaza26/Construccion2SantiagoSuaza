@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,13 +15,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import app.clinic.application.usecase.ConsultPatientOrdersUseCase;
+import app.clinic.application.usecase.ListPatientsUseCase;
 import app.clinic.application.usecase.RegisterPatientUseCase;
 import app.clinic.application.usecase.UpdatePatientUseCase;
 import app.clinic.domain.model.valueobject.Id;
+import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.repository.AppointmentRepository;
 import app.clinic.domain.service.PatientService;
 import app.clinic.domain.service.UserService;
 import app.clinic.infrastructure.dto.AppointmentDTO;
+import app.clinic.infrastructure.dto.OrderDTO;
 import app.clinic.infrastructure.dto.PatientDTO;
 import jakarta.validation.Valid;
 
@@ -27,23 +34,30 @@ import jakarta.validation.Valid;
 public class PatientController {
     private final RegisterPatientUseCase registerPatientUseCase;
     private final UpdatePatientUseCase updatePatientUseCase;
+    private final ListPatientsUseCase listPatientsUseCase;
+    private final ConsultPatientOrdersUseCase consultPatientOrdersUseCase;
     private final AppointmentRepository appointmentRepository;
     private final PatientService patientService;
     private final UserService userService;
 
     public PatientController(RegisterPatientUseCase registerPatientUseCase,
-                            UpdatePatientUseCase updatePatientUseCase,
-                            AppointmentRepository appointmentRepository,
-                            PatientService patientService,
-                            UserService userService) {
+                             UpdatePatientUseCase updatePatientUseCase,
+                             ListPatientsUseCase listPatientsUseCase,
+                             ConsultPatientOrdersUseCase consultPatientOrdersUseCase,
+                             AppointmentRepository appointmentRepository,
+                             PatientService patientService,
+                             UserService userService) {
         this.registerPatientUseCase = registerPatientUseCase;
         this.updatePatientUseCase = updatePatientUseCase;
+        this.listPatientsUseCase = listPatientsUseCase;
+        this.consultPatientOrdersUseCase = consultPatientOrdersUseCase;
         this.appointmentRepository = appointmentRepository;
         this.patientService = patientService;
         this.userService = userService;
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
     public ResponseEntity<PatientDTO> registerPatient(@Valid @RequestBody RegisterPatientRequest request) {
         var patient = registerPatientUseCase.execute(
             request.identificationNumber, request.fullName, request.dateOfBirth, request.gender,
@@ -73,6 +87,7 @@ public class PatientController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('PERSONAL_ADMINISTRATIVO')")
     public ResponseEntity<PatientDTO> updatePatient(@PathVariable String id, @Valid @RequestBody UpdatePatientRequest request) {
         var patient = updatePatientUseCase.execute(
             id, request.fullName, request.dateOfBirth, request.gender, request.address, request.phone,
@@ -100,7 +115,33 @@ public class PatientController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('PERSONAL_ADMINISTRATIVO', 'MEDICO', 'ENFERMERA')")
+    public ResponseEntity<List<PatientDTO>> listPatients() {
+        var patients = listPatientsUseCase.execute();
+
+        var patientDTOs = patients.stream().map(patient -> new PatientDTO(
+            patient.getIdentificationNumber().getValue(),
+            patient.getFullName(),
+            patient.getDateOfBirth().toString(),
+            patient.getGender().toString(),
+            patient.getAddress().getValue(),
+            patient.getPhone().getValue(),
+            patient.getEmail().getValue(),
+            patient.getEmergencyContact().getName(),
+            patient.getEmergencyContact().getRelation(),
+            patient.getEmergencyContact().getPhone().getValue(),
+            patient.getInsurance().getCompanyName(),
+            patient.getInsurance().getPolicyNumber(),
+            patient.getInsurance().isActive(),
+            patient.getInsurance().getValidityDate().toString()
+        )).collect(Collectors.toList());
+
+        return ResponseEntity.ok(patientDTOs);
+    }
+
     @GetMapping("/{patientId}/appointments")
+    @PreAuthorize("hasAnyRole('PERSONAL_ADMINISTRATIVO', 'MEDICO')")
     public ResponseEntity<List<AppointmentDTO>> getPatientAppointments(@PathVariable String patientId) {
         var appointments = appointmentRepository.findByPatientId(new Id(patientId));
         var patient = patientService.findPatientById(patientId);
@@ -122,6 +163,32 @@ public class PatientController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(appointmentDTOs);
+    }
+
+    @GetMapping("/{patientId}/orders")
+    @PreAuthorize("hasAnyRole('PERSONAL_ADMINISTRATIVO', 'MEDICO', 'ENFERMERA')")
+    public ResponseEntity<List<OrderDTO>> getPatientOrders(@PathVariable String patientId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String roleString = authentication.getAuthorities().iterator().next().getAuthority();
+        if (roleString.startsWith("ROLE_")) {
+            roleString = roleString.substring(5);
+        }
+        Role userRole = Role.valueOf(roleString);
+
+        var orders = consultPatientOrdersUseCase.execute(userRole, patientId);
+
+        var orderDTOs = orders.stream().map(order -> new OrderDTO(
+            order.getOrderNumber().getValue(),
+            order.getPatientIdentificationNumber(),
+            order.getDoctorIdentificationNumber(),
+            order.getDate(),
+            order.getDiagnosis(),
+            order.getMedications().stream().map(m -> String.valueOf(m.getItem())).collect(Collectors.toList()),
+            order.getProcedures().stream().map(p -> String.valueOf(p.getItem())).collect(Collectors.toList()),
+            order.getDiagnosticAids().stream().map(d -> String.valueOf(d.getItem())).collect(Collectors.toList())
+        )).collect(Collectors.toList());
+
+        return ResponseEntity.ok(orderDTOs);
     }
 
     public static class RegisterPatientRequest {

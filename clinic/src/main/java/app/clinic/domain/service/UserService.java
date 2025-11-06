@@ -24,6 +24,9 @@ public class UserService {
     }
 
     public User createUser(String fullName, String identificationNumber, String email, String phone, String dateOfBirth, String address, String role, String username, String password) {
+        // Validar todos los datos del usuario
+        validationService.validateUserData(fullName, identificationNumber, email, phone, dateOfBirth, address, role, username, password);
+
         // Validar que el rol sea válido
         try {
             Role.valueOf(role);
@@ -32,18 +35,7 @@ public class UserService {
         }
 
         Id id = new Id(identificationNumber);
-        if (userRepository.existsByIdentificationNumber(id)) {
-            throw new IllegalArgumentException("Ya existe un usuario con este número de identificación");
-        }
-
-        // Validar unicidad de cédula (única en toda la aplicación)
-        if (userRepository.existsByIdentificationNumber(id)) {
-            throw new IllegalArgumentException("La cédula debe ser única en toda la aplicación");
-        }
-
         Credentials credentials = new Credentials(new Username(username), new Password(password));
-        // Validar unicidad de credenciales usando el servicio de dominio
-        validationService.validateCredentialsUniqueness(credentials);
 
         User user = new User(credentials, fullName, id, new Email(email), new Phone(phone), new DateOfBirth(dateOfBirth), new Address(address), Role.valueOf(role));
 
@@ -77,7 +69,7 @@ public class UserService {
     }
 
     public User findUserByUsername(String username) {
-        return userRepository.findByUsername(new Username(username)).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return userRepository.findByUsername(new Username(username)).orElse(null);
     }
 
     public java.util.List<User> getAllUsers() {

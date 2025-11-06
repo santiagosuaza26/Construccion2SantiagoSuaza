@@ -148,7 +148,14 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Flyway Database Plugin for PostgreSQL -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -429,6 +436,25 @@
 	           <plugin>
 	               <groupId>pl.project13.maven</groupId>
 	               <artifactId>git-commit-id-plugin</artifactId>
+	           </plugin>
+
+	           <!-- Flyway Plugin -->
+	           <plugin>
+	               <groupId>org.flywaydb</groupId>
+	               <artifactId>flyway-maven-plugin</artifactId>
+	               <version>11.7.2</version>
+	               <configuration>
+	                   <url>jdbc:h2:file:./clinic_db;DB_CLOSE_DELAY=-1;MODE=MySQL</url>
+	                   <user>sa</user>
+	                   <password></password>
+	                   <schemas>
+	                       <schema>PUBLIC</schema>
+	                   </schemas>
+	                   <locations>
+	                       <location>classpath:db/migration</location>
+	                   </locations>
+	                   <cleanDisabled>false</cleanDisabled>
+	               </configuration>
 	           </plugin>
 
 	           <!-- Additional Quality Plugins -->
