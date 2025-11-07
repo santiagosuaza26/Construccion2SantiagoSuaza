@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "jwt")
 public class JwtProperties {
-    private String secretKey = "mySuperSecretKeyForDevelopmentThatIsAtLeast32CharactersLong";
+    private String secretKey = "clinic_jwt_secret_key_minimum_256_bits_long_for_security_2025";
     private long expirationTime = 86400000L; // 24 hours in milliseconds
 
     public String getSecretKey() {

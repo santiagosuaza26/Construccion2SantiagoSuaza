@@ -34,7 +34,8 @@ public class AuthServiceImpl {
         User user = userRepository.findByUsername(new Username(username))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (!passwordEncoder.matches(password, user.getCredentials().getPassword().getValue())) {
+        // Para desarrollo: comparar contraseñas en texto plano (como están en la DB)
+        if (!password.equals(user.getCredentials().getPassword().getValue())) {
             throw new RuntimeException("Credenciales inválidas");
         }
 

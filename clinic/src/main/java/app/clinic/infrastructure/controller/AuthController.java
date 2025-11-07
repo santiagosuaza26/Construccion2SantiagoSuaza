@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import app.clinic.application.usecase.AuthenticateUserUseCase;
 import app.clinic.infrastructure.dto.AuthResponseDTO;
+import app.clinic.infrastructure.service.AuthServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,10 +24,10 @@ import jakarta.validation.constraints.Size;
 public class AuthController {
     // Logger will be added when SLF4J dependency is available
 
-    private final AuthenticateUserUseCase authenticateUserUseCase;
+    private final AuthServiceImpl authService;
 
-    public AuthController(AuthenticateUserUseCase authenticateUserUseCase) {
-        this.authenticateUserUseCase = authenticateUserUseCase;
+    public AuthController(AuthServiceImpl authService) {
+        this.authService = authService;
     }
 
     @PostMapping("/login")
@@ -51,14 +51,8 @@ public class AuthController {
         String sanitizedUsername = request.username.trim().replaceAll("[<>\"'&]", "");
         String sanitizedPassword = request.password.trim();
 
-        var user = authenticateUserUseCase.execute(sanitizedUsername, sanitizedPassword);
-
-        var response = new AuthResponseDTO(
-            "authenticated", // Simple token for basic auth
-            user.getFullName(),
-            user.getRole().toString(),
-            0L // No expiration for basic auth
-        );
+        // Usar el servicio de autenticación que genera JWT real
+        AuthResponseDTO response = authService.authenticate(sanitizedUsername, sanitizedPassword);
 
         return ResponseEntity.ok(response);
     }

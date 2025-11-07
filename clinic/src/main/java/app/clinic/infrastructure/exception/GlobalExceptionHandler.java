@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import app.clinic.domain.model.DomainException;
 import app.clinic.domain.model.DuplicateOrderNumberException;
 import app.clinic.domain.model.InvalidOrderStateException;
+import app.clinic.domain.model.OrderNotFoundException;
+import app.clinic.domain.model.PatientNotFoundException;
+import app.clinic.domain.model.UserNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -51,6 +54,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleOrderNotFound(OrderNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            "Orden No Encontrada",
+            ex.getMessage(),
+            LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         ErrorResponse error = new ErrorResponse(
@@ -78,6 +92,39 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
             "Entrada Inválida",
+            ex.getMessage(),
+            LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            "Usuario No Encontrado",
+            ex.getMessage(),
+            LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PatientNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePatientNotFound(PatientNotFoundException ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            "Paciente No Encontrado",
+            ex.getMessage(),
+            LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            "Error de Autenticación",
             ex.getMessage(),
             LocalDateTime.now()
         );

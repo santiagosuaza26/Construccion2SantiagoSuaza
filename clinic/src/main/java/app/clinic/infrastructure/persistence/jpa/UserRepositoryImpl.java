@@ -68,6 +68,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void deleteByIdentificationNumber(Id identificationNumber) {
+        if (identificationNumber == null) {
+            throw new IllegalArgumentException("Identification number cannot be null");
+        }
         jpaRepository.deleteById(identificationNumber.getValue());
     }
 

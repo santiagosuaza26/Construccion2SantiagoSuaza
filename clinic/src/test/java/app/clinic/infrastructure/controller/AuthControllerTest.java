@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import app.clinic.application.usecase.AuthenticateUserUseCase;
 import app.clinic.domain.model.entities.User;
 import app.clinic.domain.model.valueobject.Address;
 import app.clinic.domain.model.valueobject.Credentials;
@@ -27,12 +26,13 @@ import app.clinic.domain.model.valueobject.Phone;
 import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.model.valueobject.Username;
 import app.clinic.infrastructure.dto.AuthResponseDTO;
+import app.clinic.infrastructure.service.AuthServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
     @Mock
-    private AuthenticateUserUseCase authenticateUserUseCase;
+    private AuthServiceImpl authService;
 
 
     private AuthController authController;
@@ -42,7 +42,7 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
-        authController = new AuthController(authenticateUserUseCase);
+        authController = new AuthController(authService);
 
         // Create test user
         Credentials credentials = new Credentials(
@@ -70,7 +70,7 @@ class AuthControllerTest {
     @Test
     void login_WithValidCredentials_ShouldReturnOkResponse() {
         // Arrange
-        when(authenticateUserUseCase.execute("testuser", "TestPass123!")).thenReturn(testUser);
+        when(authService.authenticate("testuser", "TestPass123!")).thenReturn(new AuthResponseDTO("jwt-token", "Test User", "MEDICO", 86400000L));
 
         // Act
         ResponseEntity<AuthResponseDTO> response = authController.login(loginRequest);
@@ -83,44 +83,44 @@ class AuthControllerTest {
         assertNotNull(response.getBody().getRole());
         assertEquals("MEDICO", response.getBody().getRole());
         assertNotNull(response.getBody().getToken());
-        assertEquals("authenticated", response.getBody().getToken());
-        assertEquals(0L, response.getBody().getExpiresIn());
+        assertNotNull(response.getBody().getToken());
+        assertNotNull(response.getBody().getExpiresIn());
 
-        verify(authenticateUserUseCase).execute("testuser", "TestPass123!");
+        verify(authService).authenticate("testuser", "TestPass123!");
     }
 
     @Test
     void login_WithInvalidCredentials_ShouldThrowException() {
         // Arrange
-        when(authenticateUserUseCase.execute("testuser", "wrongpassword"))
-            .thenThrow(new IllegalArgumentException("Invalid username or password"));
+        when(authService.authenticate("testuser", "wrongpassword"))
+            .thenThrow(new RuntimeException("Credenciales inválidas"));
 
         loginRequest.password = "wrongpassword";
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             authController.login(loginRequest);
         });
         assertNotNull(exception);
 
-        verify(authenticateUserUseCase).execute("testuser", "wrongpassword");
+        verify(authService).authenticate("testuser", "wrongpassword");
     }
 
     @Test
     void login_WithNonExistentUser_ShouldThrowException() {
         // Arrange
-        when(authenticateUserUseCase.execute("nonexistent", "TestPass123!"))
-            .thenThrow(new IllegalArgumentException("Invalid username or password"));
+        when(authService.authenticate("nonexistent", "TestPass123!"))
+            .thenThrow(new RuntimeException("Usuario no encontrado"));
 
         loginRequest.username = "nonexistent";
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             authController.login(loginRequest);
         });
         assertNotNull(exception);
 
-        verify(authenticateUserUseCase).execute("nonexistent", "TestPass123!");
+        verify(authService).authenticate("nonexistent", "TestPass123!");
     }
 
     @Test
@@ -134,7 +134,7 @@ class AuthControllerTest {
         });
         assertNotNull(exception);
 
-        verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
+        verify(authService, never()).authenticate(anyString(), anyString());
     }
 
     @Test
@@ -148,7 +148,7 @@ class AuthControllerTest {
         });
         assertNotNull(exception);
 
-        verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
+        verify(authService, never()).authenticate(anyString(), anyString());
     }
 
     @Test
@@ -162,7 +162,7 @@ class AuthControllerTest {
         });
         assertNotNull(exception);
 
-        verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
+        verify(authService, never()).authenticate(anyString(), anyString());
     }
 
     @Test
@@ -176,7 +176,7 @@ class AuthControllerTest {
         });
         assertNotNull(exception);
 
-        verify(authenticateUserUseCase, never()).execute(anyString(), anyString());
+        verify(authService, never()).authenticate(anyString(), anyString());
     }
 
 }
