@@ -6,6 +6,10 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-7.0-green.svg)](https://www.mongodb.com/)
 [![Maven](https://img.shields.io/badge/Maven-3.8.6-red.svg)](https://maven.apache.org/)
 
+## Desarrollado por
+
+Santiago suaza cardona
+
 ## 📋 Descripción
 
 El backend del **Sistema de Gestión Clínica** es una API REST robusta construida con Spring Boot, que proporciona servicios backend completos para la gestión integral de clínicas médicas. Implementa arquitectura de microservicios con Domain-Driven Design (DDD).
@@ -24,6 +28,7 @@ El backend del **Sistema de Gestión Clínica** es una API REST robusta construi
 ## 🛠️ Tecnologías
 
 ### **Framework & Runtime**
+
 - **Java 17**: Lenguaje principal con LTS
 - **Spring Boot 3.0**: Framework de aplicaciones
 - **Spring Security 6.0**: Seguridad y autenticación
@@ -31,17 +36,20 @@ El backend del **Sistema de Gestión Clínica** es una API REST robusta construi
 - **Spring Data MongoDB**: Persistencia NoSQL
 
 ### **Bases de Datos**
+
 - **PostgreSQL 15**: Datos relacionales
 - **MongoDB 7.0**: Historia clínica NoSQL
 - **Redis 7.0**: Caché y sesiones
 
 ### **Testing & Quality**
+
 - **JUnit 5**: Framework de testing
 - **Mockito**: Mocks y stubs
 - **JaCoCo**: Cobertura de código
 - **Testcontainers**: Tests de integración
 
 ### **DevOps & Tools**
+
 - **Maven**: Gestión de dependencias
 - **Docker**: Containerización
 - **GitHub Actions**: CI/CD
@@ -50,6 +58,7 @@ El backend del **Sistema de Gestión Clínica** es una API REST robusta construi
 ## 🚀 Inicio Rápido
 
 ### **Prerrequisitos**
+
 - Java 17 JDK
 - Maven 3.8+
 - Docker & Docker Compose
@@ -124,6 +133,7 @@ clinic/
 ### **Capas del Sistema**
 
 #### **1. Domain Layer (Dominio)**
+
 - **Entities**: Objetos con identidad (Patient, Doctor, Appointment)
 - **Value Objects**: Objetos sin identidad (Email, Phone, Address)
 - **Domain Services**: Lógica de negocio compleja
@@ -131,12 +141,14 @@ clinic/
 - **Domain Events**: Eventos del dominio
 
 #### **2. Application Layer (Aplicación)**
+
 - **Use Cases**: Casos de uso de la aplicación
 - **DTOs**: Objetos de transferencia de datos
 - **Mappers**: Conversión entre capas
 - **Application Services**: Coordinación de casos de uso
 
 #### **3. Infrastructure Layer (Infraestructura)**
+
 - **Controllers**: Endpoints REST
 - **Repositories Impl**: Implementaciones de repositorio
 - **External Services**: Integraciones externas
@@ -192,6 +204,7 @@ public class SecurityConfig {
 ### **Arquitectura Multi-Base de Datos**
 
 #### **PostgreSQL - Datos Relacionales**
+
 ```sql
 -- Usuarios del sistema
 CREATE TABLE users (
@@ -215,6 +228,7 @@ CREATE TABLE patients (
 ```
 
 #### **MongoDB - Historia Clínica**
+
 ```javascript
 // Documento de historia clínica
 {
@@ -237,6 +251,7 @@ CREATE TABLE patients (
 ```
 
 #### **Redis - Caché y Sesiones**
+
 ```bash
 # Sesiones de usuario
 SET session:user:12345 "{userId:12345, role:'DOCTOR', expires:1640995200}"
@@ -250,6 +265,7 @@ SET cache:patients:active "[{id:1, name:'Juan Pérez'}, ...]"
 ### **Estrategia de Testing**
 
 #### **1. Unit Tests**
+
 ```java
 @SpringBootTest
 class PatientServiceTest {
@@ -275,6 +291,7 @@ class PatientServiceTest {
 ```
 
 #### **2. Integration Tests**
+
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PatientControllerIntegrationTest {
@@ -292,6 +309,7 @@ class PatientControllerIntegrationTest {
 ```
 
 #### **3. Testcontainers**
+
 ```java
 @Testcontainers
 @SpringBootTest
@@ -327,12 +345,14 @@ mvn clean test jacoco:report
 ### **Swagger/OpenAPI**
 
 La documentación completa está disponible en:
+
 - **Swagger UI**: http://localhost:8081/swagger-ui.html
 - **OpenAPI JSON**: http://localhost:8081/v3/api-docs
 
 ### **Endpoints Principales**
 
 #### **Autenticación**
+
 ```http
 POST /api/auth/login
 POST /api/auth/refresh
@@ -340,6 +360,7 @@ POST /api/auth/logout
 ```
 
 #### **Pacientes**
+
 ```http
 GET    /api/patients
 POST   /api/patients
@@ -349,6 +370,7 @@ DELETE /api/patients/{id}
 ```
 
 #### **Citas Médicas**
+
 ```http
 GET    /api/appointments
 POST   /api/appointments
@@ -356,11 +378,68 @@ PUT    /api/appointments/{id}/status
 ```
 
 #### **Historia Clínica**
+
 ```http
 GET    /api/medical-records/{patientId}
 POST   /api/medical-records
 PUT    /api/medical-records/{id}
 ```
+
+### **Usuarios de Prueba**
+
+Para facilitar las pruebas de la API, se incluyen usuarios pre-configurados con diferentes roles. Utiliza estos usuarios para autenticarte y probar los diferentes endpoints según los permisos de cada rol.
+
+#### **Credenciales de Prueba**
+
+| Rol | Usuario | Contraseña | Descripción |
+|-----|---------|------------|-------------|
+| **ADMIN** | `admin.clinic` | `Admin123!` | Administrador del sistema con acceso completo |
+| **HUMAN_RESOURCES** | `hr.clinic` | `Hr123!` | Recursos Humanos - gestión de usuarios |
+| **ADMINISTRATIVE_STAFF** | `admin.staff` | `Staff123!` | Personal administrativo - gestión de pacientes |
+| **SUPPORT_STAFF** | `support.clinic` | `Support123!` | Soporte técnico - gestión de inventario |
+| **DOCTOR** | `dr.garcia` | `Doctor123!` | Médico - acceso a historias clínicas |
+| **NURSE** | `nurse.maria` | `Nurse123!` | Enfermera - registro de signos vitales |
+
+#### **Ejemplo de Autenticación**
+
+```bash
+# Login como administrador
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin.clinic",
+    "password": "Admin123!"
+  }'
+
+# Respuesta esperada
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "refresh_token_here",
+  "user": {
+    "id": "12345",
+    "username": "admin.clinic",
+    "fullName": "Administrador Clínico",
+    "role": "ADMIN"
+  }
+}
+```
+
+#### **Uso del Token JWT**
+
+```bash
+# Usar el token en requests autenticados
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN_HERE" \
+     http://localhost:8080/api/patients
+```
+
+#### **Permisos por Rol**
+
+- **ADMIN**: Acceso completo a todos los endpoints
+- **HUMAN_RESOURCES**: `/api/users/*`, `/api/roles/*`
+- **ADMINISTRATIVE_STAFF**: `/api/patients/*`, `/api/appointments/*`
+- **SUPPORT_STAFF**: `/api/inventory/*`, `/api/orders/*`
+- **DOCTOR**: `/api/medical-records/*`, `/api/patients/{id}`, `/api/appointments/doctor/*`
+- **NURSE**: `/api/vital-signs/*`, `/api/patients/{id}`, `/api/appointments/nurse/*`
 
 ## 🚀 Despliegue
 
@@ -479,6 +558,7 @@ logging.level.org.springframework.security=DEBUG
 ### **Problemas Comunes**
 
 #### **Error de Conexión a BD**
+
 ```bash
 # Verificar servicios Docker
 docker-compose ps
@@ -491,6 +571,7 @@ docker exec -it clinic-postgres psql -U clinic_user -d clinic_management
 ```
 
 #### **Error de Memoria**
+
 ```bash
 # Configurar JVM
 java -Xmx2g -Xms1g -XX:+UseG1GC -jar app.jar
@@ -500,6 +581,7 @@ ENV JAVA_OPTS="-Xmx2g -Xms1g -XX:+UseG1GC"
 ```
 
 #### **Tests Fallando**
+
 ```bash
 # Ejecutar tests específicos
 mvn test -Dtest=PatientServiceTest
@@ -513,6 +595,7 @@ mvn test -DforkCount=0 -DreuseForks=false
 ### **Performance Tuning**
 
 #### **Base de Datos**
+
 ```sql
 -- Índices optimizados
 CREATE INDEX idx_patients_national_id ON patients(national_id);
@@ -523,6 +606,7 @@ EXPLAIN ANALYZE SELECT * FROM patients WHERE national_id = 'CC-123';
 ```
 
 #### **Aplicación**
+
 ```java
 // Caché con Redis
 @Cacheable("patients")
@@ -564,7 +648,7 @@ git push origin feature/patient-registration
 
 ## 📞 Soporte
 
-- **📧 Email**: backend@clinic.com
+- **📧 Email**: santiago.suaza@correo.tdea.edu.co
 - **🐛 Issues**: [GitHub Issues](https://github.com/santiagosuaza26/Construccion2SantiagoSuaza/issues)
 - **📖 Docs**: [Documentación Completa](../README.md)
 

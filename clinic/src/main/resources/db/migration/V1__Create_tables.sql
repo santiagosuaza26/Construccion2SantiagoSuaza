@@ -10,7 +10,7 @@ CREATE TABLE users (
     phone VARCHAR(15) NOT NULL,
     date_of_birth VARCHAR(10) NOT NULL,
     address VARCHAR(30) NOT NULL,
-    role VARCHAR(50) NOT NULL CHECK (role IN ('Médico', 'Enfermera', 'Personal administrativo', 'Recursos Humanos', 'Soporte')),
+    role VARCHAR(50) NOT NULL CHECK (role IN ('MEDICO', 'ENFERMERA', 'PERSONAL_ADMINISTRATIVO', 'RECURSOS_HUMANOS', 'SOPORTE_DE_INFORMACION')),
     username VARCHAR(15) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL
 );

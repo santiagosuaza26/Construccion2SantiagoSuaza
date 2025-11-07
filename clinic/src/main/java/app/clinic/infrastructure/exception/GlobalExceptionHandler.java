@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
-            "Domain Error",
+            "Error de Dominio",
             ex.getMessage(),
             LocalDateTime.now()
         );
@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicateOrderNumber(DuplicateOrderNumberException ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.CONFLICT.value(),
-            "Duplicate Order Number",
+            "Número de Orden Duplicado",
             ex.getMessage(),
             LocalDateTime.now()
         );
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidOrderState(InvalidOrderStateException ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
-            "Invalid Order State",
+            "Estado de Orden Inválido",
             ex.getMessage(),
             LocalDateTime.now()
         );
@@ -55,8 +55,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.FORBIDDEN.value(),
-            "Access Denied",
-            "You don't have permission to access this resource. Please contact your administrator if you believe this is an error.",
+            "Acceso Denegado",
+            "No tienes permisos para acceder a este recurso. Por favor, contacta a tu administrador si crees que esto es un error.",
             LocalDateTime.now()
         );
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalAccess(IllegalAccessError ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.FORBIDDEN.value(),
-            "Access Denied",
+            "Acceso Denegado",
             ex.getMessage(),
             LocalDateTime.now()
         );
@@ -77,7 +77,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
-            "Invalid Input",
+            "Entrada Inválida",
             ex.getMessage(),
             LocalDateTime.now()
         );
@@ -93,8 +93,8 @@ public class GlobalExceptionHandler {
 
         ValidationErrorResponse error = new ValidationErrorResponse(
             HttpStatus.BAD_REQUEST.value(),
-            "Validation Error",
-            "Input validation failed",
+            "Error de Validación",
+            "La validación de entrada falló",
             errors,
             LocalDateTime.now()
         );
@@ -105,8 +105,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
         ErrorResponse error = new ErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Internal Server Error",
-            "An unexpected error occurred",
+            "Error Interno del Servidor",
+            "Ocurrió un error inesperado",
             LocalDateTime.now()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);

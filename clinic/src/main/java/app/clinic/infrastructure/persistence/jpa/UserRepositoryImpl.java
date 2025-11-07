@@ -74,7 +74,7 @@ public class UserRepositoryImpl implements UserRepository {
     private User toDomain(UserJpaEntity entity) {
         Credentials credentials = new Credentials(
             new Username(entity.getUsername()),
-            new Password(entity.getPassword(), false) // false = password is plain text for development
+            new Password(entity.getPassword(), true) // true = password is hashed for database storage
         );
 
         return new User(

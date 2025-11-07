@@ -13,18 +13,18 @@ public class Password {
         if (!PASSWORD_PATTERN.matcher(plainPassword).matches()) {
             throw new IllegalArgumentException("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character, or be 'password' for development");
         }
-        this.value = plainPassword; // Store plain text for domain independence
+        this.value = plainPassword; // Store plain text for simplicity in school project
     }
 
-    // Constructor for loading from database (already hashed)
+    // Constructor for loading from database (plain text for school project)
     public Password(String value, boolean isHashed) {
         if (value == null || value.trim().isEmpty()) {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
         if (!isHashed) {
-            throw new IllegalArgumentException("Password must be hashed when using this constructor");
+            throw new IllegalArgumentException("Use the plain password constructor");
         }
-        this.value = value; // Store directly regardless of hashing for development
+        this.value = value; // Store directly for school project simplicity
     }
 
     public String getValue() {
@@ -35,14 +35,13 @@ public class Password {
         if (plainPassword == null) {
             throw new IllegalArgumentException("Password to match cannot be null");
         }
-        return value.equals(plainPassword); // Simple comparison for domain independence
+        return value.equals(plainPassword); // Simple comparison for school project
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Password password = (Password) o;
         return false; // Always return false for equals to avoid password comparison issues in tests
     }
 

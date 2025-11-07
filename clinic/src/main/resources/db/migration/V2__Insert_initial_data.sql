@@ -4,17 +4,17 @@
 -- Insertar usuarios de ejemplo (contraseñas en texto plano para desarrollo)
 -- NOTA: Estas son contraseñas de ejemplo. En producción, usar contraseñas seguras y hasheadas.
 INSERT INTO users (id, full_name, email, phone, date_of_birth, address, role, username, password_hash) VALUES
-('1234567890', 'Dr. Juan Pérez', 'juan.perez@clinica.com', '3001234567', '15/05/1980', 'Calle 123 #45-67', 'Médico', 'jperez', 'Password123!'),
-('0987654321', 'María González', 'maria.gonzalez@clinica.com', '3019876543', '20/03/1985', 'Carrera 89 #12-34', 'Enfermera', 'mgonzalez', 'Password123!'),
-('1122334455', 'Carlos Rodríguez', 'carlos.rodriguez@clinica.com', '3025556666', '10/08/1975', 'Avenida 56 #78-90', 'Personal administrativo', 'crodriguez', 'Password123!'),
-('5566778899', 'Ana López', 'ana.lopez@clinica.com', '3034445555', '25/12/1990', 'Diagonal 34 #56-78', 'Recursos Humanos', 'alopez', 'Password123!'),
-('9988776655', 'Pedro Martínez', 'pedro.martinez@clinica.com', '3043332222', '05/11/1982', 'Transversal 67 #89-01', 'Soporte', 'pmartinez', 'Password123!');
+('1234567890', 'Dr. Juan Pérez', 'juan.perez@clinica.com', '3001234567', '15/05/1980', 'Calle 123 #45-67', 'MEDICO', 'jperez', 'Password123!'),
+('0987654321', 'María González', 'maria.gonzalez@clinica.com', '3019876543', '20/03/1985', 'Carrera 89 #12-34', 'ENFERMERA', 'mgonzalez', 'Password123!'),
+('1122334455', 'Carlos Rodríguez', 'carlos.rodriguez@clinica.com', '3025556666', '10/08/1975', 'Avenida 56 #78-90', 'PERSONAL_ADMINISTRATIVO', 'crodriguez', 'Password123!'),
+('5566778899', 'Ana López', 'ana.lopez@clinica.com', '3034445555', '25/12/1990', 'Diagonal 34 #56-78', 'RECURSOS_HUMANOS', 'alopez', 'Password123!'),
+('9988776655', 'Pedro Martínez', 'pedro.martinez@clinica.com', '3043332222', '05/11/1982', 'Transversal 67 #89-01', 'SOPORTE_DE_INFORMACION', 'pmartinez', 'Password123!');
 
 -- Insertar pacientes de ejemplo
 INSERT INTO patients (identification_number, full_name, date_of_birth, gender, address, phone, email, emergency_contact_name, emergency_contact_relation, emergency_contact_phone, insurance_company_name, insurance_policy_number, insurance_active, insurance_validity_date, annual_copay_total) VALUES
-('1111111111', 'Roberto Silva', '15/07/1985', 'masculino', 'Calle 45 #67-89', '3101234567', 'roberto.silva@email.com', 'María Silva', 'Esposa', '3117654321', 'Seguros Salud Plus', 'POL001234', true, '31/12/2025', 0.00),
-('2222222222', 'Carmen Torres', '22/09/1992', 'femenino', 'Carrera 78 #90-12', '3209876543', 'carmen.torres@email.com', 'José Torres', 'Hermano', '3216543210', 'MediCare Colombia', 'POL005678', true, '30/06/2025', 50000.00),
-('3333333333', 'Luis Ramírez', '08/03/1978', 'masculino', 'Avenida 23 #45-67', '3305554444', 'luis.ramirez@email.com', 'Ana Ramírez', 'Hija', '3312223333', NULL, NULL, false, NULL, 0.00);
+('1111111111', 'Roberto Silva', '15/07/1985', 'masculino', 'Calle 45 #67-89', '3101234567', 'roberto.silva@clinica.com', 'María Silva', 'Esposa', '3117654321', 'Seguros Salud Plus', 'POL001234', true, '31/12/2025', 0.00),
+('2222222222', 'Carmen Torres', '22/09/1992', 'femenino', 'Carrera 78 #90-12', '3209876543', 'carmen.torres@clinica.com', 'José Torres', 'Hermano', '3216543210', 'MediCare Colombia', 'POL005678', true, '30/06/2025', 50000.00),
+('3333333333', 'Luis Ramírez', '08/03/1978', 'masculino', 'Avenida 23 #45-67', '3305554444', 'luis.ramirez@clinica.com', 'Ana Ramírez', 'Hija', '3312223333', NULL, NULL, false, NULL, 0.00);
 
 -- Insertar medicamentos de ejemplo
 INSERT INTO medications (id, name, cost, requires_specialist, specialist_type) VALUES

@@ -71,17 +71,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Usar variables de entorno para configurar orígenes permitidos
-        List<String> origins = Arrays.asList(allowedOrigins.split(","));
-        configuration.setAllowedOriginPatterns(origins);
-        
+
+        // Permitir todos los orígenes para desarrollo
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
         // Usar variables de entorno para configurar métodos permitidos
         List<String> methods = Arrays.asList(allowedMethods.split(","));
         configuration.setAllowedMethods(methods);
-        
+
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // No se puede usar credenciales con "*"
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setMaxAge(3600L); // Cache preflight por 1 hora
 

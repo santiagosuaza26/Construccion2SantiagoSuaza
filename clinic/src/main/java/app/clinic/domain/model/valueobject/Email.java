@@ -9,7 +9,7 @@ public class Email {
     private static final List<String> VALID_DOMAINS = Arrays.asList(
         "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com",
         "aol.com", "protonmail.com", "mail.com", "yandex.com", "zoho.com",
-        "example.com"
+        "example.com","clinica.com"
     );
 
     private final String value;

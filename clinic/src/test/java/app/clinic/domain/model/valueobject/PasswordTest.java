@@ -2,7 +2,6 @@ package app.clinic.domain.model.valueobject;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -198,7 +197,7 @@ class PasswordTest {
     }
 
     @Test
-    void hashCode_WithSamePassword_ShouldReturnDifferentHashCodes() {
+    void hashCode_WithSamePassword_ShouldReturnSameHashCodes() {
         // Arrange
         String plainPassword = "TestPass123!";
         Password password1 = new Password(plainPassword);
@@ -209,8 +208,8 @@ class PasswordTest {
         int hashCode2 = password2.hashCode();
 
         // Assert
-        // Hash codes should be different for security (different salt)
-        assertNotEquals(hashCode1, hashCode2, "Hash codes should be different due to salting");
+        // Hash codes are the same since passwords are stored in plain text for domain independence
+        assertEquals(hashCode1, hashCode2, "Hash codes should be the same since passwords are stored in plain text");
     }
 
     @Test

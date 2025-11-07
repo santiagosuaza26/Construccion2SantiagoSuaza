@@ -12,20 +12,27 @@ public class AuthenticateUserUseCase {
 
     public User execute(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new IllegalArgumentException("Nombre de usuario o contraseña inválidos");
         }
         if (password == null || password.trim().isEmpty()) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new IllegalArgumentException("Nombre de usuario o contraseña inválidos");
         }
 
         User user = userService.findUserByUsername(username);
         if (user == null) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new IllegalArgumentException("Nombre de usuario o contraseña inválidos");
         }
         // For development: simple password comparison (passwords are stored in plain text)
         if (!user.getPassword().getValue().equals(password)) {
-            throw new IllegalArgumentException("Invalid username or password");
+            throw new IllegalArgumentException("Nombre de usuario o contraseña inválidos");
         }
         return user;
+    }
+
+    public User getUserByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de usuario no puede ser nulo o vacío");
+        }
+        return userService.findUserByUsername(username);
     }
 }

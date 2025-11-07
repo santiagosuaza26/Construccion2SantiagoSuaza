@@ -22,17 +22,20 @@ Interfaz de usuario moderna y responsiva para el **Sistema de Gestión Clínica*
 ## 🛠️ Tecnologías
 
 ### **Framework & Runtime**
+
 - **Next.js 16.0.1**: Framework React con App Router
 - **React 19.2.0**: Biblioteca de UI
 - **TypeScript 5**: Tipado estático
 - **Node.js 18+**: Runtime de JavaScript
 
 ### **Styling & UI**
+
 - **Tailwind CSS 3.4.0**: Framework CSS utility-first
 - **PostCSS**: Procesador CSS
 - **ESLint**: Linting de código
 
 ### **Integración Backend**
+
 - **Fetch API**: Comunicación con API REST
 - **JWT**: Gestión de autenticación
 - **Local Storage**: Persistencia de sesión
@@ -40,6 +43,7 @@ Interfaz de usuario moderna y responsiva para el **Sistema de Gestión Clínica*
 ## 🚀 Inicio Rápido
 
 ### **Prerrequisitos**
+
 - Node.js 18 o superior
 - npm, yarn, pnpm o bun
 - Backend corriendo en `http://localhost:8080`
@@ -76,7 +80,6 @@ Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ## 📁 Estructura del Proyecto
 
-```
 frontend/
 ├── src/
 │   ├── app/                     # 📱 Páginas Next.js (App Router)
@@ -118,7 +121,6 @@ frontend/
 ├── package.json                 # 📦 Dependencias
 ├── tailwind.config.js           # 🎨 Configuración Tailwind
 └── tsconfig.json                # 🔧 Configuración TypeScript
-```
 
 ## 🔐 Autenticación y Roles
 
@@ -185,6 +187,7 @@ module.exports = {
 ### **Componentes Principales**
 
 #### **Layout Responsivo**
+
 ```tsx
 // src/components/Layout.tsx
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -203,6 +206,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 ```
 
 #### **Formularios con Validación**
+
 ```tsx
 // src/components/forms/PatientForm.tsx
 export default function PatientForm() {
@@ -271,12 +275,14 @@ export const api = new ApiClient();
 ### **Endpoints Utilizados**
 
 #### **Autenticación**
+
 ```http
 POST /api/auth/login
 POST /api/auth/logout
 ```
 
 #### **Pacientes**
+
 ```http
 GET    /api/patients
 POST   /api/patients
@@ -285,6 +291,7 @@ PUT    /api/patients/{id}
 ```
 
 #### **Citas**
+
 ```http
 GET    /api/appointments
 POST   /api/appointments
@@ -292,6 +299,7 @@ PUT    /api/appointments/{id}/status
 ```
 
 #### **Registros Médicos**
+
 ```http
 GET    /api/medical-records/{patientId}
 POST   /api/medical-records
@@ -401,6 +409,7 @@ npm run test:coverage # Cobertura de tests
 ### **Problemas Comunes**
 
 #### **Error de Conexión con Backend**
+
 ```bash
 # Verificar que el backend esté corriendo
 curl http://localhost:8080/actuator/health
@@ -410,6 +419,7 @@ echo $NEXT_PUBLIC_API_URL
 ```
 
 #### **Errores de Build**
+
 ```bash
 # Limpiar cache de Next.js
 rm -rf .next
@@ -420,6 +430,7 @@ npm ls --depth=0
 ```
 
 #### **Problemas de CORS**
+
 - Asegurarse de que el backend tenga configurado CORS para `http://localhost:3000`
 - Verificar configuración en `SecurityConfig.java`
 
@@ -466,7 +477,7 @@ git push origin feature/patient-dashboard
 
 ## 📞 Soporte
 
-- **📧 Email**: frontend@clinic.com
+- **📧 Email**: santiago.suaza@correo.tdea.edu.co
 - **🐛 Issues**: [GitHub Issues](https://github.com/santiagosuaza26/Construccion2SantiagoSuaza/issues)
 - **📖 Docs**: [Documentación Completa](../README.md)
 - **🔗 API Docs**: [Swagger UI](http://localhost:8081/swagger-ui.html)

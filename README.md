@@ -10,7 +10,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Un sistema completo de gestión de clínicas médicas desarrollado con arquitectura de microservicios, diseñado para optimizar la administración de pacientes, citas médicas, registros médicos, facturación y soporte técnico.
+Sistema integral para la gestión de clínicas médicas, desarrollado con arquitectura de microservicios. Optimiza la administración de pacientes, citas, registros médicos, facturación y soporte técnico.
 
 ## 📋 Tabla de Contenidos
 
@@ -128,51 +128,51 @@ El sistema sigue una arquitectura limpia (Clean Architecture) con separación cl
 ### Componentes Principales
 
 - **Backend (Spring Boot)**: API RESTful con arquitectura hexagonal
-- **Frontend (Next.js)**: Interfaz de usuario moderna y responsiva
+- **Frontend (Next.js)**: Interfaz moderna y responsiva
 - **PostgreSQL**: Base de datos relacional para datos estructurados
 - **MongoDB**: Base de datos NoSQL para registros médicos
-- **Redis**: Cache y sesiones de usuario
-- **Docker**: Contenedorización completa del sistema
+- **Redis**: Cache y sesiones
+- **Docker**: Contenedorización completa
 
 ## 🛠️ Tecnologías
 
 ### Backend
 
-- **Java 17** - Lenguaje de programación principal
+- **Java 17** - Lenguaje principal
 - **Spring Boot 3.5.7** - Framework web
 - **Spring Security** - Autenticación y autorización
-- **Spring Data JPA** - Acceso a datos relacionales
-- **Spring Data MongoDB** - Acceso a datos NoSQL
+- **Spring Data JPA** - Acceso datos relacionales
+- **Spring Data MongoDB** - Acceso datos NoSQL
 - **Spring Data Redis** - Cache y sesiones
 - **JWT** - Autenticación stateless
-- **Flyway** - Migraciones de base de datos
-- **OpenAPI/Swagger** - Documentación de API
+- **Flyway** - Migraciones BD
+- **OpenAPI/Swagger** - Documentación API
 - **Bucket4j** - Rate limiting
-- **Lombok** - Reducción de código boilerplate
+- **Lombok** - Reducción boilerplate
 
 ### Frontend
 
 - **Next.js 16.0.1** - Framework React
 - **TypeScript 5** - Tipado estático
-- **React 19.2.0** - Biblioteca de UI
+- **React 19.2.0** - Biblioteca UI
 - **Tailwind CSS** - Framework CSS
-- **ESLint** - Linting de código
+- **ESLint** - Linting
 
 ### Bases de Datos y Cache
 
-- **PostgreSQL 15** - Base de datos relacional
-- **MongoDB 7** - Base de datos de documentos
+- **PostgreSQL 15** - BD relacional
+- **MongoDB 7** - BD documentos
 - **Redis 7** - Cache y sesiones
-- **H2 Database** - Base de datos embebida para desarrollo
+- **H2 Database** - BD embebida desarrollo
 
 ### DevOps y Testing
 
 - **Docker & Docker Compose** - Contenedorización
 - **JUnit 5** - Testing unitario
-- **Testcontainers** - Testing de integración
-- **Mockito** - Mocking para tests
-- **JaCoCo** - Cobertura de código
-- **Maven** - Gestión de dependencias
+- **Testcontainers** - Testing integración
+- **Mockito** - Mocking
+- **JaCoCo** - Cobertura código
+- **Maven** - Gestión dependencias
 
 ## 📋 Requisitos Previos
 
@@ -216,7 +216,6 @@ El sistema sigue una arquitectura limpia (Clean Architecture) con separación cl
    ```
 
 5. **Acceder a la aplicación**:
-   - **Frontend**: http://localhost:3000
    - **Frontend**: http://localhost:3000
    - **Backend API**: http://localhost:8081
    - **Documentación API**: http://localhost:8081/swagger-ui.html
@@ -519,6 +518,15 @@ docker stats
 # Settings > Resources > Memory > 4GB mínimo
 ```
 
+#### Problemas de Conexión
+
+```bash
+# Verificar conectividad entre servicios
+docker-compose exec backend curl -f http://postgres:5432 || echo "PostgreSQL no responde"
+docker-compose exec backend curl -f http://mongodb:27017 || echo "MongoDB no responde"
+docker-compose exec backend curl -f http://redis:6379 || echo "Redis no responde"
+```
+
 ### Logs de Debugging
 
 ```bash
@@ -555,7 +563,7 @@ docker-compose up --build -d
 
 ### Guías de Contribución
 
-- Seguir las convenciones de código
+- Seguir convenciones de código
 - Escribir tests para nuevas funcionalidades
 - Actualizar documentación según sea necesario
 - Mantener compatibilidad con versiones anteriores
@@ -567,15 +575,24 @@ docker-compose up --build -d
 - **Commits**: Conventional Commits
 - **Branches**: Git Flow
 
+### Reporte de Problemas
+
+Para reportar bugs o solicitar funcionalidades:
+
+1. Verificar que no exista un issue similar
+2. Crear un nuevo issue con descripción detallada
+3. Incluir pasos para reproducir el problema
+4. Agregar información del entorno (SO, versión, etc.)
+
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 📞 Contacto
 
-**Santiago Suaza**
+**Santiago Suaza Cardona**
 
-- Email: santiagosuaza5@gmail.com
+- Email: santiago.suaza@correo.tdea.edu.co
 - LinkedIn: [Tu LinkedIn]
 - GitHub: [Tu GitHub]
 
@@ -583,9 +600,9 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 Para soporte técnico:
 
-1. Revisar la [documentación](docs/)
+1. Revisar la documentación
 2. Crear un issue en GitHub
-3. Contactar al equipo de desarrollo
+3. Contactar al desarrollador
 
 ---
 
