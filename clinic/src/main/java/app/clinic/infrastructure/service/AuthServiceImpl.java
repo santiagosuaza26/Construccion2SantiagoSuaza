@@ -1,12 +1,10 @@
 package app.clinic.infrastructure.service;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.entities.User;
 import app.clinic.domain.model.valueobject.Username;
 import app.clinic.domain.repository.UserRepository;
-import app.clinic.domain.service.RoleBasedAccessService;
 import app.clinic.infrastructure.dto.AuthResponseDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,18 +14,12 @@ import io.jsonwebtoken.security.Keys;
 public class AuthServiceImpl {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final RoleBasedAccessService roleBasedAccessService;
 
     public AuthServiceImpl(UserRepository userRepository,
-                          PasswordEncoder passwordEncoder,
-                          JwtService jwtService,
-                          RoleBasedAccessService roleBasedAccessService) {
+                           JwtService jwtService) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-        this.roleBasedAccessService = roleBasedAccessService;
     }
 
     public AuthResponseDTO authenticate(String username, String password) {

@@ -14,7 +14,7 @@ public class RegisterEmergencyContactUseCase {
     }
 
     public Patient execute(String patientId, String emergencyName, String emergencyRelation, String emergencyPhone) {
-        Patient patient = patientService.findPatientById(patientId);
+        Patient patient = patientService.findPatientById(patientId, app.clinic.domain.model.valueobject.Role.MEDICO);
         // Update emergency contact - this would require a new method in PatientService
         // For now, we'll use the existing updatePatient method with current patient data
         patientService.updatePatient(
@@ -33,6 +33,6 @@ public class RegisterEmergencyContactUseCase {
             patient.getInsurance().isActive(),
             patient.getInsurance().getValidityDate().toString()
         );
-        return patientService.findPatientById(patientId);
+        return patientService.findPatientById(patientId, app.clinic.domain.model.valueobject.Role.MEDICO);
     }
 }

@@ -22,15 +22,12 @@ class InventoryServiceTest {
     @Mock
     private InventoryRepository inventoryRepository;
 
-    @Mock
-    private RoleBasedAccessService roleBasedAccessService;
-
     private InventoryService inventoryService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        inventoryService = new InventoryService(inventoryRepository, roleBasedAccessService);
+        inventoryService = new InventoryService(inventoryRepository);
     }
 
     @Test

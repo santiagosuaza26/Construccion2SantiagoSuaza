@@ -36,7 +36,10 @@ public class TechnicalSupportService {
         return supportTicketRepository.findAll();
     }
 
-    public void assignSupportTicket(SupportTicketId id, String assignedTo) {
+    public void assignSupportTicket(SupportTicketId id, String assignedTo, app.clinic.domain.model.valueobject.Role currentUserRole) {
+        // Validar que solo administradores pueden asignar tickets
+        roleBasedAccessService.checkAccess(currentUserRole, "support_ticket");
+
         Optional<SupportTicket> ticketOpt = supportTicketRepository.findById(id);
         if (ticketOpt.isPresent()) {
             SupportTicket ticket = ticketOpt.get();

@@ -20,6 +20,6 @@ public class UpdatePatientUseCase {
         patientService.updatePatient(identificationNumber, fullName, dateOfBirth, gender, address, phone, email,
                                    emergencyName, emergencyRelation, emergencyPhone, companyName, policyNumber,
                                    insuranceActive, validityDate);
-        return patientService.findPatientById(identificationNumber);
+        return patientService.findPatientById(identificationNumber, app.clinic.domain.model.valueobject.Role.MEDICO);
     }
 }

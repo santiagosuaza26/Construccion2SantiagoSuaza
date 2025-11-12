@@ -4,13 +4,12 @@ import org.springframework.stereotype.Service;
 
 import app.clinic.domain.repository.InventoryRepository;
 import app.clinic.domain.service.InventoryService;
-import app.clinic.domain.service.RoleBasedAccessService;
 
 @Service
 public class InventoryServiceImpl extends InventoryService {
 
-    public InventoryServiceImpl(InventoryRepository inventoryRepository, RoleBasedAccessService roleBasedAccessService) {
-        super(inventoryRepository, roleBasedAccessService);
+    public InventoryServiceImpl(InventoryRepository inventoryRepository) {
+        super(inventoryRepository);
     }
 
     // Infrastructure layer service that extends the domain service

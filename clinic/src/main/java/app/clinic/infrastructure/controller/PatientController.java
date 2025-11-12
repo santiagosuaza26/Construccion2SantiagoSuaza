@@ -195,7 +195,14 @@ public class PatientController {
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('PERSONAL_ADMINISTRATIVO', 'MEDICO', 'ENFERMERA')")
     public ResponseEntity<PatientDTO> getPatientById(@PathVariable String id) {
-        var patient = patientService.findPatientById(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String roleString = authentication.getAuthorities().iterator().next().getAuthority();
+        if (roleString.startsWith("ROLE_")) {
+            roleString = roleString.substring(5);
+        }
+        Role userRole = Role.valueOf(roleString);
+
+        var patient = patientService.findPatientById(id, userRole);
 
         var dto = new PatientDTO(
             patient.getIdentificationNumber().getValue(),

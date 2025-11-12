@@ -3,6 +3,7 @@ package app.clinic.application.usecase;
 import org.springframework.stereotype.Service;
 
 import app.clinic.domain.model.entities.Patient;
+import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.service.PatientService;
 
 @Service
@@ -13,7 +14,7 @@ public class GetPatientUseCase {
         this.patientService = patientService;
     }
 
-    public Patient execute(String identificationNumber) {
-        return patientService.findPatientById(identificationNumber);
+    public Patient execute(String identificationNumber, Role userRole) {
+        return patientService.findPatientById(identificationNumber, userRole);
     }
 }

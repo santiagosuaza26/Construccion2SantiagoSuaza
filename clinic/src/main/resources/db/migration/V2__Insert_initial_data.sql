@@ -14,7 +14,7 @@ INSERT INTO users (id, full_name, email, phone, date_of_birth, address, role, us
 INSERT INTO patients (identification_number, full_name, date_of_birth, gender, address, phone, email, emergency_contact_name, emergency_contact_relation, emergency_contact_phone, insurance_company_name, insurance_policy_number, insurance_active, insurance_validity_date, annual_copay_total) VALUES
 ('1111111111', 'Roberto Silva', '15/07/1985', 'masculino', 'Calle 45 #67-89', '3101234567', 'roberto.silva@clinica.com', 'María Silva', 'Esposa', '3117654321', 'Seguros Salud Plus', 'POL001234', true, '31/12/2025', 0.00),
 ('2222222222', 'Carmen Torres', '22/09/1992', 'femenino', 'Carrera 78 #90-12', '3209876543', 'carmen.torres@clinica.com', 'José Torres', 'Hermano', '3216543210', 'MediCare Colombia', 'POL005678', true, '30/06/2025', 50000.00),
-('3333333333', 'Luis Ramírez', '08/03/1978', 'masculino', 'Avenida 23 #45-67', '3305554444', 'luis.ramirez@clinica.com', 'Ana Ramírez', 'Hija', '3312223333', NULL, NULL, false, NULL, 0.00);
+('3333333333', 'Luis Ramírez', '08/03/1978', 'masculino', 'Avenida 23 #45-67', '3305554444', 'luis.ramirez@clinica.com', 'Ana Ramírez', 'Hija', '3312223333', 'Sin Seguro', 'N/A', false, NULL, 0.00);
 
 -- Insertar medicamentos de ejemplo
 INSERT INTO medications (id, name, cost, requires_specialist, specialist_type) VALUES

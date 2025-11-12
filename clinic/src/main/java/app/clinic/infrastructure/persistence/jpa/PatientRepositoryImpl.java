@@ -1,6 +1,8 @@
 package app.clinic.infrastructure.persistence.jpa;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class PatientRepositoryImpl implements PatientRepository {
             patient.getInsurance().getCompanyName(),
             patient.getInsurance().getPolicyNumber(),
             patient.getInsurance().isActive(),
-            patient.getInsurance().getValidityDate().toString(),
+            patient.getInsurance().getValidityDate() != null ? patient.getInsurance().getValidityDate().toString() : null,
             patient.getAnnualCopayTotal()
         );
         patientJpaRepository.save(entity);
@@ -107,11 +109,20 @@ public class PatientRepositoryImpl implements PatientRepository {
             new Phone(entity.getEmergencyContactPhone())
         );
 
+        LocalDate validityDate = null;
+        if (entity.getInsuranceValidityDate() != null) {
+            try {
+                validityDate = LocalDate.parse(entity.getInsuranceValidityDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            } catch (DateTimeParseException e) {
+                validityDate = LocalDate.parse(entity.getInsuranceValidityDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            }
+        }
+
         Insurance insurance = new Insurance(
             entity.getInsuranceCompanyName(),
             entity.getInsurancePolicyNumber(),
             entity.isInsuranceActive(),
-            LocalDate.parse(entity.getInsuranceValidityDate())
+            validityDate
         );
 
         return new Patient(

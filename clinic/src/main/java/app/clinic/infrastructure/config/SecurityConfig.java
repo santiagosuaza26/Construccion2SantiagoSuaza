@@ -63,7 +63,7 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Permitir acceso a H2 console
-        http.headers(headers -> headers.frameOptions().disable());
+        http.headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("frame-ancestors 'self'")));
 
         return http.build();
     }

@@ -2,15 +2,27 @@
 
 [![Java](https://img.shields.io/badge/Java-17-orange)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen)](https://spring.io/projects/spring-boot)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)](https://www.postgresql.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-7-green)](https://www.mongodb.com/)
-[![Redis](https://img.shields.io/badge/Redis-7-red)](https://redis.io/)
-[![Next.js](https://img.shields.io/badge/Next.js-16.0.1-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
+[![H2 Database](https://img.shields.io/badge/H2-Database-blue)](https://www.h2database.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Sistema integral para la gestión de clínicas médicas, desarrollado con arquitectura de microservicios. Optimiza la administración de pacientes, citas, registros médicos, facturación y soporte técnico.
+Sistema integral para la gestión de clínicas médicas desarrollado con arquitectura limpia. Trabajo final del semestre para la clase **Construcción de Software 2**.
+
+**Desarrollado por: Santiago Suaza Cardona**
+
+## 🔗 Acceso Rápido a la API
+
+La aplicación está ejecutándose en **http://localhost:8080**
+
+- **🏠 Página Principal**: http://localhost:8080/api/public/welcome
+- **📚 Documentación Swagger UI**: http://localhost:8080/swagger-ui/index.html
+- **📖 API Docs (JSON)**: http://localhost:8080/v3/api-docs
+- **💾 Consola H2 Database**: http://localhost:8080/h2-console
+- **❤️ Health Check**: http://localhost:8080/api/public/health
+- **ℹ️ Información API**: http://localhost:8080/api/public/info
+
+### Credenciales de Prueba
+- **Usuario**: jperez (jperez)
+- **Contraseña**: Password123!
 
 ## 📋 Tabla de Contenidos
 
@@ -187,56 +199,38 @@ El sistema sigue una arquitectura limpia (Clean Architecture) con separación cl
 
 ## 🚀 Instalación y Despliegue
 
-### Opción 1: Despliegue con Docker (Recomendado)
+### 🚀 Inicio Rápido (Desarrollo Local)
 
-1. **Clonar el repositorio**:
-
-   ```bash
-   git clone <repository-url>
-   cd Construccion2SantiagoSuaza
-   ```
-
-2. **Configurar variables de entorno** (opcional):
+1. **Ejecutar la aplicación**:
 
    ```bash
-   cp .env.example .env
-   # Editar .env con sus valores personalizados
+   cd Construccion2SantiagoSuaza/clinic
+   mvn spring-boot:run
    ```
 
-3. **Desplegar con Docker Compose**:
+2. **Acceder a la aplicación**:
+   - **API Base**: http://localhost:8080
+   - **Documentación Swagger**: http://localhost:8080/swagger-ui/index.html
+   - **Consola H2 Database**: http://localhost:8080/h2-console
 
-   ```bash
-   docker-compose up -d
-   ```
+### 📋 Configuración de Base de Datos
 
-4. **Verificar el despliegue**:
+La aplicación utiliza **H2 Database** embebida para desarrollo:
+- **URL**: `jdbc:h2:file:../clinic_db`
+- **Usuario**: `sa`
+- **Contraseña**: *(vacía)*
+- **Migraciones**: Automáticas con Flyway
 
-   ```bash
-   docker-compose ps
-   ```
+### 🔧 Desarrollo Completo
 
-5. **Acceder a la aplicación**:
-   - **Frontend**: http://localhost:3000
-   - **Backend API**: http://localhost:8081
-   - **Documentación API**: http://localhost:8081/swagger-ui.html
-   - **Consola H2** (desarrollo): http://localhost:8081/h2-console
-
-### Opción 2: Desarrollo Local
-
-#### Backend
+Para desarrollo con todas las bases de datos (PostgreSQL, MongoDB, Redis):
 
 ```bash
-cd clinic
-mvn clean install
-mvn spring-boot:run
-```
+# Configurar variables de entorno
+cp .env.example .env
 
-#### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
+# Ejecutar con Docker Compose
+docker-compose up -d
 ```
 
 ## ⚙️ Configuración
@@ -275,17 +269,27 @@ SPRING_PROFILES_ACTIVE=docker
 
 ### Acceso al Sistema
 
-1. **Usuario Administrador**:
-   - Email: admin@clinic.com
-   - Contraseña: admin123
+La aplicación incluye datos de prueba precargados. Credenciales disponibles:
 
-2. **Usuario Doctor**:
-   - Email: doctor@clinic.com
-   - Contraseña: doctor123
+- **Usuario**: jperez (Médico)
+  - Email: juan.perez@clinica.com
+  - Contraseña: Password123!
 
-3. **Usuario Enfermera**:
-   - Email: nurse@clinic.com
-   - Contraseña: nurse123
+- **Usuario**: mgonzalez (Enfermera)
+  - Email: maria.gonzalez@clinica.com
+  - Contraseña: Password123!
+
+- **Usuario**: crodriguez (Administrativo)
+  - Email: carlos.rodriguez@clinica.com
+  - Contraseña: Password123!
+
+### Endpoints Disponibles
+
+- `POST /api/auth/login` - Autenticación
+- `GET /api/patients` - Gestión de pacientes
+- `GET /api/appointments` - Gestión de citas
+- `GET /api/medical-records` - Registros médicos
+- `GET /api/public/health` - Estado del sistema
 
 ### Funcionalidades Principales
 
@@ -321,8 +325,9 @@ SPRING_PROFILES_ACTIVE=docker
 
 La documentación completa de la API está disponible en:
 
-- **Swagger UI**: http://localhost:8081/swagger-ui.html
-- **OpenAPI JSON**: http://localhost:8081/v3/api-docs
+- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
+- **OpenAPI JSON**: http://localhost:8080/v3/api-docs
+- **Consola H2 Database**: http://localhost:8080/h2-console
 
 ### Endpoints Principales
 
@@ -451,11 +456,13 @@ mvn jacoco:report
 
 ## 📊 Monitoreo
 
-### Health Checks
+### Health Checks y Estado
 
-- **Health Endpoint**: http://localhost:8080/actuator/health
-- **Metrics**: http://localhost:8080/actuator/metrics
-- **Info**: http://localhost:8080/actuator/info
+- **Health Check**: http://localhost:8080/api/public/health
+- **Información API**: http://localhost:8080/api/public/info
+- **Página de Bienvenida**: http://localhost:8080/api/public/welcome
+- **Actuator Health**: http://localhost:8080/actuator/health
+- **Actuator Info**: http://localhost:8080/actuator/info
 
 ### Logs
 
@@ -590,22 +597,23 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ## 📞 Contacto
 
-**Santiago Suaza Cardona**
+**Santiago Suaza Cardona** - Estudiante de Ingeniería de Sistemas
 
-- Email: santiago.suaza@correo.tdea.edu.co
-- LinkedIn: [Tu LinkedIn]
-- GitHub: [Tu GitHub]
+- **Institución**: Institución Universitaria Tecnológico de Antioquia (TdeA)
+- **Programa**: Ingeniería de Sistemas
+- **Curso**: Construcción de Software 2
+- **Proyecto**: Trabajo Final de Semestre
 
 ### Soporte
 
-Para soporte técnico:
+Para soporte técnico del proyecto:
 
-1. Revisar la documentación
-2. Crear un issue en GitHub
+1. Revisar la documentación de la API
+2. Consultar los logs de la aplicación
 3. Contactar al desarrollador
 
 ---
 
-⭐ Si este proyecto te resulta útil, ¡dale una estrella en GitHub!
+⭐ **Proyecto desarrollado como trabajo final de semestre para la clase Construcción de Software 2**
 
 Última actualización: Noviembre 2025

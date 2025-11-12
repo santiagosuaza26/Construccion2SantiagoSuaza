@@ -1,5 +1,7 @@
 package app.clinic.domain.service;
 
+import java.time.format.DateTimeFormatter;
+
 import app.clinic.domain.model.entities.Insurance;
 import app.clinic.domain.model.entities.Patient;
 import app.clinic.domain.model.valueobject.Address;
@@ -35,7 +37,7 @@ public class PatientService {
         Id id = new Id(identificationNumber);
         patientRepository.findByIdentificationNumber(id).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
         EmergencyContact emergencyContact = new EmergencyContact(emergencyName, emergencyRelation, new Phone(emergencyPhone));
-        Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate));
+        Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate, DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         Patient updatedPatient = new Patient(id, fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender.toUpperCase()), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
         patientRepository.save(updatedPatient);
     }

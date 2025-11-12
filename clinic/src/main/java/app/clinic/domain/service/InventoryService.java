@@ -11,11 +11,9 @@ import app.clinic.domain.repository.InventoryRepository;
 
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
-    private final RoleBasedAccessService roleBasedAccessService;
 
-    public InventoryService(InventoryRepository inventoryRepository, RoleBasedAccessService roleBasedAccessService) {
+    public InventoryService(InventoryRepository inventoryRepository) {
         this.inventoryRepository = inventoryRepository;
-        this.roleBasedAccessService = roleBasedAccessService;
     }
 
     public Medication addMedication(String id, String name, double cost, boolean requiresSpecialist, String specialistType) {

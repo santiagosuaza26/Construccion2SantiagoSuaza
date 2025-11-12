@@ -3,6 +3,8 @@ package app.clinic.infrastructure.controller;
 import java.time.LocalDateTime;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import app.clinic.application.mapper.AppointmentMapper;
 import app.clinic.application.usecase.ScheduleAppointmentUseCase;
 import app.clinic.domain.model.valueobject.AppointmentStatus;
+import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.service.PatientService;
 import app.clinic.domain.service.UserService;
 import app.clinic.infrastructure.dto.AppointmentDTO;
@@ -39,6 +42,18 @@ public class AppointmentController {
         this.userService = userService;
     }
 
+    private Role getCurrentUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            String roleString = authentication.getAuthorities().iterator().next().getAuthority();
+            if (roleString.startsWith("ROLE_")) {
+                roleString = roleString.substring(5); // Remove "ROLE_" prefix
+            }
+            return Role.valueOf(roleString);
+        }
+        return null;
+    }
+
     @PostMapping
     @Operation(summary = "Programar cita médica", description = "Programa una nueva cita médica para un paciente")
     @ApiResponses(value = {
@@ -55,7 +70,11 @@ public class AppointmentController {
         );
 
         // Get patient and user details
-        var patient = patientService.findPatientById(request.patientId);
+        Role currentRole = getCurrentUserRole();
+        if (currentRole == null) {
+            return ResponseEntity.status(403).build(); // Forbidden
+        }
+        var patient = patientService.findPatientById(request.patientId, currentRole);
         var admin = userService.findUserById(request.adminId);
         var doctor = userService.findUserById(request.doctorId);
 

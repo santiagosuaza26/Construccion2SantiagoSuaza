@@ -2,6 +2,8 @@ package app.clinic.infrastructure.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import app.clinic.application.usecase.GetVitalSignsUseCase;
 import app.clinic.application.usecase.RecordMedicationAdministrationUseCase;
 import app.clinic.application.usecase.RecordProcedureRealizationUseCase;
 import app.clinic.application.usecase.RecordVitalSignsUseCase;
+import app.clinic.domain.model.valueobject.Role;
 import app.clinic.infrastructure.dto.PatientDTO;
 import app.clinic.infrastructure.dto.VitalSignsDTO;
 import jakarta.validation.Valid;
@@ -30,15 +33,27 @@ public class NurseController {
     private final RecordProcedureRealizationUseCase recordProcedureRealizationUseCase;
 
     public NurseController(GetPatientUseCase getPatientUseCase,
-                           GetVitalSignsUseCase getVitalSignsUseCase,
-                           RecordVitalSignsUseCase recordVitalSignsUseCase,
-                           RecordMedicationAdministrationUseCase recordMedicationAdministrationUseCase,
-                           RecordProcedureRealizationUseCase recordProcedureRealizationUseCase) {
+                            GetVitalSignsUseCase getVitalSignsUseCase,
+                            RecordVitalSignsUseCase recordVitalSignsUseCase,
+                            RecordMedicationAdministrationUseCase recordMedicationAdministrationUseCase,
+                            RecordProcedureRealizationUseCase recordProcedureRealizationUseCase) {
         this.getPatientUseCase = getPatientUseCase;
         this.getVitalSignsUseCase = getVitalSignsUseCase;
         this.recordVitalSignsUseCase = recordVitalSignsUseCase;
         this.recordMedicationAdministrationUseCase = recordMedicationAdministrationUseCase;
         this.recordProcedureRealizationUseCase = recordProcedureRealizationUseCase;
+    }
+
+    private Role getCurrentUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            String roleString = authentication.getAuthorities().iterator().next().getAuthority();
+            if (roleString.startsWith("ROLE_")) {
+                roleString = roleString.substring(5); // Remove "ROLE_" prefix
+            }
+            return Role.valueOf(roleString);
+        }
+        return null;
     }
 
     /**
@@ -54,7 +69,11 @@ public class NurseController {
         }
 
         try {
-            var patient = getPatientUseCase.execute(id);
+            Role currentRole = getCurrentUserRole();
+            if (currentRole == null) {
+                return ResponseEntity.status(403).build(); // Forbidden
+            }
+            var patient = getPatientUseCase.execute(id, currentRole);
             var dto = new PatientDTO(
                 patient.getIdentificationNumber().getValue(),
                 patient.getFullName(),

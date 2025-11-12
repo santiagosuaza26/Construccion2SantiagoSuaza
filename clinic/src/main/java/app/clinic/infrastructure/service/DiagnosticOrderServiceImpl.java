@@ -9,17 +9,14 @@ import app.clinic.domain.model.entities.Order;
 import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.model.valueobject.OrderNumber;
 import app.clinic.domain.repository.OrderRepository;
-import app.clinic.domain.service.OrderService;
 
 @Service
 public class DiagnosticOrderServiceImpl {
 
     private final OrderRepository orderRepository;
-    private final OrderService orderService;
 
-    public DiagnosticOrderServiceImpl(OrderRepository orderRepository, OrderService orderService) {
+    public DiagnosticOrderServiceImpl(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.orderService = orderService;
     }
 
     public void addDiagnosticToOrder(String orderNumber, String diagnosticAidId, String quantity, boolean requiresSpecialist, String specialistId, double cost) {

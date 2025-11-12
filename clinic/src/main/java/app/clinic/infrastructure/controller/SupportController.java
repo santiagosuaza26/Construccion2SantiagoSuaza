@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import app.clinic.application.mapper.SupportTicketMapper;
 import app.clinic.application.usecase.ProvideTechnicalSupportUseCase;
+import app.clinic.domain.model.DomainException;
 import app.clinic.domain.model.entities.SupportTicket;
+import app.clinic.domain.model.valueobject.Role;
 import app.clinic.domain.service.TechnicalSupportService;
 import app.clinic.infrastructure.dto.SupportTicketDTO;
 
@@ -25,9 +29,21 @@ public class SupportController {
     private final TechnicalSupportService technicalSupportService;
 
     public SupportController(ProvideTechnicalSupportUseCase provideTechnicalSupportUseCase,
-                           TechnicalSupportService technicalSupportService) {
+                            TechnicalSupportService technicalSupportService) {
         this.provideTechnicalSupportUseCase = provideTechnicalSupportUseCase;
         this.technicalSupportService = technicalSupportService;
+    }
+
+    private Role getCurrentUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getAuthorities() != null) {
+            String roleString = authentication.getAuthorities().iterator().next().getAuthority();
+            if (roleString.startsWith("ROLE_")) {
+                roleString = roleString.substring(5); // Remove "ROLE_" prefix
+            }
+            return Role.valueOf(roleString);
+        }
+        return null;
     }
 
     @PostMapping("/tickets")
@@ -68,7 +84,11 @@ public class SupportController {
 
     @PutMapping("/tickets/{id}/assign")
     public ResponseEntity<Void> assignSupportTicket(@PathVariable String id, @RequestBody AssignTicketRequest request) {
-        technicalSupportService.assignSupportTicket(new app.clinic.domain.model.valueobject.SupportTicketId(id), request.assignedTo);
+        Role currentRole = getCurrentUserRole();
+        if (currentRole == null) {
+            throw new DomainException("Usuario no autenticado");
+        }
+        technicalSupportService.assignSupportTicket(new app.clinic.domain.model.valueobject.SupportTicketId(id), request.assignedTo, currentRole);
         return ResponseEntity.ok().build();
     }
 

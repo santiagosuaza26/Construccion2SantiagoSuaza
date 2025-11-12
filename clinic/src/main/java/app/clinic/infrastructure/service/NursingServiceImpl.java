@@ -70,7 +70,7 @@ public class NursingServiceImpl {
         roleBasedAccessService.checkAccess(nurse.getRole(), "PATIENT_DATA");
 
         // Validate patient exists
-        var patient = patientRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(patientId))
+        patientRepository.findByIdentificationNumber(new app.clinic.domain.model.valueobject.Id(patientId))
                 .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
 
         // Add observation to vital signs or medical record

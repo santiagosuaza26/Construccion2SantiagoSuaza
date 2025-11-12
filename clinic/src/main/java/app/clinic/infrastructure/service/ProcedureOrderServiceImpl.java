@@ -9,17 +9,14 @@ import app.clinic.domain.model.entities.ProcedureOrder;
 import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.model.valueobject.OrderNumber;
 import app.clinic.domain.repository.OrderRepository;
-import app.clinic.domain.service.OrderService;
 
 @Service
 public class ProcedureOrderServiceImpl {
 
     private final OrderRepository orderRepository;
-    private final OrderService orderService;
 
-    public ProcedureOrderServiceImpl(OrderRepository orderRepository, OrderService orderService) {
+    public ProcedureOrderServiceImpl(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.orderService = orderService;
     }
 
     public void addProcedureToOrder(String orderNumber, String procedureId, String quantity, String frequency, double cost, boolean requiresSpecialist, String specialistId) {
