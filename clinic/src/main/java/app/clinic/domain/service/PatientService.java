@@ -26,7 +26,7 @@ public class PatientService {
 
         EmergencyContact emergencyContact = new EmergencyContact(emergencyName, emergencyRelation, new Phone(emergencyPhone));
         Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate, java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-        Patient patient = new Patient(new Id(identificationNumber), fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
+        Patient patient = new Patient(new Id(identificationNumber), fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender.toUpperCase()), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
         patientRepository.save(patient);
         return patient;
     }
@@ -36,7 +36,7 @@ public class PatientService {
         patientRepository.findByIdentificationNumber(id).orElseThrow(() -> new IllegalArgumentException("Patient not found"));
         EmergencyContact emergencyContact = new EmergencyContact(emergencyName, emergencyRelation, new Phone(emergencyPhone));
         Insurance insurance = new Insurance(companyName, policyNumber, insuranceActive, java.time.LocalDate.parse(validityDate));
-        Patient updatedPatient = new Patient(id, fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
+        Patient updatedPatient = new Patient(id, fullName, new DateOfBirth(dateOfBirth), Gender.valueOf(gender.toUpperCase()), new Address(address), new Phone(phone), new Email(email), emergencyContact, insurance);
         patientRepository.save(updatedPatient);
     }
 
@@ -105,7 +105,7 @@ public class PatientService {
             throw new IllegalArgumentException("Gender is required");
         }
         try {
-            Gender.valueOf(gender);
+            Gender.valueOf(gender.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid gender. Must be MASCULINO, FEMENINO, or OTRO");
         }

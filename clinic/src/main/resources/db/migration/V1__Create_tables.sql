@@ -155,6 +155,23 @@ CREATE TABLE billings (
     generated_by VARCHAR(20) NOT NULL
 );
 
+-- Tabla de registros médicos
+CREATE TABLE medical_records (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    patient_id VARCHAR(20) NOT NULL,
+    consultation_date DATE NOT NULL,
+    doctor_id VARCHAR(20),
+    reason TEXT,
+    symptoms TEXT,
+    diagnosis TEXT,
+    prescriptions TEXT,
+    procedures TEXT,
+    diagnostic_aids TEXT,
+    order_number VARCHAR(10),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Tabla de tickets de soporte
 CREATE TABLE support_tickets (
     id VARCHAR(50) PRIMARY KEY,
@@ -178,6 +195,8 @@ CREATE INDEX idx_procedure_orders_order_number ON procedure_orders(order_number)
 CREATE INDEX idx_diagnostic_aid_orders_order_number ON diagnostic_aid_orders(order_number);
 CREATE INDEX idx_vital_signs_patient_id ON vital_signs(patient_identification_number);
 CREATE INDEX idx_billings_patient_id ON billings(identification_number);
+CREATE INDEX idx_medical_records_patient_id ON medical_records(patient_id);
+CREATE INDEX idx_medical_records_consultation_date ON medical_records(consultation_date);
 CREATE INDEX idx_support_tickets_user_id ON support_tickets(user_id);
 CREATE INDEX idx_support_tickets_assigned_to ON support_tickets(assigned_to);
 CREATE INDEX idx_support_tickets_status ON support_tickets(status);
@@ -205,6 +224,9 @@ ALTER TABLE vital_signs ADD CONSTRAINT fk_vital_signs_patient_id FOREIGN KEY (pa
 
 ALTER TABLE billings ADD CONSTRAINT fk_billings_order_number FOREIGN KEY (order_number) REFERENCES orders(order_number) ON DELETE CASCADE;
 ALTER TABLE billings ADD CONSTRAINT fk_billings_generated_by FOREIGN KEY (generated_by) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE medical_records ADD CONSTRAINT fk_medical_records_patient_id FOREIGN KEY (patient_id) REFERENCES patients(identification_number) ON DELETE CASCADE;
+ALTER TABLE medical_records ADD CONSTRAINT fk_medical_records_doctor_id FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE support_tickets ADD CONSTRAINT fk_support_tickets_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 ALTER TABLE support_tickets ADD CONSTRAINT fk_support_tickets_assigned_to FOREIGN KEY (assigned_to) REFERENCES users(id) ON DELETE SET NULL;

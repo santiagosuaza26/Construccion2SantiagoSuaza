@@ -14,7 +14,6 @@ import app.clinic.domain.model.valueobject.Address;
 import app.clinic.domain.model.valueobject.DateOfBirth;
 import app.clinic.domain.model.valueobject.Email;
 import app.clinic.domain.model.valueobject.EmergencyContact;
-import app.clinic.domain.model.valueobject.Gender;
 import app.clinic.domain.model.valueobject.Id;
 import app.clinic.domain.model.valueobject.Phone;
 import app.clinic.domain.repository.PatientRepository;
@@ -35,7 +34,7 @@ public class PatientRepositoryImpl implements PatientRepository {
             patient.getIdentificationNumber().getValue(),
             patient.getFullName(),
             patient.getDateOfBirth().toString(),
-            patient.getGender().toString(),
+            patient.getGender(),
             patient.getAddress().getValue(),
             patient.getPhone().getValue(),
             patient.getEmail().getValue(),
@@ -119,7 +118,7 @@ public class PatientRepositoryImpl implements PatientRepository {
             new Id(entity.getIdentificationNumber()),
             entity.getFullName(),
             new DateOfBirth(entity.getDateOfBirth()),
-            Gender.valueOf(entity.getGender()),
+            entity.getGender(),
             new Address(entity.getAddress()),
             new Phone(entity.getPhone()),
             new Email(entity.getEmail()),

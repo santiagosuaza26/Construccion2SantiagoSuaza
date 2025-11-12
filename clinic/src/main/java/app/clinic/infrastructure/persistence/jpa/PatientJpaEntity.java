@@ -1,5 +1,6 @@
 package app.clinic.infrastructure.persistence.jpa;
 
+import app.clinic.domain.model.valueobject.Gender;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -25,7 +26,7 @@ public class PatientJpaEntity {
     private String dateOfBirth;
 
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
     @Column(name = "address")
     private String address;
